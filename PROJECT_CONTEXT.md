@@ -205,6 +205,12 @@ separate repositories and release lifecycles.
 - Standardized all regional project infrastructure on `eu-central-1`. Migrated the
   protected/versioned Terraform state backend from Paris to Frankfurt, verified a
   zero-drift refresh plan, and then permanently retired the old Paris bucket.
+- Added passwordless GitHub-to-AWS CI/CD using OIDC: a `main`-only read/plan role and
+  a separately scoped deployment role trusted only by the `aws-bootstrap`
+  Environment. Applies require manual dispatch and an exact saved Terraform plan.
+- Recorded a GitHub-plan constraint: private repositories on the current GitHub
+  plan cannot enable Environment reviewer protection, so manual dispatch is the
+  portfolio human gate and required reviewers remain the enterprise target.
 
 ## Decisions
 
