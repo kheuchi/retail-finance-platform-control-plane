@@ -229,6 +229,27 @@ separate repositories and release lifecycles.
   corrected the trust policy locally, and removed the diagnostic step. The corrected
   policy still requires plan/apply verification before this item is complete.
 
+### 2026-09-15
+
+- Completed the GitHub OIDC proof. Passwordless GitHub-to-AWS authentication is now
+  verified end to end: Actions assumes the read-only plan role, reads the Frankfurt
+  remote state, and reports a zero-drift Terraform plan. Infrastructure release
+  `v1.1.0` was cut automatically.
+- Before applying, recovered the real OIDC `sub` claim from the retained CI log of
+  the earlier failed run and independently confirmed the numeric owner and repository
+  IDs through the GitHub API, rather than trusting the prepared fix unverified.
+- The trust-policy apply changed 2 resources in place and added or destroyed none.
+  No chargeable resources were created and no credentials were stored.
+- Fixing the first fault revealed a second one it had been masking: the CI
+  Budget-email secret did not reach Terraform as a usable value. Re-set it from the
+  Git-ignored local variables file without exposing the address, and rewrote the
+  validation message so the failure explains itself instead of recurring silently.
+- Recorded the verified WSL2 toolchain in the infrastructure repository. Nothing
+  required installation; AWS CLI 2.36.44, Terraform 1.14.6, GitHub CLI, jq and
+  python3 were already present and working.
+- Confirmed the deploy role has still never been exercised by a real apply. Only the
+  plan path is proven against AWS.
+
 ## Decisions
 
 | ID | Decision | Status | Reason |
@@ -287,7 +308,16 @@ separate repositories and release lifecycles.
 - Security baseline: root MFA enabled; no root access keys; no CloudTrail, Config
   recorder or account password policy; GuardDuty/Security Hub unavailable on Free plan
 - AWS resources created by this project: protected/versioned Terraform state in
-  `eu-central-1`, a USD 50 monthly Budget with alerts, and an IAM password policy
+  `eu-central-1`, a USD 50 monthly Budget with alerts, an IAM password policy, a
+  GitHub OIDC identity provider, and separate CI plan and deploy roles. None are
+  hourly-billed.
+- CI/CD authentication: verified. GitHub Actions reaches AWS through short-lived
+  OIDC sessions with no stored access keys, and the plan path returns zero drift.
+  The deploy role exists and is correctly scoped but has not yet run a real apply.
+- Local toolchain: WSL2 Ubuntu with AWS CLI 2.36.44, Terraform 1.14.6, GitHub CLI,
+  jq and python3, all verified present on 2026-09-15 with no installation required.
+  Versions and the two environment caveats are recorded in the infra repository's
+  `PROJECT_CONTEXT.md`.
 - Delivery target: one week for the initial implementation
 - Budget: USD 100 AWS credit plus up to USD 50 personal spend per month; enabling
   Organizations or Control Tower would forfeit the AWS credit under current terms
@@ -295,8 +325,9 @@ separate repositories and release lifecycles.
 ## Immediate next actions
 
 1. Keep Organizations and Control Tower undeployed while the Free plan is active.
-2. Create a least-privilege GitHub OIDC deployment role without stored access keys.
-3. Triage the five advisory Checkov findings and record justified exceptions.
+2. Exercise the GitHub OIDC deploy role once through the manual deployment workflow,
+   so the apply path is proven and not merely configured.
+3. Triage the seven advisory Checkov findings and record justified exceptions.
 4. Design and cost the Frankfurt network, audit and Databricks foundations.
 5. Produce the threat model, control matrix and responsibility matrix.
 
