@@ -196,6 +196,9 @@ separate repositories and release lifecycles.
   names `retail-finance-platform-control-plane` and
   `retail-finance-platform-infra`; performed pre-push credential and account-ID
   hygiene checks.
+- Published both private repositories. Infrastructure CI passed Terraform checks and
+  semantic-release created `v1.0.0`; a Checkov setup defect was diagnosed and fixed
+  so the advisory scan executes rather than merely remaining non-blocking.
 
 ## Decisions
 
