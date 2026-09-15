@@ -67,6 +67,18 @@ actions without explicit human approval.
 14. Record material decisions, assumptions, evidence, risks and exceptions in Git.
 15. Agents default to read-only analysis. Consequential actions require a human gate.
 
+## Human communication contract
+
+Every assistant status update and handoff must:
+
+1. Start with a short `TL;DR` in plain words.
+2. Explain technical terms when first used, including what they mean operationally.
+3. Separate verified facts, proposals, assumptions, risks and remaining work.
+4. State resource changes and cost impact plainly, especially creates and destroys.
+5. Avoid assuming the reader already knows AWS, Terraform, Databricks or ML jargon.
+6. Keep explanations concise enough for interview preparation while preserving the
+   technical vocabulary a practitioner is expected to use.
+
 ## Target environments
 
 The enterprise target is a multi-account landing zone with distinct security,
@@ -211,6 +223,11 @@ separate repositories and release lifecycles.
 - Recorded a GitHub-plan constraint: private repositories on the current GitHub
   plan cannot enable Environment reviewer protection, so manual dispatch is the
   portfolio human gate and required reviewers remain the enterprise target.
+- Began the live GitHub OIDC proof. The first role assumption failed safely because
+  GitHub uses a hardened OIDC subject containing immutable owner/repository numeric
+  IDs rather than the legacy name-only subject. Captured only non-sensitive claims,
+  corrected the trust policy locally, and removed the diagnostic step. The corrected
+  policy still requires plan/apply verification before this item is complete.
 
 ## Decisions
 
