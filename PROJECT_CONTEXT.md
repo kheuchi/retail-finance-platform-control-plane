@@ -192,6 +192,10 @@ separate repositories and release lifecycles.
 - Changed the workload/AI region from Paris to Frankfurt after current feature
   verification. Added an infrastructure CI/CD design using semantic-release and a
   non-blocking Checkov job; no workload resources were moved because none exist yet.
+- Prepared private GitHub publication under the personal GitHub account, with remote
+  names `retail-finance-platform-control-plane` and
+  `retail-finance-platform-infra`; performed pre-push credential and account-ID
+  hygiene checks.
 
 ## Decisions
 

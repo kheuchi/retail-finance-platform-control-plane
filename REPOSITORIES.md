@@ -8,7 +8,7 @@ ownership.
 
 | Repository | Responsibility | Windows path | WSL path | Status |
 |---|---|---|---|---|
-| `dataMLPlatform` | Program control plane: shared context, roadmap, cross-repository decisions, progress, and AI/human orchestration | `C:\Users\cheik\.vscode\dataMLPlatform` | `/mnt/c/Users/cheik/.vscode/dataMLPlatform` | Active |
+| `retail-finance-platform-control-plane` | Program control plane: shared context, roadmap, cross-repository decisions, progress, and AI/human orchestration | `C:\Users\cheik\.vscode\dataMLPlatform` | `/mnt/c/Users/cheik/.vscode/dataMLPlatform` | Active |
 | `retail-finance-platform-infra` | Terraform for AWS/Databricks foundations, security controls, state, networking, governance, and infrastructure CI/CD | `C:\Users\cheik\.vscode\retail-finance-platform-infra` | `/mnt/c/Users/cheik/.vscode/retail-finance-platform-infra` | Active |
 
 ## Planned repositories
