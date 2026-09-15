@@ -189,6 +189,9 @@ separate repositories and release lifecycles.
   the IAM password policy, and confirmed a post-apply Terraform plan has no drift.
 - Enabled Budget notifications at 50% actual, 80% actual, and 100% forecasted spend;
   the update changed only the existing Budget and created or destroyed nothing.
+- Changed the workload/AI region from Paris to Frankfurt after current feature
+  verification. Added an infrastructure CI/CD design using semantic-release and a
+  non-blocking Checkov job; no workload resources were moved because none exist yet.
 
 ## Decisions
 
@@ -203,8 +206,9 @@ separate repositories and release lifecycles.
 | D-007 | Prohibit root identity for project operations | Accepted | Root has unrestricted account authority and is reserved for root-only recovery/bootstrap tasks |
 | D-008 | One-week initial delivery window | Accepted | User constraint; requires a thin end-to-end slice and documented future roadmap |
 | D-009 | Preserve Free plan; do not deploy Organizations or Control Tower | Accepted | Retain the USD 100 credit; implement a single-account baseline and keep the multi-account landing zone deployable as a reference design |
-| D-010 | Use `eu-west-3` as primary project region | Accepted | Paris/EU residency and current Databricks support |
+| D-010 | Use `eu-west-3` as primary project region | Superseded | Basic Databricks support exists, but custom model/agent serving is unavailable |
 | D-011 | Separate control plane, infrastructure, data, ML, and agent repositories | Accepted | Independent ownership, permissions, CI/CD, state, and release lifecycles |
+| D-012 | Use `eu-central-1` for workloads/AI; retain state in `eu-west-3` | Accepted | Frankfurt supports Databricks custom model/agent serving and Bedrock Custom Model Import while remaining in the EU |
 
 ## Open decisions
 

@@ -12,7 +12,8 @@ models enterprise practices while remaining affordable for a personal AWS accoun
 ## Current approach
 
 - Preserve the AWS Free plan and its credits.
-- Deploy a hardened single-account foundation in `eu-west-3` (Paris).
+- Keep bootstrap state in `eu-west-3` (Paris) and deploy workloads in
+  `eu-central-1` (Frankfurt) for custom model and agent-serving support.
 - Maintain a production-ready multi-account Control Tower design without activating
   AWS Organizations during the Free plan.
 - Provision infrastructure with Terraform and deploy workloads through CI/CD.
