@@ -202,6 +202,9 @@ separate repositories and release lifecycles.
 - Verified the repaired infrastructure workflow on GitHub: Terraform checks passed,
   Checkov executed 37 controls (32 passed, 5 findings) without blocking the workflow,
   and semantic-release created `v1.0.1`.
+- Standardized all regional project infrastructure on `eu-central-1`. Migrated the
+  protected/versioned Terraform state backend from Paris to Frankfurt, verified a
+  zero-drift refresh plan, and then permanently retired the old Paris bucket.
 
 ## Decisions
 
@@ -218,7 +221,8 @@ separate repositories and release lifecycles.
 | D-009 | Preserve Free plan; do not deploy Organizations or Control Tower | Accepted | Retain the USD 100 credit; implement a single-account baseline and keep the multi-account landing zone deployable as a reference design |
 | D-010 | Use `eu-west-3` as primary project region | Superseded | Basic Databricks support exists, but custom model/agent serving is unavailable |
 | D-011 | Separate control plane, infrastructure, data, ML, and agent repositories | Accepted | Independent ownership, permissions, CI/CD, state, and release lifecycles |
-| D-012 | Use `eu-central-1` for workloads/AI; retain state in `eu-west-3` | Accepted | Frankfurt supports Databricks custom model/agent serving and Bedrock Custom Model Import while remaining in the EU |
+| D-012 | Use `eu-central-1` for workloads/AI; retain state in `eu-west-3` | Superseded | The split was safe but added needless complexity at this early project stage |
+| D-013 | Standardize all regional resources on `eu-central-1` | Accepted | Simpler governance and operations; required Databricks and Bedrock model capabilities remain available |
 
 ## Open decisions
 
@@ -259,21 +263,19 @@ separate repositories and release lifecycles.
   instances or S3 buckets
 - Security baseline: root MFA enabled; no root access keys; no CloudTrail, Config
   recorder or account password policy; GuardDuty/Security Hub unavailable on Free plan
-- AWS resources created by this project: none
+- AWS resources created by this project: protected/versioned Terraform state in
+  `eu-central-1`, a USD 50 monthly Budget with alerts, and an IAM password policy
 - Delivery target: one week for the initial implementation
 - Budget: USD 100 AWS credit plus up to USD 50 personal spend per month; enabling
   Organizations or Control Tower would forfeit the AWS credit under current terms
 
 ## Immediate next actions
 
-1. Secure the root user with MFA and end its CLI session.
-2. Establish a named IAM administrator with MFA and AWS CLI browser login using
-   temporary credentials; do not create long-lived access keys.
-3. Keep Organizations and Control Tower undeployed while the Free plan is active.
-4. Run read-only account, Control Tower, region, billing and quota discovery.
-5. Create a one-week delivery plan and service-level cost estimate.
-6. Produce the landing-zone architecture, threat model and responsibility matrix.
-7. Review the plan before creating or enrolling any AWS accounts.
+1. Keep Organizations and Control Tower undeployed while the Free plan is active.
+2. Create a least-privilege GitHub OIDC deployment role without stored access keys.
+3. Triage the five advisory Checkov findings and record justified exceptions.
+4. Design and cost the Frankfurt network, audit and Databricks foundations.
+5. Produce the threat model, control matrix and responsibility matrix.
 
 ## Working convention
 
