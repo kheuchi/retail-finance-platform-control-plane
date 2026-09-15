@@ -199,6 +199,9 @@ separate repositories and release lifecycles.
 - Published both private repositories. Infrastructure CI passed Terraform checks and
   semantic-release created `v1.0.0`; a Checkov setup defect was diagnosed and fixed
   so the advisory scan executes rather than merely remaining non-blocking.
+- Verified the repaired infrastructure workflow on GitHub: Terraform checks passed,
+  Checkov executed 37 controls (32 passed, 5 findings) without blocking the workflow,
+  and semantic-release created `v1.0.1`.
 
 ## Decisions
 
