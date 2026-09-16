@@ -34,3 +34,6 @@ Thumbs.db
 # Generated reports
 artifacts/
 coverage/
+
+# Local Claude Code settings (personal, machine-specific)
+.claude/settings.local.json

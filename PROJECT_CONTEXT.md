@@ -262,9 +262,20 @@ separate repositories and release lifecycles.
 - Changed the AWS Budget alert recipient to a personal address, updating both the
   Git-ignored Terraform variables file and the GitHub Actions secret. No address is
   stored in Git.
-- The local browser AWS session expired, so the Budget change was delivered through
-  the deployment pipeline instead of the workstation. This also provides the first
-  real exercise of the deploy role, which until now was configured but unproven.
+- Delivered the Budget change through the deployment pipeline rather than the
+  workstation, which gave the deploy role its first real exercise. The first attempt
+  failed safely during the plan phase and exposed a genuine defect: the deploy role
+  could modify the state bucket and the Budget but lacked permission to finish
+  reading them, and Terraform refreshes before it plans. Corrected the policy,
+  reran, and the pipeline planned and applied successfully.
+- Verified against AWS afterwards: all three Budget alerts intact, the subscriber is
+  the new personal address, USD 50 ceiling against USD 0.001 observed spend, and a
+  refresh plan reports no drift.
+- Recorded a design gap. The deploy role could not repair its own permissions,
+  because the missing permissions were what blocked its plan, so recovery required a
+  human administrator session. A tested human break-glass path must therefore remain
+  available alongside the automation; the infrastructure repository documents the
+  current path and the enterprise target.
 
 ## Decisions
 
@@ -327,9 +338,10 @@ separate repositories and release lifecycles.
   `eu-central-1`, a USD 50 monthly Budget with alerts, an IAM password policy, a
   GitHub OIDC identity provider, and separate CI plan and deploy roles. None are
   hourly-billed.
-- CI/CD authentication: verified. GitHub Actions reaches AWS through short-lived
-  OIDC sessions with no stored access keys, and the plan path returns zero drift.
-  The deploy role exists and is correctly scoped but has not yet run a real apply.
+- CI/CD authentication: verified end to end. GitHub Actions reaches AWS through
+  short-lived OIDC sessions with no stored access keys. Both paths are proven: the
+  plan path returns zero drift, and the deploy role has planned and applied a real
+  change through the manually gated workflow.
 - Local toolchain: WSL2 Ubuntu with AWS CLI 2.36.44, Terraform 1.14.6, GitHub CLI,
   jq and python3, all verified present on 2026-09-15 with no installation required.
   Versions and the two environment caveats are recorded in the infra repository's
@@ -341,9 +353,9 @@ separate repositories and release lifecycles.
 ## Immediate next actions
 
 1. Keep Organizations and Control Tower undeployed while the Free plan is active.
-2. Exercise the GitHub OIDC deploy role once through the manual deployment workflow,
-   so the apply path is proven and not merely configured.
-3. Triage the seven advisory Checkov findings and record justified exceptions.
+2. Document and rehearse the break-glass administrator path as a runbook, rather
+   than relying on having discovered it during a failure.
+3. Triage the advisory Checkov findings and record justified exceptions.
 4. Design and cost the Frankfurt network, audit and Databricks foundations.
 5. Produce the threat model, control matrix and responsibility matrix.
 
