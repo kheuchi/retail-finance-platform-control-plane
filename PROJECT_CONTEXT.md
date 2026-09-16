@@ -250,6 +250,22 @@ separate repositories and release lifecycles.
 - Confirmed the deploy role has still never been exercised by a real apply. Only the
   plan path is proven against AWS.
 
+### 2026-09-16
+
+- Removed all employer email addresses from both repositories' Git history. Every
+  commit in both repos, and the three infrastructure release tags, now use a single
+  personal identity. Dependabot's own authorship was left intact.
+- Identified the underlying cause: Windows Git and WSL Git carried different global
+  `user.email` values, so the shell that happened to run the commit decided the
+  author. Both global configurations and both repository-local configurations are
+  now aligned, so the mismatch cannot recur.
+- Changed the AWS Budget alert recipient to a personal address, updating both the
+  Git-ignored Terraform variables file and the GitHub Actions secret. No address is
+  stored in Git.
+- The local browser AWS session expired, so the Budget change was delivered through
+  the deployment pipeline instead of the workstation. This also provides the first
+  real exercise of the deploy role, which until now was configured but unproven.
+
 ## Decisions
 
 | ID | Decision | Status | Reason |
