@@ -294,6 +294,23 @@ separate repositories and release lifecycles.
   ceiling. Everything else in that layer is close to free, so the design stays
   serverless-first and needs no VPC at all unless classic compute forces it.
 
+- Built the audit baseline, the first piece of the Frankfurt foundation. The account
+  now records who called which AWS API, when and from where; previously nothing
+  recorded that at all. A protected log bucket plus a multi-region CloudTrail with
+  global service events and log file validation, with object-level events captured
+  for the Terraform state bucket only. Verified live: logging enabled, delivery
+  succeeding, no drift. Cost is pennies and no hourly resources were created.
+- The apply was deliberately split in two, granting the deploy role its permissions
+  before creating the resources, because a role cannot create what it has no
+  permission for. That was still not sufficient: two CloudTrail actions are
+  account-wide enumeration calls that AWS does not allow to be resource-scoped, so
+  the post-create read-back failed. The resources applied correctly and the trail
+  logged throughout, but the pipeline could no longer refresh.
+- Recovered through the break-glass runbook, which has now had two real uses in one
+  day. The lesson is recorded: least-privilege scoping has to be checked against
+  whether each individual action supports resource-level permissions at all, because
+  several do not and the failure only appears at runtime.
+
 ## Decisions
 
 | ID | Decision | Status | Reason |
@@ -353,8 +370,13 @@ separate repositories and release lifecycles.
   recorder or account password policy; GuardDuty/Security Hub unavailable on Free plan
 - AWS resources created by this project: protected/versioned Terraform state in
   `eu-central-1`, a USD 50 monthly Budget with alerts, an IAM password policy, a
-  GitHub OIDC identity provider, and separate CI plan and deploy roles. None are
-  hourly-billed.
+  GitHub OIDC identity provider, separate CI plan and deploy roles, and the audit
+  baseline (a protected CloudTrail log bucket and a multi-region management-events
+  trail). None are hourly-billed.
+- Audit: verified. A multi-region trail with global service events and log file
+  validation is logging to a protected bucket, with object-level events on the
+  Terraform state bucket. The single-account limitation is documented: logs sit
+  beside the workloads they describe, which only a Log Archive account fixes.
 - CI/CD authentication: verified end to end. GitHub Actions reaches AWS through
   short-lived OIDC sessions with no stored access keys. Both paths are proven: the
   plan path returns zero drift, and the deploy role has planned and applied a real
@@ -370,11 +392,14 @@ separate repositories and release lifecycles.
 ## Immediate next actions
 
 1. Keep Organizations and Control Tower undeployed while the Free plan is active.
-2. Decide whether to build the audit baseline: a multi-region CloudTrail management
-   trail plus a protected log bucket, roughly USD 1 per month with no hourly
-   resources. It is the one item recommended without further cost discussion.
-3. Confirm whether the AWS credit covers Databricks charges, since that materially
-   changes the effective budget for the lakehouse work.
+2. Integrate the trail with CloudWatch Logs and alarm on break-glass role assumption.
+   This closes the alerting gap the runbook names and is the deferred Checkov
+   finding CKV2_AWS_10.
+3. Prepare the Databricks AWS-side prerequisites (buckets and cross-account role)
+   before starting the Databricks free trial, so the 14-day trial window is spent on
+   lakehouse work rather than setup. Confirmed: AWS promotional credits do not cover
+   Databricks charges, and Databricks Free Edition cannot use our own S3, so the
+   trial is the only viable option for this project.
 4. Produce the threat model, control matrix and responsibility matrix.
 5. Rehearse the break-glass path deliberately, rather than only ever having executed
    it under failure.
