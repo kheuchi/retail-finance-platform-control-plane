@@ -277,6 +277,23 @@ separate repositories and release lifecycles.
   available alongside the automation; the infrastructure repository documents the
   current path and the enterprise target.
 
+- Triaged the policy scan to zero unexplained findings: 90 passed, 0 failed, 6
+  deliberate skips. Two were real defects and were fixed, including an over-granted
+  IAM permission that used a wildcard where AWS supports resource-level scoping. The
+  other five are recorded as justified exceptions, each with its residual risk and
+  the trigger that would make us revisit it.
+- Re-ran the deployment pipeline after narrowing that permission, to confirm the
+  tightened role still works. Narrowing a permission without retesting the path that
+  uses it would only have been a guess.
+- Wrote a break-glass runbook from the failure that produced it, stating the current
+  weaknesses plainly rather than implying maturity the setup does not have.
+- Designed and costed the Frankfurt network, audit and Databricks foundations. The
+  finding worth carrying: cost is concentrated in two specific choices, not spread
+  across the platform. A NAT Gateway is roughly USD 37 per month before any data
+  moves, and Databricks compute left running is the likeliest way to breach the
+  ceiling. Everything else in that layer is close to free, so the design stays
+  serverless-first and needs no VPC at all unless classic compute forces it.
+
 ## Decisions
 
 | ID | Decision | Status | Reason |
@@ -353,11 +370,14 @@ separate repositories and release lifecycles.
 ## Immediate next actions
 
 1. Keep Organizations and Control Tower undeployed while the Free plan is active.
-2. Document and rehearse the break-glass administrator path as a runbook, rather
-   than relying on having discovered it during a failure.
-3. Triage the advisory Checkov findings and record justified exceptions.
-4. Design and cost the Frankfurt network, audit and Databricks foundations.
-5. Produce the threat model, control matrix and responsibility matrix.
+2. Decide whether to build the audit baseline: a multi-region CloudTrail management
+   trail plus a protected log bucket, roughly USD 1 per month with no hourly
+   resources. It is the one item recommended without further cost discussion.
+3. Confirm whether the AWS credit covers Databricks charges, since that materially
+   changes the effective budget for the lakehouse work.
+4. Produce the threat model, control matrix and responsibility matrix.
+5. Rehearse the break-glass path deliberately, rather than only ever having executed
+   it under failure.
 
 ## Working convention
 
