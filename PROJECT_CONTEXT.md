@@ -311,6 +311,30 @@ separate repositories and release lifecycles.
   whether each individual action supports resource-level permissions at all, because
   several do not and the failure only appears at runtime.
 
+### 2026-09-17
+
+- Built the alerting layer on top of the audit trail, so security-relevant activity
+  is noticed rather than merely recorded. CloudTrail now also streams to CloudWatch
+  Logs, where metric filters match events as they arrive and alarms publish to an
+  email topic.
+- Two detections: any write performed by the break-glass administrator identity,
+  since routine change is expected through CI rather than from a workstation; and any
+  use of the root account, which decision D-007 forbids.
+- Verified by testing rather than assumption. A deliberate write as the administrator
+  identity produced matching events and drove the alarm into ALARM within a few
+  minutes. Two lessons recorded: one plausible-looking spelling of the filter
+  condition parses and deploys but silently never fires, and Terraform state-lock
+  writes are attributed to whichever identity ran the command.
+- This closes the alerting gap the break-glass runbook had named as a known weakness,
+  and the runbook was updated rather than left with a stale claim.
+- The whole increment deployed through the pipeline in one clean run: permissions
+  first, then resources, 10 added and 1 changed, with no permission failure and no
+  break-glass recovery. The two-phase pattern adopted after the earlier failures
+  worked as intended.
+- Cost: CloudWatch Logs ingestion and storage bounded by a 90-day retention that is
+  deliberately shorter than the 365 days kept in S3, which remains the durable
+  record. Alarms are within the free allowance. Nothing hourly was created.
+
 ## Decisions
 
 | ID | Decision | Status | Reason |
@@ -373,9 +397,11 @@ separate repositories and release lifecycles.
   GitHub OIDC identity provider, separate CI plan and deploy roles, and the audit
   baseline (a protected CloudTrail log bucket and a multi-region management-events
   trail). None are hourly-billed.
-- Audit: verified. A multi-region trail with global service events and log file
-  validation is logging to a protected bucket, with object-level events on the
-  Terraform state bucket. The single-account limitation is documented: logs sit
+- Audit and alerting: verified. A multi-region trail with global service events and
+  log file validation is logging to a protected bucket, with object-level events on
+  the Terraform state bucket. The trail also streams to CloudWatch Logs, where tested
+  metric filters alarm on break-glass administrator writes and on root account use.
+  The email subscription for those alarms is still pending confirmation. The single-account limitation is documented: logs sit
   beside the workloads they describe, which only a Log Archive account fixes.
 - CI/CD authentication: verified end to end. GitHub Actions reaches AWS through
   short-lived OIDC sessions with no stored access keys. Both paths are proven: the
@@ -392,9 +418,9 @@ separate repositories and release lifecycles.
 ## Immediate next actions
 
 1. Keep Organizations and Control Tower undeployed while the Free plan is active.
-2. Integrate the trail with CloudWatch Logs and alarm on break-glass role assumption.
-   This closes the alerting gap the runbook names and is the deferred Checkov
-   finding CKV2_AWS_10.
+2. Confirm the security-alerts email subscription. AWS sends a confirmation link and
+   the subscription delivers nothing until it is clicked, so the alarms currently
+   fire without reaching anyone.
 3. Prepare the Databricks AWS-side prerequisites (buckets and cross-account role)
    before starting the Databricks free trial, so the 14-day trial window is spent on
    lakehouse work rather than setup. Confirmed: AWS promotional credits do not cover
