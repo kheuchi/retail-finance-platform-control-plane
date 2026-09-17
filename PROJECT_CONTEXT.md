@@ -335,6 +335,24 @@ separate repositories and release lifecycles.
   deliberately shorter than the 365 days kept in S3, which remains the durable
   record. Alarms are within the free allowance. Nothing hourly was created.
 
+- Confirmed the security-alerts email subscription, so the alarms now reach a real
+  inbox. The confirmation had gone to spam, and it had been sent to the alerts
+  address rather than the address registered on the AWS account, which are different
+  mailboxes.
+- Built the Databricks storage prerequisites: workspace root storage and the Unity
+  Catalog managed location, both carrying the estate's standard protections and both
+  verified against AWS. Empty buckets cost nothing and both sit on the critical path
+  to a workspace.
+- Deliberately stopped short of the Databricks IAM. The cross-account role, the Unity
+  Catalog storage credential role and the Databricks statements on the bucket
+  policies are all conditioned on the Databricks account ID, which does not exist
+  until the account is created. Writing them now would mean shipping IAM that can be
+  neither applied nor tested.
+- Confirmed against the official documentation that the AWS promotional credit does
+  not cover Databricks charges and that Databricks Free Edition cannot use our own S3
+  buckets. The 14-day trial with USD 400 of Databricks credit is therefore the only
+  viable route for this project, and its clock starts at sign-up.
+
 ## Decisions
 
 | ID | Decision | Status | Reason |
@@ -407,6 +425,10 @@ separate repositories and release lifecycles.
   short-lived OIDC sessions with no stored access keys. Both paths are proven: the
   plan path returns zero drift, and the deploy role has planned and applied a real
   change through the manually gated workflow.
+- Databricks: storage prerequisites built and verified in `eu-central-1`. The
+  cross-account and Unity Catalog roles remain outstanding, blocked on the Databricks
+  account ID. No Databricks account exists yet and no Databricks charges have been
+  incurred.
 - Local toolchain: WSL2 Ubuntu with AWS CLI 2.36.44, Terraform 1.14.6, GitHub CLI,
   jq and python3, all verified present on 2026-09-15 with no installation required.
   Versions and the two environment caveats are recorded in the infra repository's
@@ -418,14 +440,10 @@ separate repositories and release lifecycles.
 ## Immediate next actions
 
 1. Keep Organizations and Control Tower undeployed while the Free plan is active.
-2. Confirm the security-alerts email subscription. AWS sends a confirmation link and
-   the subscription delivers nothing until it is clicked, so the alarms currently
-   fire without reaching anyone.
-3. Prepare the Databricks AWS-side prerequisites (buckets and cross-account role)
-   before starting the Databricks free trial, so the 14-day trial window is spent on
-   lakehouse work rather than setup. Confirmed: AWS promotional credits do not cover
-   Databricks charges, and Databricks Free Edition cannot use our own S3, so the
-   trial is the only viable option for this project.
+2. Decide when to start the Databricks trial, then supply the Databricks account ID.
+   The remaining IAM and the workspace can then be built and tested in one pass.
+   Start it only when there is a clear run at the build, since the 14-day clock
+   begins at sign-up and the AWS credit does not cover Databricks charges.
 4. Produce the threat model, control matrix and responsibility matrix.
 5. Rehearse the break-glass path deliberately, rather than only ever having executed
    it under failure.
