@@ -12,14 +12,25 @@ weakest link is outside AWS entirely. The AWS side is in reasonable shape for a
 single account: short-lived credentials everywhere, no stored access keys, a scoped
 deploy role, an audit trail, and two tested alarms.
 
-The path into that account, however, runs through a GitHub account that has
-two-factor authentication switched off, and a `main` branch that anyone with push
-access can write to directly. Both were verified, not assumed. A password is
-currently the only thing standing between an attacker and a role that can change
-IAM, S3 and the audit trail.
+The path into that account, however, runs through GitHub. Two Critical gaps were
+found there and both were verified against the GitHub API, not assumed: two-factor
+authentication was switched off, and nothing prevented a direct push to the `main`
+branch that AWS trusts.
 
-Four gaps were found. The two most serious are free to fix and should be fixed
-first. Details in **Findings** below.
+Four gaps were found in total. Since the first version of this document:
+
+- **F-2 is largely resolved.** The infrastructure repository was made public, which
+  makes branch protection free. Pull requests, passing status checks, linear history
+  and a ban on force pushes are now enforced on `main`, including for administrators.
+  Secret scanning and push protection came with it.
+- **F-1 remains open by owner decision.** Two-factor authentication is still off. It
+  is the highest-severity item here and the mitigations above do not address it,
+  which is why it is recorded as an accepted risk rather than closed.
+- **F-3 and F-4 are unchanged** and scheduled.
+
+Publishing the repository also made the AWS account identifier and the bucket names
+public. That was a deliberate trade and is recorded under **What is deliberately
+accepted**.
 
 ## Scope and method
 
@@ -114,8 +125,8 @@ retrofitted.
 
 | ID | Threat | STRIDE | Severity | What stops it today | Residual risk |
 |---|---|---|---|---|---|
-| T-01 | GitHub account taken over; attacker pushes to `main` and reaches AWS through the deploy role | S, E | **Critical** | The deploy role is scoped to specific S3, IAM, CloudTrail and Budgets actions and cannot launch compute. Trust is pinned to `main` of one repository by immutable numeric ID | Two-factor authentication is off, so a password is the only barrier. The role can still rewrite IAM, including its own trust policy |
-| T-02 | Direct push to `main` with no review | T, E | **Critical** | Nothing technical. The deploy workflow requires the operator to type `apply`, which is a typo guard, not an authorisation control | Branch protection and environment reviewers are unavailable on the free plan for a private repository |
+| T-01 | GitHub account taken over; attacker merges to `main` and reaches AWS through the deploy role | S, E | **Critical** | The deploy role is scoped to specific S3, IAM, CloudTrail and Budgets actions and cannot launch compute. Trust is pinned to `main` of one repository by immutable numeric ID. CloudTrail records the result | Two-factor authentication is off by owner decision (F-1), so a password is the only barrier. Branch protection does not help here: whoever holds the account can open a pull request and merge it. The role can still rewrite IAM, including its own trust policy |
+| T-02 | A change reaches `main` without review | T, E | Medium | Branch protection enforced on `main` and applied to administrators: pull request required, `Terraform checks` and `Checkov advisory scan` must pass, branch must be current, linear history, no force pushes, no deletion | Required approvals are zero, because a single maintainer cannot approve their own pull request. A self-merge is still unreviewed by a second person |
 | T-03 | Compromised GitHub Action or npm dependency steals the OIDC token or acts inside the AWS session | T, E | High | Every action pinned to a full commit SHA rather than a tag. `permissions:` is minimal per job, and `id-token: write` is granted only where needed. Terraform and Checkov versions pinned | A pinned action's own transitive dependencies are not pinned. `semantic-release` runs with `contents: write` over a large npm dependency tree |
 | T-04 | Stolen workstation session credentials | S | Medium | Credentials are short-lived and browser-issued; no access keys on disk | A live session remains usable until it expires. No alarm on an unexpected source address |
 | T-05 | Break-glass administrator identity abused | E | Medium | MFA on the user; every non-read action matches a tested metric filter and drives an alarm to a confirmed inbox | Detection, not prevention. The alarm fires after the act, not instead of it |
@@ -135,42 +146,71 @@ retrofitted.
 
 Four gaps worth acting on, in priority order. The two most serious cost nothing.
 
-### F-1 — Two-factor authentication is off on the GitHub account (Critical)
+### F-1 — Two-factor authentication is off on the GitHub account (Critical — ACCEPTED, OPEN)
 
 Verified: the GitHub API reports `two_factor_authentication: false` for the account
 that owns both repositories.
 
-That account can push to the `main` branch that the AWS trust policy accepts. The
+That account can merge to the `main` branch that the AWS trust policy accepts. The
 entire chain of hardening on the AWS side — immutable numeric repository IDs, scoped
 policies, no stored keys — sits behind a single password, and all of it is bypassed
 by one successful phish.
 
-Fix: enable two-factor authentication on GitHub, preferably with a hardware key or an
-authenticator app rather than SMS. Five minutes, no cost.
+**Status: accepted by the platform owner on 2026-09-21 and deliberately left open.**
+This is recorded rather than quietly closed because it is the highest-severity item
+in the model and the mitigations added since do not address it. Branch protection
+(F-2) stops an attacker pushing *directly* to `main`; it does not stop one who holds
+the account from opening a pull request and merging it themselves, because a single
+maintainer cannot require a second approver.
 
-### F-2 — Nothing prevents a direct push to `main` (Critical)
+Residual risk, stated plainly: compromise of one password still leads to control of
+the AWS bootstrap estate. The compensating controls are the scoped deploy role, which
+cannot create compute, and CloudTrail with alarms, which would record the activity
+after the fact.
 
-Verified: the branch protection API returns HTTP 403 with `Upgrade to GitHub Pro or
-make this repository public`, and the `aws-bootstrap` environment reports
-`protection_rules: []` with no deployment branch policy and `can_admins_bypass: true`.
+Revisit when: real data enters the platform, a second person gains access, or the
+account is used for anything beyond this portfolio project. The fix remains five
+minutes and free.
 
-The deploy workflow asks the operator to type `apply`. That prevents an accidental
-click. It does not prevent anyone with push access from committing a change and
-deploying it entirely unreviewed.
+### F-2 — Nothing prevented a direct push to `main` (was Critical — LARGELY RESOLVED 2026-09-21)
 
-Three ways out, and the choice is a genuine trade-off:
+Originally verified: the branch protection API returned HTTP 403 with `Upgrade to
+GitHub Pro or make this repository public`, and the `aws-bootstrap` environment
+reported `protection_rules: []` with `can_admins_bypass: true`.
 
-1. **Make the repository public.** Branch protection, required reviews and required
-   status checks all become free. This suits a portfolio project that is meant to be
-   read, and it enforces the discipline of never committing anything sensitive. The
-   cost is that any future mistake is public the moment it is pushed.
-2. **Upgrade to GitHub Pro.** Keeps the repository private, costs a few dollars a
-   month.
-3. **Accept it**, and record that the review gate is procedural rather than enforced.
+**Resolved by making the infrastructure repository public**, which makes the
+protections free. Now enforced and verified on `main`:
 
-Recommendation: option 1. The repository contains no secrets by design, the account
-identifier is deliberately kept out of Git, and a portfolio project nobody can read
-is worth less than one they can.
+| Setting | Value |
+|---|---|
+| Pull request required before merge | Yes |
+| Required status checks | `Terraform checks`, `Checkov advisory scan` |
+| Branch must be up to date before merge | Yes |
+| Rules apply to administrators | Yes |
+| Force pushes | Blocked |
+| Branch deletion | Blocked |
+| Linear history required | Yes |
+| Conversation resolution required | Yes |
+
+Secret scanning and push protection were enabled at the same time, which closes
+CHG-13, and Dependabot security updates were switched on.
+
+**What this does not fix.** Required approvals are set to zero, because one
+maintainer cannot approve their own pull request and any higher number would block
+all work permanently. So a change still reaches `main` without a second pair of eyes.
+What changed is that every change now goes through a pull request with a visible
+diff, CI must pass before merge, history cannot be rewritten, and none of it can be
+bypassed by the administrator. That removes the accident and the silent rewrite. It
+does not create review, which needs a second person, not a setting.
+
+Residual severity: Medium, carried as T-02.
+
+**Consequence accepted at the same time.** Publishing the repository also published
+the AWS account identifier and all four bucket names, which appear both in the
+Terraform plan output of every GitHub Actions log and, previously, in four old
+commits. The commits were scrubbed by rewriting history; the Actions logs were not,
+and future runs will keep printing it. The platform owner accepted this on
+2026-09-21. See **What is deliberately accepted** below.
 
 ### F-3 — No alarm on changes to the audit trail or to IAM (High)
 
@@ -219,6 +259,16 @@ recorded. They are not oversights.
 - GuardDuty and Security Hub are unavailable on the Free plan.
 - Detection is email to a single inbox. There is no on-call rotation and no second
   channel.
+- **The AWS account identifier and all four bucket names are public**, because the
+  infrastructure repository is public and every Terraform plan in an Actions log
+  prints them. Accepted on 2026-09-21 in exchange for free branch protection and
+  secret scanning. An account ID is not a credential, but it does let anyone
+  construct the exact ARNs of our roles and buckets and probe them. What defends
+  those is unchanged and is the real control: every bucket denies public access and
+  non-TLS requests, and both CI roles can only be assumed through OIDC from one
+  repository identified by immutable numeric ID.
+- **Two-factor authentication on GitHub is off** by owner decision. See F-1; this is
+  the highest-severity open item in the model.
 
 ## Revisit triggers
 

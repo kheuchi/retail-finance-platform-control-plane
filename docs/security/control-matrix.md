@@ -11,9 +11,13 @@ Its value is in the honest rows. Anyone can list controls they intend to have. A
 matrix is only useful if it also shows what is missing, what is partial, and what was
 turned down on purpose.
 
-Current position, across 79 controls: **48 implemented, 1 partial, 17 planned, 7
-deliberately not implemented, 5 unavailable on the current AWS or GitHub plans, and
-1 open gap** — the missing GitHub two-factor authentication.
+Current position, across 79 controls: **51 implemented, 1 partial, 17 planned, 7
+deliberately not implemented, 2 unavailable on the AWS Free plan, and 1 accepted
+risk** — GitHub two-factor authentication, which the owner has chosen to leave off.
+
+Updated 2026-09-21: making the infrastructure repository public moved branch
+protection, administrator enforcement and secret scanning from *unavailable* to
+*implemented*.
 
 ## How to read this
 
@@ -25,8 +29,8 @@ deliberately not implemented, 5 unavailable on the current AWS or GitHub plans, 
 | Partial | Built, but with a named limitation recorded in the Gap column |
 | Planned | Designed and scheduled, not yet built |
 | Not implemented | Considered and deliberately turned down, with the reason recorded |
-| Gap | Missing, and not by choice. Tracked as a finding in the threat model |
-| Unavailable | Blocked by the AWS Free plan or the GitHub free plan |
+| Accepted risk | Missing, and the owner has decided to leave it so. The residual risk is stated |
+| Unavailable | Blocked by the AWS Free plan |
 
 **Evidence** distinguishes how strongly we know a control works:
 
@@ -48,7 +52,7 @@ Threat IDs refer to the [threat model](threat-model.md). File paths are in the
 | IAM-2 | Human access via browser-issued temporary credentials | Implemented | Operating practice | Verified | T-04 | Session valid until expiry; no source-address check |
 | IAM-3 | CI authenticates by GitHub OIDC federation, no stored secrets | Implemented | `github_oidc.tf` | Tested | T-01 | — |
 | IAM-4 | OIDC trust pinned to immutable numeric owner and repository IDs | Implemented | `github_oidc.tf` | Tested | T-01 | — |
-| IAM-5 | OIDC trust restricted to the `main` branch | Implemented | `github_oidc.tf` | Tested | T-01, T-02 | Only as strong as write access to `main` — see F-2 |
+| IAM-5 | OIDC trust restricted to the `main` branch | Implemented | `github_oidc.tf` | Tested | T-01, T-02 | Only as strong as merge access to `main`, which branch protection now governs |
 | IAM-6 | Separate read-only plan role and write-capable deploy role | Implemented | `github_oidc.tf` | Tested | T-01 | — |
 | IAM-7 | Deploy role scoped to named actions and resources, not administrator | Implemented | `github_oidc.tf` | Tested | T-01, T-12 | Two residual `"*"` statements where AWS supports no resource qualifier; registered as Checkov exceptions |
 | IAM-8 | Deploy role cannot create compute | Implemented | `github_oidc.tf` | Verified | T-12 | Emerges from the scoping rather than from an explicit deny |
@@ -68,16 +72,16 @@ Threat IDs refer to the [threat model](threat-model.md). File paths are in the
 | CHG-1 | All infrastructure defined as code | Implemented | `bootstrap/*.tf` | Verified | T-02 | — |
 | CHG-2 | No production-style change without a reviewed plan | Implemented | `deploy-bootstrap.yml` applies a saved plan file | Tested | T-02 | The plan is reviewed by the same person who wrote it |
 | CHG-3 | Manual gate on the deploy workflow | Partial | `deploy-bootstrap.yml` | Tested | T-02 | The typed `apply` input is a typo guard, not authorisation |
-| CHG-4 | Branch protection with required review on `main` | Unavailable | — | None | T-02 | **Finding F-2.** Not offered on a private repository on the GitHub free plan |
-| CHG-5 | Environment protection rules with required reviewers | Unavailable | `aws-bootstrap` environment exists but carries no rules | Verified | T-02 | **Finding F-2.** Same plan limitation |
-| CHG-6 | GitHub two-factor authentication | **Gap** | Account setting | Verified as off | T-01 | **Finding F-1.** Free to fix, highest priority of anything on this page |
+| CHG-4 | Branch protection on `main`: pull request required, status checks must pass, linear history, no force push, no deletion | Implemented | GitHub branch protection | Verified | T-02 | Required approvals are zero; one maintainer cannot approve their own pull request |
+| CHG-5 | Branch protection applies to administrators | Implemented | `enforce_admins: true` | Verified | T-02 | Removable by the administrator in two clicks, so it guards against error rather than intent |
+| CHG-6 | GitHub two-factor authentication | **Accepted risk** | Account setting | Verified as off | T-01 | **Finding F-1**, accepted by the owner 2026-09-21 and deliberately left open. Highest-severity item in the threat model |
 | CHG-7 | All GitHub Actions pinned to full commit SHAs | Implemented | `.github/workflows/*.yml` | Verified | T-03 | Transitive dependencies of pinned actions are not pinned |
 | CHG-8 | Least-privilege `permissions:` per workflow job | Implemented | `.github/workflows/*.yml` | Verified | T-03 | `release` job holds `contents: write` over a large npm tree |
 | CHG-9 | Terraform and provider versions pinned, with a lock file | Implemented | `versions.tf`, `.terraform.lock.hcl` | Verified | T-03 | — |
 | CHG-10 | Policy-as-code scanning on every build (Checkov) | Implemented | `ci.yml` | Tested — 200 passed, 0 failed, 24 skipped | T-03, T-09 | Advisory only; `continue-on-error` means a new finding cannot block a merge |
 | CHG-11 | Every scanner exception recorded with a revisit trigger | Implemented | `docs/security/checkov-exceptions.md` | Verified | — | — |
-| CHG-12 | Automated dependency updates | Implemented | Dependabot | Verified | T-03 | — |
-| CHG-13 | Automated secret scanning and push protection | Unavailable | — | None | T-10 | A paid feature on private repositories; becomes free if the repository is made public (F-2) |
+| CHG-12 | Automated dependency updates and security alerts | Implemented | Dependabot; `vulnerability-alerts` and `automated-security-fixes` enabled | Verified | T-03 | — |
+| CHG-13 | Automated secret scanning and push protection | Implemented | GitHub repository settings | Verified | T-10 | Became free when the repository was made public |
 | CHG-14 | State locking to prevent concurrent applies | Implemented | S3 `use_lockfile=true` | Tested | T-11 | — |
 | CHG-15 | `prevent_destroy` on irreplaceable buckets | Implemented | `main.tf`, `databricks_storage.tf` | Declared | T-07 | Removable by anyone who can edit the code |
 | CHG-16 | Documented emergency recovery path | Implemented | `docs/runbooks/break-glass.md` | Tested twice | T-01 | — |
@@ -115,7 +119,7 @@ Threat IDs refer to the [threat model](threat-model.md). File paths are in the
 | DAT-5 | Bucket-owner-enforced ownership, disabling ACLs | Implemented | all four buckets | Verified | T-09 | — |
 | DAT-6 | Versioning, so a bad overwrite is recoverable | Implemented | all four buckets | Verified | T-07, T-11 | — |
 | DAT-7 | Lifecycle rules reaping superseded versions and abandoned uploads | Implemented | `main.tf`, `audit.tf`, `databricks_storage.tf` | Declared | T-12 | — |
-| DAT-8 | No credentials or state in Git | Implemented | `.gitignore`; backend in S3 | Verified | T-10 | A stale local state file remains on the workstation |
+| DAT-8 | No credentials or state in Git | Implemented | `.gitignore`; backend in S3; secret push protection | Verified — full history scanned 2026-09-21 before publication | T-10 | A stale local state file remains on the workstation. The AWS account identifier is now public by decision, though it is not a credential |
 | DAT-9 | Customer-managed KMS keys | Not implemented | — | None | T-10 | Fixed monthly charge per key against a USD 50 ceiling. Registered as a Checkov exception with a revisit trigger |
 | DAT-10 | Cross-region replication of state | Not implemented | — | None | — | Contradicts decision D-013 and doubles cost to protect a reproducible file |
 | DAT-11 | Data classification tags (`public`, `internal`, `confidential`, `restricted`) | Planned | — | None | T-14 | Needed before data lands |
@@ -160,18 +164,22 @@ All planned. Recorded now so they are designed in rather than retrofitted.
 
 | Status | Count |
 |---|---|
-| Implemented | 48 |
+| Implemented | 51 |
 | Partial | 1 |
 | Planned | 17 |
 | Not implemented, deliberately | 7 |
-| Unavailable on current plans | 5 |
-| Open gap | 1 |
+| Unavailable on the AWS Free plan | 2 |
+| Accepted risk | 1 |
 | **Total** | **79** |
 
-The four highest-value next moves, in order, are CHG-6 (enable two-factor
-authentication), CHG-4 and CHG-5 (make review enforceable), AUD-10 and AUD-11 (alarm
-on tampering with the controls themselves), and DAT-4 (account-level public access
-block). The first is free and takes five minutes.
+The highest-value remaining moves are AUD-10 and AUD-11, which alarm on tampering
+with the controls themselves, and DAT-4, the account-level public access block. Both
+are small and nearly free.
+
+CHG-6 sits above all of them on severity and remains open by owner decision. It is
+the one row on this page where the honest status is "we know, and we chose not to."
+That is a legitimate answer for a portfolio account holding synthetic data, and it
+stops being legitimate the moment real data or a second user arrives.
 
 ## Related
 

@@ -378,6 +378,32 @@ separate repositories and release lifecycles.
   is the path into them. Both were verified against the GitHub API, not assumed.
 - Cost of this increment: zero. Nothing was deployed and no AWS session was required.
 
+- Acted on the findings the same day. The owner accepted F-1 and chose to publish the
+  infrastructure repository to resolve F-2.
+- Before publishing, scanned the full Git history of both repositories rather than
+  only the working tree. That mattered: the AWS account identifier was present in
+  four old commits, an employer account name was present at HEAD and in twenty-one
+  commits, and three stale Dependabot branches still carried commits authored from
+  two employer email addresses that an earlier rewrite had missed because it only
+  covered `main`. History was rewritten to scrub the identifier and the employer
+  name, tags were re-pointed, and the stale branches turned out to be already deleted
+  upstream. Verified afterwards that `main` carries 31 commits under one identity and
+  neither string survives on any live ref.
+- Made `retail-finance-platform-infra` public and enforced on `main`: pull request
+  required, `Terraform checks` and `Checkov advisory scan` must pass, branch must be
+  current, linear history, no force pushes, no deletion, and the rules apply to
+  administrators. Also enabled secret scanning, push protection and Dependabot
+  security updates, all of which became free with the visibility change.
+- **Working convention change:** `main` in the infrastructure repository can no
+  longer be pushed to directly, by anyone including an administrator. All changes now
+  go through a pull request whose checks must pass before merge.
+- Recorded honestly rather than marked green: F-1 stays open as an accepted risk,
+  F-2 is "largely resolved" rather than closed because required approvals are zero,
+  and publishing the repository exposed the AWS account identifier through Actions
+  logs, which is accepted and explained rather than glossed over.
+- Verified from official Databricks documentation that there are two sign-up routes,
+  not one, correcting an earlier statement in this project. See decision D-014.
+
 ## Decisions
 
 | ID | Decision | Status | Reason |
@@ -395,6 +421,10 @@ separate repositories and release lifecycles.
 | D-011 | Separate control plane, infrastructure, data, ML, and agent repositories | Accepted | Independent ownership, permissions, CI/CD, state, and release lifecycles |
 | D-012 | Use `eu-central-1` for workloads/AI; retain state in `eu-west-3` | Superseded | The split was safe but added needless complexity at this early project stage |
 | D-013 | Standardize all regional resources on `eu-central-1` | Accepted | Simpler governance and operations; required Databricks and Bedrock model capabilities remain available |
+| D-014 | Sign up for the Databricks free trial through AWS Marketplace rather than directly on databricks.com | Proposed | Verified in Databricks documentation: the Marketplace route puts Databricks charges on the AWS bill, which brings them inside the existing USD 50 AWS Budget. The direct route bills separately and leaves the Budget blind to them. Corrects an earlier statement in this project that the Budget could not see Databricks spend at all |
+| D-015 | Use a serverless Databricks workspace rather than a classic workspace | Proposed | A classic workspace deploys a VPC and NAT Gateway in our account and is billed hourly by AWS separately from the Databricks trial credit, which conflicts with NET-2 and the USD 50 ceiling. Trade-off: the serverless workspace uses Databricks-managed root storage, so the `dbx-root` bucket may go unused while `dbx-uc` still serves Unity Catalog managed storage |
+| D-016 | Publish `retail-finance-platform-infra`, accepting exposure of the AWS account identifier | Accepted | Buys branch protection, administrator enforcement, secret scanning and push protection at no cost, resolving F-2. The identifier is not a credential and the controls guarding the named resources are unchanged |
+| D-017 | Leave GitHub two-factor authentication disabled for now | Accepted | Owner decision on 2026-09-21. Recorded as an open, accepted risk rather than closed, because it is the highest-severity item in the threat model and nothing added since mitigates it |
 
 ## Open decisions
 
@@ -410,15 +440,30 @@ separate repositories and release lifecycles.
 
 ## Known risks
 
-- Critical (F-1): two-factor authentication is switched off on the GitHub account
-  that owns both repositories. That account can push to the `main` branch the AWS
-  trust policy accepts, so a single password currently stands in front of a role that
-  can change IAM, S3 and the audit trail. Free to fix; highest priority in the
-  project.
-- Critical (F-2): nothing technically prevents an unreviewed push to `main`. Branch
-  protection and environment reviewers are not offered for a private repository on
-  the GitHub free plan, and the deploy workflow's typed confirmation is a typo guard
-  rather than an authorisation control.
+- Critical (F-1), ACCEPTED AND OPEN: two-factor authentication is switched off on the
+  GitHub account that owns both repositories. That account can merge to the `main`
+  branch the AWS trust policy accepts, so a single password stands in front of a role
+  that can change IAM, S3 and the audit trail. Accepted by the owner on 2026-09-21
+  and deliberately left open. Branch protection does not mitigate it: whoever holds
+  the account can open a pull request and merge it. Compensating controls are the
+  scoped deploy role, which cannot create compute, and CloudTrail with alarms, which
+  record the activity after the fact. Revisit when real data, a second user, or any
+  non-portfolio use arrives.
+- Medium (F-2), LARGELY RESOLVED 2026-09-21: the infrastructure repository was made
+  public, which makes branch protection free. `main` now requires a pull request and
+  passing `Terraform checks` and `Checkov advisory scan`, must be up to date, keeps a
+  linear history, and blocks force pushes and deletion, with the rules applying to
+  administrators. Secret scanning, push protection and Dependabot security updates
+  were enabled at the same time. Residual: required approvals are zero, because one
+  maintainer cannot approve their own pull request, so a self-merge is still
+  unreviewed by a second person.
+- Accepted 2026-09-21: publishing the infrastructure repository also published the
+  AWS account identifier and the four bucket names. They appear in the Terraform plan
+  output of every Actions log; four old commits containing the identifier were
+  scrubbed by rewriting history, but the logs were not. An account identifier is not
+  a credential. The controls that matter are unchanged: every bucket denies public
+  access and non-TLS requests, and both CI roles are assumable only through OIDC from
+  one repository identified by immutable numeric ID.
 - High (F-3): no alarm fires when the audit trail itself is stopped or altered, or
   when IAM is widened. The events are recorded; nobody is told.
 - Medium (F-4): the account-level S3 public access block is not managed by Terraform,
@@ -475,36 +520,34 @@ separate repositories and release lifecycles.
   Versions and the two environment caveats are recorded in the infra repository's
   `PROJECT_CONTEXT.md`.
 - Security assessment: threat model, control matrix and responsibility matrix
-  complete and recorded in `docs/security/`. Of 79 controls, 48 are implemented and
-  verified against the live account. Four gaps are open, two of them Critical and
-  both on the GitHub side rather than in AWS; they are listed under Known risks and
-  are the first four Immediate next actions.
+  complete and recorded in `docs/security/`. Of 79 controls, 51 are implemented and
+  verified, 1 is an accepted risk, and 2 remain unavailable on the AWS Free plan.
+  F-2 was resolved on 2026-09-21 by publishing the infrastructure repository; F-1 is
+  accepted and open; F-3 and F-4 are scheduled.
+- Source control: `retail-finance-platform-infra` is public with branch protection
+  enforced on `main` for administrators too, plus secret scanning, push protection
+  and Dependabot security updates. `retail-finance-platform-control-plane` remains
+  private and its history was verified clean of the account identifier and of any
+  employer identity.
 - Delivery target: one week for the initial implementation
 - Budget: USD 100 AWS credit plus up to USD 50 personal spend per month; enabling
   Organizations or Control Tower would forfeit the AWS credit under current terms
 
 ## Immediate next actions
 
-1. **Enable two-factor authentication on GitHub (F-1).** Five minutes, no cost, and
-   it closes the most serious gap in the project. Nothing else on this list matters
-   as much.
-2. **Decide how to make review enforceable (F-2).** Either make the infrastructure
-   repository public, which makes branch protection, required reviews and secret
-   push protection free, or upgrade to GitHub Pro, or accept and record that the
-   gate is procedural. Recommendation: make it public.
-3. **Add the two missing alarms (F-3)** on audit-trail tampering and on IAM changes.
+1. **Add the two missing alarms (F-3)** on audit-trail tampering and on IAM changes.
    They reuse the log group, topic and subscription that already exist, so the
    marginal cost is near zero.
-4. **Add the account-level S3 public access block (F-4)**, following the two-phase
+2. **Add the account-level S3 public access block (F-4)**, following the two-phase
    apply pattern: deploy-role permission first, resource second.
-5. Keep Organizations and Control Tower undeployed while the Free plan is active.
-6. Decide when to start the Databricks trial, then supply the Databricks account ID.
+3. Keep Organizations and Control Tower undeployed while the Free plan is active.
+4. Decide when to start the Databricks trial, then supply the Databricks account ID.
    The remaining IAM and the workspace can then be built and tested in one pass.
    Start it only when there is a clear run at the build, since the 14-day clock
    begins at sign-up and the AWS credit does not cover Databricks charges.
-7. Rehearse the break-glass path deliberately, rather than only ever having executed
+5. Rehearse the break-glass path deliberately, rather than only ever having executed
    it under failure.
-8. Delete the stale local `terraform.tfstate` left in the infrastructure repository's
+6. Delete the stale local `terraform.tfstate` left in the infrastructure repository's
    `bootstrap/` directory from before the S3 backend migration, so only one copy of
    the truth exists. It is correctly gitignored.
 
