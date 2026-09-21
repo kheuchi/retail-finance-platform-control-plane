@@ -32,4 +32,13 @@ cross-repository evidence—not deployable infrastructure or application code.
 - [Repository map](REPOSITORIES.md)
 - [One-week roadmap](docs/roadmap/one-week.md)
 
+Security assurance:
+
+- [Threat model](docs/security/threat-model.md) — what we protect, who attacks it,
+  what stops them, and the gaps found
+- [Control matrix](docs/security/control-matrix.md) — every control, its status and
+  its evidence
+- [Responsibility matrix](docs/security/responsibility-matrix.md) — who owns what,
+  including the limits placed on AI assistants
+
 No AWS resources have been created by this repository yet.

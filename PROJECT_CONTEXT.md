@@ -131,15 +131,15 @@ separate repositories and release lifecycles.
 
 | Phase | Outcome | Status |
 |---|---|---|
-| 0. Discovery and guardrails | Identity, budget, region, constraints and documentation | In progress |
-| 1. Landing-zone design | Account/OU model, identity, controls, logging and threat model | Not started |
-| 2. Landing-zone implementation | Control Tower and governed account baseline | Not started |
-| 3. Platform foundation | Terraform state, networking, KMS, CI/CD and observability | Not started |
-| 4. Databricks foundation | Workspaces, Unity Catalog, storage, networking and RBAC | Not started |
+| 0. Discovery and guardrails | Identity, budget, region, constraints and documentation | Complete |
+| 1. Landing-zone design | Account/OU model, identity, controls, logging and threat model | Complete |
+| 2. Landing-zone implementation | Control Tower and governed account baseline | Deferred by D-009; single-account baseline built instead |
+| 3. Platform foundation | Terraform state, networking, KMS, CI/CD and observability | In progress — state, CI/CD and observability done; networking and KMS deliberately deferred |
+| 4. Databricks foundation | Workspaces, Unity Catalog, storage, networking and RBAC | In progress — storage built; the rest blocked on the Databricks account ID |
 | 5. Data products | Ingestion, bronze/silver/gold, quality, lineage and serving | Not started |
 | 6. ML platform | Features, experiments, registry, deployment and monitoring | Not started |
 | 7. Agentic platform | Governed tools, orchestration, evaluation and human approvals | Not started |
-| 8. Assurance | WAF review, controls evidence, recovery tests and portfolio demo | Not started |
+| 8. Assurance | WAF review, controls evidence, recovery tests and portfolio demo | In progress — threat model, control matrix and responsibility matrix complete |
 
 ## Progress log
 
@@ -353,6 +353,31 @@ separate repositories and release lifecycles.
   buckets. The 14-day trial with USD 400 of Databricks credit is therefore the only
   viable route for this project, and its clock starts at sign-up.
 
+### 2026-09-21
+
+- Produced the three assurance artefacts that phase 1 and phase 8 both required: a
+  threat model, a control matrix and a responsibility matrix, all in
+  `docs/security/` in this repository. They are deliberately in the control plane
+  rather than the infrastructure repository, because they span repositories that do
+  not exist yet.
+- The threat model is asset-centric, walks five trust boundaries, tags each threat
+  with a STRIDE category, and rates severity for this system as it actually is
+  rather than for the enterprise deployment it models. Sixteen threats are recorded,
+  four of them against components that are still only planned.
+- The control matrix records 79 controls: 48 implemented and verified, 1 partial,
+  17 planned, 7 deliberately not implemented, 5 unavailable on the current AWS or
+  GitHub plans, and 1 open gap. Every row carries an evidence grade distinguishing
+  *tested* from *verified* from merely *declared*, so the difference between a
+  control that was exercised and one that was only applied stays visible.
+- The responsibility matrix states the segregation-of-duties position plainly: one
+  person is Accountable on every row that is not a third party's. It also writes down
+  what an AI assistant may do unasked, must ask about, and must never do, since
+  assistants perform real work here.
+- **The exercise found four gaps, and the two most serious are outside AWS.** This is
+  the useful result: the AWS controls are in reasonable shape, and the weakest link
+  is the path into them. Both were verified against the GitHub API, not assumed.
+- Cost of this increment: zero. Nothing was deployed and no AWS session was required.
+
 ## Decisions
 
 | ID | Decision | Status | Reason |
@@ -385,8 +410,24 @@ separate repositories and release lifecycles.
 
 ## Known risks
 
-- Critical: the only currently verified CLI session is the AWS account root user.
-  It must not be used by Terraform, CI/CD or routine discovery/deployment work.
+- Critical (F-1): two-factor authentication is switched off on the GitHub account
+  that owns both repositories. That account can push to the `main` branch the AWS
+  trust policy accepts, so a single password currently stands in front of a role that
+  can change IAM, S3 and the audit trail. Free to fix; highest priority in the
+  project.
+- Critical (F-2): nothing technically prevents an unreviewed push to `main`. Branch
+  protection and environment reviewers are not offered for a private repository on
+  the GitHub free plan, and the deploy workflow's typed confirmation is a typo guard
+  rather than an authorisation control.
+- High (F-3): no alarm fires when the audit trail itself is stopped or altered, or
+  when IAM is widened. The events are recorded; nobody is told.
+- Medium (F-4): the account-level S3 public access block is not managed by Terraform,
+  so a bucket created outside Terraform would inherit no guard.
+- Superseded (retained for history): the first verified CLI session in this project
+  was the AWS account root user. Routine work has since moved to a named IAM identity
+  using browser-issued temporary credentials, and CI/CD uses OIDC with no stored keys.
+  The rule stands: root must not be used by Terraform, CI/CD or routine work, and
+  decision D-007 plus a tested alarm now enforce it.
 - Creating/joining an AWS Organization or enabling Control Tower will immediately
   expire the account's Free Tier credits under current AWS terms.
 - Control Tower and its integrated logging/security services create ongoing cost.
@@ -433,20 +474,39 @@ separate repositories and release lifecycles.
   jq and python3, all verified present on 2026-09-15 with no installation required.
   Versions and the two environment caveats are recorded in the infra repository's
   `PROJECT_CONTEXT.md`.
+- Security assessment: threat model, control matrix and responsibility matrix
+  complete and recorded in `docs/security/`. Of 79 controls, 48 are implemented and
+  verified against the live account. Four gaps are open, two of them Critical and
+  both on the GitHub side rather than in AWS; they are listed under Known risks and
+  are the first four Immediate next actions.
 - Delivery target: one week for the initial implementation
 - Budget: USD 100 AWS credit plus up to USD 50 personal spend per month; enabling
   Organizations or Control Tower would forfeit the AWS credit under current terms
 
 ## Immediate next actions
 
-1. Keep Organizations and Control Tower undeployed while the Free plan is active.
-2. Decide when to start the Databricks trial, then supply the Databricks account ID.
+1. **Enable two-factor authentication on GitHub (F-1).** Five minutes, no cost, and
+   it closes the most serious gap in the project. Nothing else on this list matters
+   as much.
+2. **Decide how to make review enforceable (F-2).** Either make the infrastructure
+   repository public, which makes branch protection, required reviews and secret
+   push protection free, or upgrade to GitHub Pro, or accept and record that the
+   gate is procedural. Recommendation: make it public.
+3. **Add the two missing alarms (F-3)** on audit-trail tampering and on IAM changes.
+   They reuse the log group, topic and subscription that already exist, so the
+   marginal cost is near zero.
+4. **Add the account-level S3 public access block (F-4)**, following the two-phase
+   apply pattern: deploy-role permission first, resource second.
+5. Keep Organizations and Control Tower undeployed while the Free plan is active.
+6. Decide when to start the Databricks trial, then supply the Databricks account ID.
    The remaining IAM and the workspace can then be built and tested in one pass.
    Start it only when there is a clear run at the build, since the 14-day clock
    begins at sign-up and the AWS credit does not cover Databricks charges.
-4. Produce the threat model, control matrix and responsibility matrix.
-5. Rehearse the break-glass path deliberately, rather than only ever having executed
+7. Rehearse the break-glass path deliberately, rather than only ever having executed
    it under failure.
+8. Delete the stale local `terraform.tfstate` left in the infrastructure repository's
+   `bootstrap/` directory from before the S3 backend migration, so only one copy of
+   the truth exists. It is correctly gitignored.
 
 ## Working convention
 
