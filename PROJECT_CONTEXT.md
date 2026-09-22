@@ -404,6 +404,44 @@ separate repositories and release lifecycles.
 - Verified from official Databricks documentation that there are two sign-up routes,
   not one, correcting an earlier statement in this project. See decision D-014.
 
+### 2026-09-22
+
+- Resolved the Databricks hosting question, after a detour that was worth its cost in
+  lessons. The AWS Marketplace route was blocked by the Free plan; Azure was tried
+  and abandoned; GCP was evaluated and rejected. The account is now on the AWS Paid
+  plan and the platform stays on AWS.
+- The Azure workspace deployed a NAT gateway automatically, because the Azure trial
+  tier forces a hybrid workspace and disables serverless. It billed from creation
+  with no cluster started, and was deleted the same day. The generalisable lesson:
+  **a Databricks trial credit covers the Databricks licence and never the cloud
+  infrastructure the workspace creates in your account.** Same trap on all three
+  clouds; only the price differs.
+- Rejected GCP for two reasons beyond cost. Its free path is serverless, which
+  demonstrates none of the network controls this project exists to show; and its
+  classic path runs on GKE, which Databricks has deprecated in favour of plain VMs.
+  Building a portfolio on a deprecated architecture is a weak position to defend.
+- Built the customer-managed VPC: no internet gateway, no NAT gateway, S3 gateway
+  endpoint plus STS and Kinesis interface endpoints, no `0.0.0.0/0` in any security
+  group, VPC flow logs into the CloudTrail bucket. Gated behind a flag defaulting to
+  false, so it merged and was reviewed while creating and billing nothing.
+- Reframed the security narrative around **accounting, not banking**. The controls
+  that matter for a retail finance function are those protecting financial
+  reporting: proving the revenue figure, showing who changed the transformation
+  behind the margin report, and evidencing the record was not altered. Containment
+  and flow logs read directly onto that.
+- Two credential findings on the workstation. The Azure CLI was authenticated to an
+  employer tenant with a corporate subscription as the default target, and gcloud
+  holds three employer service accounts. Azure credentials were cleared before any
+  write occurred. This is the same class of risk as the Git author addresses cleaned
+  up on 2026-09-21, and it is now the most concrete instance of the "operator error"
+  threat the model already ranked most likely.
+- An incident of my own making, recorded in the infrastructure repository in full:
+  the 2026-09-21 history rewrite re-pointed only the three tags the local clone held,
+  orphaning ten that existed on the remote, which broke `semantic-release` two days
+  later. Root cause was verification run against local state rather than the remote.
+  Repaired by re-pointing every tag onto its rewritten commit; `v1.8.0` then cut
+  cleanly. A standing rule now requires asserting tag reachability after any rewrite.
+
 ## Decisions
 
 | ID | Decision | Status | Reason |
@@ -424,6 +462,11 @@ separate repositories and release lifecycles.
 | D-014 | Sign up for the Databricks free trial through AWS Marketplace rather than directly on databricks.com | Proposed | Verified in Databricks documentation: the Marketplace route puts Databricks charges on the AWS bill, which brings them inside the existing USD 50 AWS Budget. The direct route bills separately and leaves the Budget blind to them. Corrects an earlier statement in this project that the Budget could not see Databricks spend at all |
 | D-015 | Use a serverless Databricks workspace rather than a classic workspace | Proposed | A classic workspace deploys a VPC and NAT Gateway in our account and is billed hourly by AWS separately from the Databricks trial credit, which conflicts with NET-2 and the USD 50 ceiling. Trade-off: the serverless workspace uses Databricks-managed root storage, so the `dbx-root` bucket may go unused while `dbx-uc` still serves Unity Catalog managed storage |
 | D-016 | Publish `retail-finance-platform-infra`, accepting exposure of the AWS account identifier | Accepted | Buys branch protection, administrator enforcement, secret scanning and push protection at no cost, resolving F-2. The identifier is not a credential and the controls guarding the named resources are unchanged |
+| D-014b | Sign up for Databricks through AWS Marketplace | Accepted | Superseded the blocked attempt: the AWS account is now on the Paid plan, so Marketplace offers are available and Databricks charges land on the AWS bill inside the existing Budget |
+| D-015b | Use a classic workspace in a customer-managed VPC, not serverless | Accepted | Serverless demonstrates none of the network, containment or encryption controls this project exists to evidence. Supersedes D-015 |
+| D-018 | Upgrade the AWS account from the Free plan to the Paid plan | Accepted | The Free plan closes the account and deletes all resources when credits run out or the term ends, which would destroy the portfolio. Remaining credits carry over on upgrade |
+| D-019 | Build the Databricks VPC in the fully-private shape, with no NAT gateway | Accepted | Stronger control and lower cost: no public egress path exists at all, at roughly USD 15 per month against roughly USD 32 for a NAT gateway. Consistent with control NET-2 |
+| D-020 | Reject Azure and GCP as the Databricks host | Accepted | Azure forces a hybrid workspace on the trial tier and so mandates a NAT gateway; GCP classic compute runs on GKE, which Databricks has deprecated. Both would also abandon the AWS foundation |
 | D-017 | Leave GitHub two-factor authentication disabled for now | Accepted | Owner decision on 2026-09-21. Recorded as an open, accepted risk rather than closed, because it is the highest-severity item in the threat model and nothing added since mitigates it |
 
 ## Open decisions

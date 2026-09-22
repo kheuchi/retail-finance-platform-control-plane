@@ -141,6 +141,7 @@ retrofitted.
 | T-14 | Real personal or payment data enters a platform designed for synthetic data | I | *Planned* | Policy only: synthetic data, no real PII or card data | Needs a technical control before ingestion begins, not a rule in a document |
 | T-15 | An agent produces a plausible but wrong finance narrative | T | *Planned* | None yet | Requires source citations, deterministic metrics, evaluation and human review before any output is trusted |
 | T-16 | Prompt injection reaching an agent through ingested data | T, E | *Planned* | None yet | All ingested content must be treated as untrusted input to the model; agent tools must be read-only and separately authorised |
+| T-17 | Employer cloud credentials on the same workstation are used against this project, or this project's commands run against an employer account | T, E, D | **High** | Awareness only. Azure CLI credentials were cleared on 2026-09-22 after being found authenticated to an employer tenant with a corporate subscription as the default target | gcloud still holds three employer service accounts. Git author addresses from two employers were scrubbed from history on 2026-09-21. This is the concrete form of the operator-error threat ranked most likely in this model, and the damage runs in both directions |
 
 ## Findings
 
@@ -269,6 +270,12 @@ recorded. They are not oversights.
   repository identified by immutable numeric ID.
 - **Two-factor authentication on GitHub is off** by owner decision. See F-1; this is
   the highest-severity open item in the model.
+- **Work and personal cloud credentials share one workstation.** Recorded as T-17
+  rather than solved, because the fix is a habit and a separate profile, not a
+  control this repository can deploy. The practical mitigations are to check
+  `az account show`, `gcloud config list` and `git config user.email` before acting,
+  and to prefer explicit subscription and project flags over whatever default a tool
+  happens to hold.
 
 ## Revisit triggers
 
