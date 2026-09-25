@@ -205,6 +205,17 @@ decisions:
     date: '2026-09-24'
     reason: 'Everything in code, no console clicks. Secret lifetime matches the trial. Target: GitHub OIDC federation
       policy, no stored secret.'
+  - id: D-025
+    decision: Generate the accounting data synthetically; real inputs only for ECB FX rates and holidays
+    status: Accepted
+    date: '2026-09-25'
+    reason: No public dataset has a ledger, budget and cashier-level refunds; public retail sets carry customer IDs;
+      synthetic data lets us plant known anomalies as ground truth; the workspace has no internet egress anyway.
+  - id: D-026
+    decision: Data code lives in a separate public repo, retail-finance-data-products
+    status: Accepted
+    date: '2026-09-25'
+    reason: Owner decision, per D-011. Public for the same reasons as the infra repo (free branch protection, secret scanning).
   - id: D-024
     decision: Markdown stays short and human-readable; detail lives in cmdb.yml
     status: Accepted

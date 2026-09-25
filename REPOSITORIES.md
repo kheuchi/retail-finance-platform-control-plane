@@ -6,7 +6,7 @@
 |---|---|---|
 | `retail-finance-platform-control-plane` (this one, private) | Context, roadmap, decisions, security docs | Active |
 | `retail-finance-platform-infra` (public) | Terraform for AWS and Databricks, CI/CD | Active |
-| `retail-finance-data-products` | Ingestion, Bronze/Silver/Gold, data quality | Planned |
+| `retail-finance-data-products` (public) | Synthetic data, ingestion, Bronze/Silver/Gold, data quality | Active |
 | `retail-finance-ml-platform` | Features, training, registry, serving | Planned |
 | `retail-finance-agent-platform` | Agent tools, evaluation, UI | Planned |
 
