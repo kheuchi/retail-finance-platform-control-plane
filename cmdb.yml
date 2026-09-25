@@ -1,0 +1,1026 @@
+# cmdb.yml: the detailed record behind the short markdown docs.
+# Edit here; keep the .md files short.
+
+about: Detailed record for the retail-finance platform program. Markdown stays short; detail lives here.
+updated: '2026-09-25'
+program:
+  name: Retail Finance Data, ML and Agentic AI Platform
+  scenario: Accounting department of a large multi-channel retailer (fictional)
+  needs:
+    - Revenue, refund, cost and gross-margin reporting
+    - Actual vs budget variance
+    - Store/channel/product profitability
+    - Cash-flow and demand forecasting
+    - Reconciliation and finance data quality
+    - Anomaly detection for refunds and margin leakage
+    - Governed natural-language analysis with citations
+  agent_boundary: May investigate, summarise and recommend. Never posts journal entries, moves money or approves
+    payments without a human.
+  cloud:
+    aws_region: eu-central-1
+    aws_plan: Paid (upgraded 2026-09-22, credits kept)
+    budget_usd_month: 50
+    databricks:
+      tier: Enterprise
+      billing: AWS Marketplace
+      trial_credit_usd: 400
+      trial_ends: '2026-10-06'
+      workspace: retail-finance-platform (classic, HYBRID)
+      workspace_url: https://dbc-011bcfbf-172d.cloud.databricks.com
+      metastore: metastore_aws_eu_central_1
+rules:
+  - No secrets, state or account identifiers in Git
+  - Short-lived access only; CI uses OIDC
+  - No infrastructure change without a reviewed Terraform plan
+  - Synthetic data only; no real PII or card data
+  - Agents read-only; consequential actions need a human
+  - Budgets before spend; tear down after the trial
+  - 'Docs: short markdown, detail in cmdb.yml'
+phases:
+  - id: 1
+    name: Foundation
+    status: Done
+  - id: 2
+    name: Lakehouse
+    status: Done
+  - id: 3
+    name: Ingest
+    status: Next
+  - id: 4
+    name: Transform & Quality
+    status: Planned
+  - id: 5
+    name: ML Models
+    status: Planned
+  - id: 6
+    name: Serve & Monitor
+    status: Planned
+  - id: 7
+    name: AI Agent
+    status: Planned
+decisions:
+  - id: D-001
+    decision: Use a retail finance department scenario
+    status: Accepted
+    reason: User-selected business domain
+  - id: D-002
+    decision: Build the governed cloud foundation before workloads
+    status: Accepted
+    reason: Establish enterprise controls first
+  - id: D-003
+    decision: Use Terraform for reproducible infrastructure
+    status: Accepted
+    reason: User requirement
+  - id: D-004
+    decision: Use AWS Databricks for the lakehouse and ML platform
+    status: Accepted
+    reason: User requirement
+  - id: D-005
+    decision: Keep project context agent-agnostic
+    status: Accepted
+    reason: Supports multiple tools and human handoff
+  - id: D-006
+    decision: Use AWS Control Tower versus a custom landing zone
+    status: Deferred by D-009
+    reason: Requires account, budget and constraint discovery
+  - id: D-007
+    decision: Prohibit root identity for project operations
+    status: Accepted
+    reason: Root has unrestricted account authority and is reserved for root-only recovery/bootstrap tasks
+  - id: D-008
+    decision: One-week initial delivery window
+    status: Accepted
+    reason: User constraint; requires a thin end-to-end slice and documented future roadmap
+  - id: D-009
+    decision: Preserve Free plan; do not deploy Organizations or Control Tower
+    status: Accepted
+    reason: Retain the USD 100 credit; implement a single-account baseline and keep the multi-account landing zone
+      deployable as a reference design
+  - id: D-010
+    decision: Use eu-west-3 as primary project region
+    status: Superseded
+    reason: Basic Databricks support exists, but custom model/agent serving is unavailable
+  - id: D-011
+    decision: Separate control plane, infrastructure, data, ML, and agent repositories
+    status: Accepted
+    reason: Independent ownership, permissions, CI/CD, state, and release lifecycles
+  - id: D-012
+    decision: Use eu-central-1 for workloads/AI; retain state in eu-west-3
+    status: Superseded
+    reason: The split was safe but added needless complexity at this early project stage
+  - id: D-013
+    decision: Standardize all regional resources on eu-central-1
+    status: Accepted
+    reason: Simpler governance and operations; required Databricks and Bedrock model capabilities remain available
+  - id: D-014
+    decision: Sign up for the Databricks free trial through AWS Marketplace rather than directly on databricks.com
+    status: Superseded by D-014b
+    reason: 'Verified in Databricks documentation: the Marketplace route puts Databricks charges on the AWS bill,
+      which brings them inside the existing USD 50 AWS Budget. The direct route bills separately and leaves the
+      Budget blind to them. Corrects an earlier statement in this project that the Budget could not see Databricks
+      spend at all'
+  - id: D-015
+    decision: Use a serverless Databricks workspace rather than a classic workspace
+    status: Superseded by D-015b
+    reason: 'A classic workspace deploys a VPC and NAT Gateway in our account and is billed hourly by AWS separately
+      from the Databricks trial credit, which conflicts with NET-2 and the USD 50 ceiling. Trade-off: the serverless
+      workspace uses Databricks-managed root storage, so the dbx-root bucket may go unused while dbx-uc still serves
+      Unity Catalog managed storage'
+  - id: D-016
+    decision: Publish retail-finance-platform-infra, accepting exposure of the AWS account identifier
+    status: Accepted
+    reason: Buys branch protection, administrator enforcement, secret scanning and push protection at no cost, resolving
+      F-2. The identifier is not a credential and the controls guarding the named resources are unchanged
+  - id: D-014b
+    decision: Sign up for Databricks through AWS Marketplace
+    status: Accepted
+    reason: 'Superseded the blocked attempt: the AWS account is now on the Paid plan, so Marketplace offers are
+      available and Databricks charges land on the AWS bill inside the existing Budget'
+  - id: D-015b
+    decision: Use a classic workspace in a customer-managed VPC, not serverless
+    status: Accepted
+    reason: Serverless demonstrates none of the network, containment or encryption controls this project exists
+      to evidence. Supersedes D-015
+  - id: D-018
+    decision: Upgrade the AWS account from the Free plan to the Paid plan
+    status: Accepted
+    reason: The Free plan closes the account and deletes all resources when credits run out or the term ends, which
+      would destroy the portfolio. Remaining credits carry over on upgrade
+  - id: D-019
+    decision: Build the Databricks VPC in the fully-private shape, with no NAT gateway
+    status: Accepted
+    reason: 'Stronger control and lower cost: no public egress path exists at all, at roughly USD 15 per month against
+      roughly USD 32 for a NAT gateway. Consistent with control NET-2'
+  - id: D-020
+    decision: Reject Azure and GCP as the Databricks host
+    status: Accepted
+    reason: Azure forces a hybrid workspace on the trial tier and so mandates a NAT gateway; GCP classic compute
+      runs on GKE, which Databricks has deprecated. Both would also abandon the AWS foundation
+  - id: D-017
+    decision: Leave GitHub two-factor authentication disabled for now
+    status: Accepted
+    reason: Owner decision on 2026-09-21. Recorded as an open, accepted risk rather than closed, because it is the
+      highest-severity item in the threat model and nothing added since mitigates it
+  - id: D-021
+    decision: Databricks Enterprise tier with back-end PrivateLink
+    status: Accepted
+    date: '2026-09-24'
+    reason: PrivateLink requires Enterprise. It is the only design where 'no public egress path exists' is literally
+      true. Costs more than NAT (~USD 64 vs ~38/month); chosen for the enterprise story, and justified by MNPI-grade
+      finance data.
+  - id: D-022
+    decision: Manage Databricks in a separate Terraform stack (databricks/)
+    status: Accepted
+    date: '2026-09-24'
+    reason: Blast radius, separate credentials, separate lifecycle. Reads bootstrap outputs; never the reverse.
+  - id: D-023
+    decision: Terraform authenticates to Databricks as a service principal (OAuth M2M), 14-day secret
+    status: Accepted
+    date: '2026-09-24'
+    reason: 'Everything in code, no console clicks. Secret lifetime matches the trial. Target: GitHub OIDC federation
+      policy, no stored secret.'
+  - id: D-024
+    decision: Markdown stays short and human-readable; detail lives in cmdb.yml
+    status: Accepted
+    date: '2026-09-25'
+    reason: Owner request. Long prose docs were hard to read. Full earlier versions remain in Git history.
+risks:
+  - id: R-01
+    severity: Critical
+    status: Accepted
+    risk: GitHub 2FA off (F-1)
+  - id: R-02
+    severity: High
+    status: Open
+    risk: PrivateLink network costs ~USD 64/month, above the USD 50 budget if left on
+    mitigation: 'Teardown on 2026-10-06: set enable_workspace and enable_databricks_network to false'
+  - id: R-03
+    severity: High
+    status: Open
+    risk: Databricks trial converts to pay-as-you-go on 2026-10-06
+    mitigation: Calendar reminder day 12; tear down or cancel the Marketplace subscription
+  - id: R-04
+    severity: Medium
+    status: Open
+    risk: Service principal secret expires ~2026-10-08; Databricks plans then fail in CI
+    mitigation: Move to GitHub OIDC federation policy
+  - id: R-05
+    severity: High
+    status: Open
+    risk: Employer cloud credentials on the same workstation (T-17)
+    mitigation: Azure CLI cleared 2026-09-22; gcloud still holds 3 employer service accounts
+  - id: R-06
+    severity: Medium
+    status: Accepted
+    risk: AWS account ID and bucket names public (D-016)
+  - id: R-07
+    severity: Medium
+    status: Accepted
+    risk: 'Single operator: no segregation of duties'
+  - id: R-08
+    severity: Medium
+    status: Accepted
+    risk: Audit logs in the same account as workloads (needs a Log Archive account)
+  - id: R-09
+    severity: High
+    status: Planned control
+    risk: Agent produces plausible but wrong finance narrative
+    mitigation: Citations to certified Gold tables, deterministic metrics, evaluation, human sign-off
+findings:
+  - id: F-1
+    severity: Critical
+    status: Accepted, open
+    summary: GitHub 2FA off on the account that owns both repos
+    note: Owner decision 2026-09-21 (D-017). Branch protection does not mitigate it.
+  - id: F-2
+    severity: Medium (was Critical)
+    status: Largely resolved 2026-09-21
+    summary: Unreviewed pushes to main
+    note: Infra repo public; branch protection enforced for admins; required approvals 0 (single maintainer).
+  - id: F-3
+    severity: High
+    status: Open
+    summary: No alarm on audit-trail tampering or IAM changes
+  - id: F-4
+    severity: Medium
+    status: Open
+    summary: Account-level S3 public access block not managed
+threats:
+  - id: T-01
+    threat: GitHub account taken over; attacker merges to main and reaches AWS through the deploy role
+    stride: S, E
+    severity: Critical
+    mitigations: The deploy role is scoped to specific S3, IAM, CloudTrail and Budgets actions and cannot launch
+      compute. Trust is pinned to main of one repository by immutable numeric ID. CloudTrail records the result
+    residual: 'Two-factor authentication is off by owner decision (F-1), so a password is the only barrier. Branch
+      protection does not help here: whoever holds the account can open a pull request and merge it. The role can
+      still rewrite IAM, including its own trust policy'
+  - id: T-02
+    threat: A change reaches main without review
+    stride: T, E
+    severity: Medium
+    mitigations: 'Branch protection enforced on main and applied to administrators: pull request required, Terraform
+      checks and Checkov advisory scan must pass, branch must be current, linear history, no force pushes, no deletion'
+    residual: Required approvals are zero, because a single maintainer cannot approve their own pull request. A
+      self-merge is still unreviewed by a second person
+  - id: T-03
+    threat: Compromised GitHub Action or npm dependency steals the OIDC token or acts inside the AWS session
+    stride: T, E
+    severity: High
+    mitigations: 'Every action pinned to a full commit SHA rather than a tag. permissions: is minimal per job, and
+      id-token: write is granted only where needed. Terraform and Checkov versions pinned'
+    residual: 'A pinned action''s own transitive dependencies are not pinned. semantic-release runs with contents:
+      write over a large npm dependency tree'
+  - id: T-04
+    threat: Stolen workstation session credentials
+    stride: S
+    severity: Medium
+    mitigations: Credentials are short-lived and browser-issued; no access keys on disk
+    residual: A live session remains usable until it expires. No alarm on an unexpected source address
+  - id: T-05
+    threat: Break-glass administrator identity abused
+    stride: E
+    severity: Medium
+    mitigations: MFA on the user; every non-read action matches a tested metric filter and drives an alarm to a
+      confirmed inbox
+    residual: Detection, not prevention. The alarm fires after the act, not instead of it
+  - id: T-06
+    threat: Root account used
+    stride: E
+    severity: Low
+    mitigations: Root MFA enabled, no root access keys, decision D-007 forbids use, tested alarm on any root activity
+    residual: Root can disable the alarm, though doing so is itself a logged event
+  - id: T-07
+    threat: Audit trail stopped or logs deleted to hide activity
+    stride: R, T
+    severity: High
+    mitigations: Log file validation enabled, bucket versioned, prevent_destroy on the bucket, trail is multi-region
+    residual: No alarm on StopLogging, DeleteTrail or event-selector changes. Logs live in the same account as the
+      workloads they describe, which only a separate Log Archive account fixes. No S3 Object Lock
+  - id: T-08
+    threat: IAM quietly changed to widen access
+    stride: E
+    severity: High
+    mitigations: Every IAM change is captured in CloudTrail and in the S3 record
+    residual: No alarm on IAM policy or role changes. A widened deploy role would be recorded, but nobody would
+      be told
+  - id: T-09
+    threat: A bucket is exposed publicly
+    stride: I
+    severity: Medium
+    mitigations: All four buckets carry a public access block on all four settings, bucket-owner-enforced ownership
+      and a TLS-only policy. Verified directly against AWS
+    residual: The account-level public access block is not managed by Terraform. A bucket created outside Terraform
+      inherits no guard
+  - id: T-10
+    threat: Terraform state read by an unauthorised party
+    stride: I
+    severity: Medium
+    mitigations: Private bucket, encrypted at rest, TLS enforced, never committed to Git, and CloudTrail object-level
+      events recorded on it
+    residual: Encryption uses S3-managed keys, so there is no key-level revocation or independent decryption audit.
+      A stale local terraform.tfstate remains on the workstation from before the backend migration
+  - id: T-11
+    threat: Two applies run at once and corrupt state
+    stride: T
+    severity: Low
+    mitigations: S3 native state locking (use_lockfile=true), and the deploy workflow's concurrency group prevents
+      overlapping runs
+    residual: A break-glass apply from a workstation bypasses the workflow, though it still takes the lock
+  - id: T-12
+    threat: 'Denial of wallet: an attacker, or a forgotten resource, burns the budget'
+    stride: D
+    severity: Medium
+    mitigations: Budget alerts at 50% and 80% actual and 100% forecast, to a confirmed inbox. Nothing hourly-billed
+      is deployed. The deploy role cannot create compute
+    residual: Budget alerts lag real spend by hours. There is no hard stop — an alert is a message, not a brake.
+      The budget cannot see Databricks charges at all Since 2026-09-24 the PrivateLink network runs ~USD 64/month,
+      above the USD 50 budget if left on after the trial.
+  - id: T-13
+    threat: Confused deputy on the Databricks cross-account role
+    stride: E
+    severity: Low
+    mitigations: Cross-account role requires sts:ExternalId = our Databricks account ID; Unity Catalog role requires
+      the external ID Databricks issued for our credential; root bucket grant requires aws:PrincipalTag/DatabricksAccountId.
+    residual: None known. Built and applied 2026-09-24.
+  - id: T-14
+    threat: Real personal or payment data enters a platform designed for synthetic data
+    stride: I
+    severity: '*Planned*'
+    mitigations: 'Policy only: synthetic data, no real PII or card data'
+    residual: Needs a technical control before ingestion begins, not a rule in a document
+  - id: T-15
+    threat: An agent produces a plausible but wrong finance narrative
+    stride: T
+    severity: '*Planned*'
+    mitigations: None yet
+    residual: Requires source citations, deterministic metrics, evaluation and human review before any output is
+      trusted
+  - id: T-16
+    threat: Prompt injection reaching an agent through ingested data
+    stride: T, E
+    severity: '*Planned*'
+    mitigations: None yet
+    residual: All ingested content must be treated as untrusted input to the model; agent tools must be read-only
+      and separately authorised
+  - id: T-17
+    threat: Employer cloud credentials on the same workstation are used against this project, or this project's
+      commands run against an employer account
+    stride: T, E, D
+    severity: High
+    mitigations: Awareness only. Azure CLI credentials were cleared on 2026-09-22 after being found authenticated
+      to an employer tenant with a corporate subscription as the default target
+    residual: gcloud still holds three employer service accounts. Git author addresses from two employers were scrubbed
+      from history on 2026-09-21. This is the concrete form of the operator-error threat ranked most likely in this
+      model, and the damage runs in both directions
+controls_summary:
+  Accepted risk: 1
+  Implemented: 59
+  Not implemented: 9
+  Partial: 4
+  Planned: 13
+controls:
+  - id: IAM-1
+    control: No long-lived AWS access keys for humans or CI
+    status: Implemented
+    where: Design; github_oidc.tf
+    evidence: Verified
+    threats: T-01, T-04
+    gap: Break-glass user is the one exception, and it is alarmed
+  - id: IAM-2
+    control: Human access via browser-issued temporary credentials
+    status: Implemented
+    where: Operating practice
+    evidence: Verified
+    threats: T-04
+    gap: Session valid until expiry; no source-address check
+  - id: IAM-3
+    control: CI authenticates by GitHub OIDC federation, no stored secrets
+    status: Implemented
+    where: github_oidc.tf
+    evidence: Tested
+    threats: T-01
+    gap: —
+  - id: IAM-4
+    control: OIDC trust pinned to immutable numeric owner and repository IDs
+    status: Implemented
+    where: github_oidc.tf
+    evidence: Tested
+    threats: T-01
+    gap: —
+  - id: IAM-5
+    control: OIDC trust restricted to the main branch
+    status: Implemented
+    where: github_oidc.tf
+    evidence: Tested
+    threats: T-01, T-02
+    gap: Only as strong as merge access to main, which branch protection now governs
+  - id: IAM-6
+    control: Separate read-only plan role and write-capable deploy role
+    status: Implemented
+    where: github_oidc.tf
+    evidence: Tested
+    threats: T-01
+    gap: —
+  - id: IAM-7
+    control: Deploy role scoped to named actions and resources, not administrator
+    status: Implemented
+    where: github_oidc.tf
+    evidence: Tested
+    threats: T-01, T-12
+    gap: Two residual "*" statements where AWS supports no resource qualifier; registered as Checkov exceptions
+  - id: IAM-8
+    control: Deploy role cannot create compute
+    status: Implemented
+    where: github_oidc.tf
+    evidence: Verified
+    threats: T-12
+    gap: Emerges from the scoping rather than from an explicit deny
+  - id: IAM-9
+    control: iam:PassRole constrained by iam:PassedToService
+    status: Implemented
+    where: github_oidc.tf
+    evidence: Declared
+    threats: T-01
+    gap: —
+  - id: IAM-10
+    control: Root account not used for operations (decision D-007)
+    status: Implemented
+    where: Policy plus ROOT-usage alarm
+    evidence: Tested
+    threats: T-06
+    gap: —
+  - id: IAM-11
+    control: Root MFA enabled, no root access keys
+    status: Implemented
+    where: Account setting
+    evidence: Verified
+    threats: T-06
+    gap: —
+  - id: IAM-12
+    control: 'Account password policy: 14 characters, complexity, 90-day rotation, 24 remembered'
+    status: Implemented
+    where: main.tf
+    evidence: Declared
+    threats: T-01
+    gap: —
+  - id: IAM-13
+    control: Break-glass administrator identity with MFA
+    status: Implemented
+    where: Account; docs/runbooks/break-glass.md
+    evidence: Tested (used twice under real failure)
+    threats: T-05
+    gap: Never rehearsed deliberately, only under pressure
+  - id: IAM-14
+    control: Databricks cross-account role gated on external ID
+    status: Implemented
+    where: databricks/crossaccount.tf
+    evidence: Tested (Databricks validated the credential at creation, 2026-09-24)
+    threats: T-13
+    gap: —
+  - id: IAM-15
+    control: Per-workload roles for ingestion, transformation, ML and agents
+    status: Planned
+    where: —
+    evidence: None
+    threats: —
+    gap: —
+  - id: IAM-16
+    control: Federated human roles (auditor, data engineer, analyst) via IAM Identity Center
+    status: Not implemented
+    where: —
+    evidence: None
+    threats: —
+    gap: Single operator; would be theatre at this scale. Revisit on a second human
+  - id: CHG-1
+    control: All infrastructure defined as code
+    status: Implemented
+    where: bootstrap/*.tf
+    evidence: Verified
+    threats: T-02
+    gap: —
+  - id: CHG-2
+    control: No production-style change without a reviewed plan
+    status: Implemented
+    where: deploy-bootstrap.yml applies a saved plan file
+    evidence: Tested
+    threats: T-02
+    gap: The plan is reviewed by the same person who wrote it
+  - id: CHG-3
+    control: Manual gate on the deploy workflow
+    status: Partial
+    where: deploy-bootstrap.yml
+    evidence: Tested
+    threats: T-02
+    gap: The typed apply input is a typo guard, not authorisation
+  - id: CHG-4
+    control: 'Branch protection on main: pull request required, status checks must pass, linear history, no force
+      push, no deletion'
+    status: Implemented
+    where: GitHub branch protection
+    evidence: Verified
+    threats: T-02
+    gap: Required approvals are zero; one maintainer cannot approve their own pull request
+  - id: CHG-5
+    control: Branch protection applies to administrators
+    status: Implemented
+    where: 'enforce_admins: true'
+    evidence: Verified
+    threats: T-02
+    gap: Removable by the administrator in two clicks, so it guards against error rather than intent
+  - id: CHG-6
+    control: GitHub two-factor authentication
+    status: Accepted risk
+    where: Account setting
+    evidence: Verified as off
+    threats: T-01
+    gap: Finding F-1, accepted by the owner 2026-09-21 and deliberately left open. Highest-severity item in the
+      threat model
+  - id: CHG-7
+    control: All GitHub Actions pinned to full commit SHAs
+    status: Implemented
+    where: .github/workflows/*.yml
+    evidence: Verified
+    threats: T-03
+    gap: Transitive dependencies of pinned actions are not pinned
+  - id: CHG-8
+    control: 'Least-privilege permissions: per workflow job'
+    status: Implemented
+    where: .github/workflows/*.yml
+    evidence: Verified
+    threats: T-03
+    gap: 'release job holds contents: write over a large npm tree'
+  - id: CHG-9
+    control: Terraform and provider versions pinned, with a lock file
+    status: Implemented
+    where: versions.tf, .terraform.lock.hcl
+    evidence: Verified
+    threats: T-03
+    gap: —
+  - id: CHG-10
+    control: Policy-as-code scanning on every build (Checkov)
+    status: Implemented
+    where: ci.yml
+    evidence: Tested — 200 passed, 0 failed, 24 skipped
+    threats: T-03, T-09
+    gap: 'Job is advisory, but it is a required status check: a new finding blocks the merge (observed 2026-09-24).
+      Blind to count=0 resources and to provider-generated IAM policies.'
+  - id: CHG-11
+    control: Every scanner exception recorded with a revisit trigger
+    status: Implemented
+    where: docs/security/checkov-exceptions.md
+    evidence: Verified
+    threats: —
+    gap: —
+  - id: CHG-12
+    control: Automated dependency updates and security alerts
+    status: Implemented
+    where: Dependabot; vulnerability-alerts and automated-security-fixes enabled
+    evidence: Verified
+    threats: T-03
+    gap: —
+  - id: CHG-13
+    control: Automated secret scanning and push protection
+    status: Implemented
+    where: GitHub repository settings
+    evidence: Verified
+    threats: T-10
+    gap: Became free when the repository was made public
+  - id: CHG-14
+    control: State locking to prevent concurrent applies
+    status: Implemented
+    where: S3 use_lockfile=true
+    evidence: Tested
+    threats: T-11
+    gap: —
+  - id: CHG-15
+    control: prevent_destroy on irreplaceable buckets
+    status: Implemented
+    where: main.tf, databricks_storage.tf
+    evidence: Declared
+    threats: T-07
+    gap: Removable by anyone who can edit the code
+  - id: CHG-16
+    control: Documented emergency recovery path
+    status: Implemented
+    where: docs/runbooks/break-glass.md
+    evidence: Tested twice
+    threats: T-01
+    gap: —
+  - id: AUD-1
+    control: Multi-region CloudTrail management-event trail
+    status: Implemented
+    where: audit.tf
+    evidence: Verified
+    threats: T-07, T-08
+    gap: —
+  - id: AUD-2
+    control: Global service events included
+    status: Implemented
+    where: audit.tf
+    evidence: Verified
+    threats: T-06
+    gap: —
+  - id: AUD-3
+    control: Log file validation enabled
+    status: Implemented
+    where: audit.tf
+    evidence: Verified
+    threats: T-07
+    gap: Detects tampering; does not prevent it
+  - id: AUD-4
+    control: Object-level data events on the Terraform state bucket
+    status: Implemented
+    where: audit.tf
+    evidence: Verified
+    threats: T-10
+    gap: Only this bucket; data buckets are not covered
+  - id: AUD-5
+    control: 'Audit log bucket protected: versioned, encrypted, TLS-only, no public access'
+    status: Implemented
+    where: audit.tf
+    evidence: Verified
+    threats: T-07
+    gap: No Object Lock, so a sufficiently privileged identity can still delete
+  - id: AUD-6
+    control: Trail streams to CloudWatch Logs for near real-time matching
+    status: Implemented
+    where: alerting.tf
+    evidence: Tested
+    threats: T-05, T-06
+    gap: —
+  - id: AUD-7
+    control: Alarm on break-glass administrator writes
+    status: Implemented
+    where: alerting.tf
+    evidence: Tested — drove a real alarm within minutes
+    threats: T-05
+    gap: —
+  - id: AUD-8
+    control: Alarm on root account use
+    status: Implemented
+    where: alerting.tf
+    evidence: Tested
+    threats: T-06
+    gap: —
+  - id: AUD-9
+    control: Alarms deliver to a confirmed email subscription
+    status: Implemented
+    where: alerting.tf
+    evidence: Tested
+    threats: T-05, T-06
+    gap: One inbox, one channel, no on-call
+  - id: AUD-10
+    control: Alarm on trail tampering (StopLogging, DeleteTrail, UpdateTrail, PutEventSelectors)
+    status: Planned
+    where: —
+    evidence: None
+    threats: T-07
+    gap: Finding F-3. Reuses existing log group and topic; marginal cost near zero
+  - id: AUD-11
+    control: Alarm on IAM policy and role changes
+    status: Planned
+    where: —
+    evidence: None
+    threats: T-08
+    gap: Finding F-3. Same
+  - id: AUD-12
+    control: 'Log retention: 365 days in S3, 90 days in CloudWatch Logs'
+    status: Implemented
+    where: audit.tf, alerting.tf
+    evidence: Declared
+    threats: T-07
+    gap: 'Deliberate asymmetry: S3 is the system of record, CloudWatch is the trigger'
+  - id: AUD-13
+    control: Logs stored in a separate account from the workloads
+    status: Not implemented
+    where: —
+    evidence: None
+    threats: T-07
+    gap: Requires AWS Organizations, which would forfeit the Free plan credit
+  - id: AUD-14
+    control: S3 server access logging on buckets
+    status: Not implemented
+    where: —
+    evidence: None
+    threats: T-10
+    gap: CloudTrail data events are the better control and are in place for state. Registered as a Checkov exception
+  - id: AUD-15
+    control: AWS Config configuration recorder
+    status: Not implemented
+    where: —
+    evidence: None
+    threats: —
+    gap: Usage-priced per configuration item; unbounded against a USD 50 ceiling
+  - id: AUD-16
+    control: GuardDuty threat detection
+    status: Not implemented
+    where: —
+    evidence: None
+    threats: T-04, T-12
+    gap: Available since the Paid-plan upgrade (2026-09-22); not enabled, to control cost. GuardDuty offers a 30-day
+      free trial.
+  - id: AUD-17
+    control: Security Hub posture management
+    status: Not implemented
+    where: —
+    evidence: None
+    threats: —
+    gap: Available since the Paid-plan upgrade (2026-09-22); not enabled, to control cost. GuardDuty offers a 30-day
+      free trial.
+  - id: DAT-1
+    control: Encryption at rest on every bucket (SSE-S3, AES-256)
+    status: Implemented
+    where: all four buckets
+    evidence: Verified
+    threats: T-10
+    gap: S3-managed keys, so no key-level revocation or independent decryption audit
+  - id: DAT-2
+    control: TLS required in transit, enforced by bucket policy
+    status: Implemented
+    where: all four buckets
+    evidence: Verified
+    threats: T-09, T-10
+    gap: —
+  - id: DAT-3
+    control: Block Public Access on all four settings, per bucket
+    status: Implemented
+    where: all four buckets
+    evidence: Verified
+    threats: T-09
+    gap: —
+  - id: DAT-4
+    control: Block Public Access at account level
+    status: Planned
+    where: —
+    evidence: None
+    threats: T-09
+    gap: Finding F-4. A bucket created outside Terraform inherits no guard
+  - id: DAT-5
+    control: Bucket-owner-enforced ownership, disabling ACLs
+    status: Implemented
+    where: all four buckets
+    evidence: Verified
+    threats: T-09
+    gap: —
+  - id: DAT-6
+    control: Versioning, so a bad overwrite is recoverable
+    status: Implemented
+    where: all four buckets
+    evidence: Verified
+    threats: T-07, T-11
+    gap: —
+  - id: DAT-7
+    control: Lifecycle rules reaping superseded versions and abandoned uploads
+    status: Implemented
+    where: main.tf, audit.tf, databricks_storage.tf
+    evidence: Declared
+    threats: T-12
+    gap: —
+  - id: DAT-8
+    control: No credentials or state in Git
+    status: Implemented
+    where: .gitignore; backend in S3; secret push protection
+    evidence: Verified — full history scanned 2026-09-21 before publication
+    threats: T-10
+    gap: A stale local state file remains on the workstation. The AWS account identifier is now public by decision,
+      though it is not a credential
+  - id: DAT-9
+    control: Customer-managed KMS keys
+    status: Not implemented
+    where: —
+    evidence: None
+    threats: T-10
+    gap: Fixed monthly charge per key against a USD 50 ceiling. Registered as a Checkov exception with a revisit
+      trigger
+  - id: DAT-10
+    control: Cross-region replication of state
+    status: Not implemented
+    where: —
+    evidence: None
+    threats: —
+    gap: Contradicts decision D-013 and doubles cost to protect a reproducible file
+  - id: DAT-11
+    control: Data classification tags (public, internal, confidential, restricted)
+    status: Planned
+    where: —
+    evidence: None
+    threats: T-14
+    gap: Needed before data lands
+  - id: DAT-12
+    control: Technical control preventing real PII entering the platform
+    status: Planned
+    where: —
+    evidence: None
+    threats: T-14
+    gap: Currently policy only
+  - id: NET-1
+    control: Default VPC not used for platform workloads
+    status: Implemented
+    where: No workloads deployed
+    evidence: Verified
+    threats: —
+    gap: Trivially true today; must survive first deployment
+  - id: NET-2
+    control: No NAT Gateway (hourly cost even when idle)
+    status: Implemented
+    where: Design decision
+    evidence: Verified
+    threats: T-12
+    gap: —
+  - id: NET-3
+    control: Dedicated customer-managed VPC with no internet egress
+    status: Implemented
+    where: bootstrap/databricks_network.tf
+    evidence: 'Verified in AWS 2026-09-25: 0 internet gateways, 0 NAT, 0 routes to 0.0.0.0/0, 0 public IPs'
+    threats: —
+    gap: —
+  - id: CST-1
+    control: Monthly AWS budget of USD 50
+    status: Implemented
+    where: main.tf
+    evidence: Verified
+    threats: T-12
+    gap: —
+  - id: CST-2
+    control: Alerts at 50% and 80% actual, 100% forecast
+    status: Implemented
+    where: main.tf
+    evidence: Verified
+    threats: T-12
+    gap: Lags real spend by hours
+  - id: CST-3
+    control: Budget measures gross spend, ignoring credits
+    status: Implemented
+    where: main.tf (include_credit = false)
+    evidence: Declared
+    threats: T-12
+    gap: 'Deliberate: promotional credit must not hide burn'
+  - id: CST-4
+    control: No hourly-billed resources deployed
+    status: Implemented
+    where: Whole estate
+    evidence: Verified
+    threats: T-12
+    gap: —
+  - id: CST-5
+    control: AWS Organizations and Control Tower not activated
+    status: Implemented
+    where: Decision D-009
+    evidence: Verified
+    threats: —
+    gap: Deliberate, to preserve the Free plan credit
+  - id: CST-6
+    control: Databricks spend monitoring
+    status: Partial
+    where: Databricks billed via AWS Marketplace
+    evidence: Declared
+    threats: T-12
+    gap: Marketplace charges land on the AWS bill, so the AWS Budget should see them. Not yet observed.
+  - id: CST-7
+    control: Cluster auto-termination and cost guardrails
+    status: Planned
+    where: docs/architecture/frankfurt-foundation.md
+    evidence: None
+    threats: T-12
+    gap: Agreed in design; enforceable only once a workspace exists
+  - id: CST-8
+    control: A hard spending stop, as opposed to an alert
+    status: Not implemented
+    where: —
+    evidence: None
+    threats: T-12
+    gap: AWS offers no true hard stop. The practical substitute is deleting resources, which the runbook covers
+  - id: GOV-1
+    control: Unity Catalog as the single governance layer for catalogs, schemas, tables, lineage and grants
+    status: Partial
+    threats: T-14
+    evidence: 'Tested: storage credential + external location on the governed bucket, READ/WRITE/LIST/DELETE PASS
+      (2026-09-25)'
+    gap: Catalogs, schemas and grants not created yet
+  - id: GOV-2
+    control: Data contracts and quality gates between ingestion and consumption
+    status: Planned
+    threats: T-15
+  - id: GOV-3
+    control: Model registry with versioning and approval before deployment
+    status: Planned
+    threats: T-15
+  - id: GOV-4
+    control: Agent tools read-only and individually authorised
+    status: Planned
+    threats: T-16
+  - id: GOV-5
+    control: Agent outputs carry source citations and deterministic metrics
+    status: Planned
+    threats: T-15
+  - id: GOV-6
+    control: Evaluation suite and human review before any agent output is trusted
+    status: Planned
+    threats: T-15
+  - id: GOV-7
+    control: All ingested content treated as untrusted model input
+    status: Planned
+    threats: T-16
+  - id: NET-4
+    control: Back-end PrivateLink to the Databricks control plane (workspace API + SCC relay)
+    status: Implemented
+    where: bootstrap/databricks_network.tf, databricks/workspace.tf
+    evidence: 'Verified: endpoints available and registered'
+    threats: T-07
+    gap: Front-end (UI) access stays public, authenticated by Databricks
+  - id: NET-5
+    control: VPC flow logs, all traffic, to the audit bucket
+    status: Implemented
+    where: bootstrap/databricks_network.tf
+    evidence: 'Verified: ACTIVE, objects landing in S3'
+    threats: T-07
+    gap: —
+  - id: NET-6
+    control: Default security group stripped of all rules
+    status: Implemented
+    where: bootstrap/databricks_network.tf
+    evidence: 'Verified: 0 inbound, 0 outbound'
+    threats: T-09
+    gap: —
+  - id: IAM-17
+    control: Cross-account role uses Databricks 'restricted' policy pinned to our VPC and security group
+    status: Implemented
+    where: databricks/crossaccount.tf
+    evidence: Declared
+    threats: T-12, T-13
+    gap: Policy generated by provider; not visible to Checkov
+  - id: IAM-18
+    control: Confused-deputy defences on every Databricks trust (external IDs, principal tag)
+    status: Implemented
+    where: databricks/, bootstrap/databricks_storage.tf
+    evidence: Tested (apply validated by Databricks)
+    threats: T-13
+    gap: —
+  - id: IAM-19
+    control: Databricks automation identity is a service principal with a short-lived OAuth secret
+    status: Partial
+    where: GitHub secret + ~/.databrickscfg
+    evidence: Verified
+    threats: T-01
+    gap: 'Secret expires ~2026-10-08. Target: OIDC federation policy, no secret'
+  - id: CHG-17
+    control: IAM policy simulator run before permission-dependent applies
+    status: Implemented
+    where: Operating practice
+    evidence: 'Tested: found 3 gaps before activation, 0 failed applies'
+    threats: T-11
+    gap: Manual step, not automated in CI
+progress:
+  - date: '2026-09-14'
+    summary:
+      - Project defined; single-account design; Terraform bootstrap (state, budget, password policy)
+      - 'Repos split: control plane + infra; region standardised on eu-central-1'
+      - GitHub Actions CI, semantic-release, Checkov; OIDC plan/deploy roles
+  - date: '2026-09-15'
+    summary:
+      - OIDC proven end to end (hardened numeric-ID subject recovered from CI logs)
+      - Budget-email secret defect fixed
+  - date: '2026-09-16'
+    summary:
+      - Employer emails scrubbed from history
+      - Deploy role first real apply; break-glass used twice
+      - Checkov triaged to zero unexplained findings
+      - CloudTrail audit baseline built
+  - date: '2026-09-17'
+    summary:
+      - CloudTrail -> CloudWatch alarms on break-glass writes and root use, tested
+      - Databricks storage buckets built
+  - date: '2026-09-21'
+    summary:
+      - Threat model, control matrix, responsibility matrix
+      - Infra repo made public; branch protection, secret scanning
+      - History scrub of account ID and employer name
+  - date: '2026-09-22'
+    summary:
+      - AWS Marketplace blocked on Free plan; Azure tried (NAT gateway billed idle) and deleted; GCP rejected
+      - AWS account upgraded to Paid plan (credits kept)
+      - Customer-managed VPC code, gated off
+      - Orphaned release tags repaired
+  - date: '2026-09-24'
+    summary:
+      - Databricks trial via Marketplace; account upgraded to Enterprise
+      - Back-end PrivateLink network enabled (29 resources)
+      - Classic Enterprise workspace created via Terraform (databricks/ stack)
+      - IAM simulator found 3 permission gaps before apply
+  - date: '2026-09-25'
+    summary:
+      - Unity Catalog storage credential + external location, validated
+      - Network verified in AWS
+      - Roadmap chart; docs refactored to short markdown + cmdb.yml
+lessons:
+  - Grant permissions in one apply, use them in the next (two-phase apply).
+  - Run the IAM policy simulator before applies that need new permissions; test negative cases too.
+  - count = 0 hides resources from Checkov; a clean scan of code that creates nothing proves nothing.
+  - Data sources are read at plan time even when unused; gate them too.
+  - Terraform does not store null outputs; read them with try().
+  - 'Some IAM actions have no resource type (DescribeTrails, log deliveries): ''*'' is the only form.'
+  - Verify against the remote, not a local clone (orphaned tags after history rewrite).
+  - A Databricks trial credit covers DBUs, never the cloud infrastructure the workspace creates.
+  - CloudWatch filter '$.readOnly = false' parses but never matches; use 'IS FALSE'.
+  - Check which cloud account a CLI is pointed at before running anything.

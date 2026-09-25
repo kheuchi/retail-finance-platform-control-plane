@@ -1,44 +1,27 @@
 # Retail Finance Data, ML and Agentic AI Platform
 
-An enterprise-style learning project built on AWS and Databricks for a fictional
-retail finance department.
+An enterprise-style portfolio project on **AWS + Databricks** for the accounting
+department of a large (fictional) retailer: governed finance data, forecasting,
+anomaly detection, and an AI agent that drafts cited analysis for a human to approve.
 
-## Plain-language goal
+![Plan and roadmap](docs/roadmap/roadmap.svg)
 
-Build a secure data platform that can explain revenue and margin, forecast results,
-detect unusual activity, and generate traceable finance narratives. The project
-models enterprise practices while remaining affordable for a personal AWS account.
+## Where we are
 
-## Current approach
-
-- Preserve the AWS Free plan and its credits.
-- Standardize bootstrap state and workloads in `eu-central-1` (Frankfurt) for a
-  simpler boundary with custom model and agent-serving support.
-- Maintain a production-ready multi-account Control Tower design without activating
-  AWS Organizations during the Free plan.
-- Provision infrastructure with Terraform and deploy workloads through CI/CD.
-- Use Databricks for governed data engineering, analytics, ML, and AI.
-- Tear down or suspend chargeable workload resources after the one-week build.
-
-## Repository role
-
-This repository is the program control plane used by humans and AI assistants to
-coordinate the other repositories. It contains context, decisions, roadmap, and
-cross-repository evidence—not deployable infrastructure or application code.
+- **Done:** secure AWS foundation, CI/CD, audit and alerting, private Databricks
+  workspace with Unity Catalog on our own S3.
+- **Next:** ingest synthetic ERP and POS data into the lakehouse.
+- **Deadline:** Databricks trial ends 2026-10-06, then teardown.
 
 ## Start here
 
-- [Project context and progress](PROJECT_CONTEXT.md)
-- [Repository map](REPOSITORIES.md)
-- [One-week roadmap](docs/roadmap/one-week.md)
+| File | What it is |
+|---|---|
+| [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) | Goal, rules, current state, next actions |
+| [docs/roadmap/roadmap.md](docs/roadmap/roadmap.md) | The plan, stage by stage |
+| [docs/security/](docs/security/) | Threat model, controls, who owns what |
+| [REPOSITORIES.md](REPOSITORIES.md) | Which repo does what |
+| [cmdb.yml](cmdb.yml) | Full detail: decisions, risks, threats, controls, history |
 
-Security assurance:
-
-- [Threat model](docs/security/threat-model.md) — what we protect, who attacks it,
-  what stops them, and the gaps found
-- [Control matrix](docs/security/control-matrix.md) — every control, its status and
-  its evidence
-- [Responsibility matrix](docs/security/responsibility-matrix.md) — who owns what,
-  including the limits placed on AI assistants
-
-No AWS resources have been created by this repository yet.
+This repo holds coordination and evidence only. Infrastructure code lives in
+[retail-finance-platform-infra](https://github.com/kheuchi/retail-finance-platform-infra).
