@@ -2,7 +2,7 @@
 
 **Contents:** [Summary (2026-09-25)](#summary-2026-09-25) · [Strongest controls](#strongest-controls) · [Biggest gaps](#biggest-gaps)
 
-**Which security controls exist, and how we know.** The full list of 86 controls,
+**Which security controls exist, and how we know.** The full list of 87 controls,
 with where each lives and its evidence, is in [cmdb.yml](../../cmdb.yml) → `controls`.
 
 ## Summary (2026-09-25)
@@ -11,9 +11,9 @@ with where each lives and its evidence, is in [cmdb.yml](../../cmdb.yml) → `co
 
 | Status | Count |
 |---|---|
-| Implemented | 59 |
-| Partial | 4 |
-| Planned | 13 |
+| Implemented | 62 |
+| Partial | 3 |
+| Planned | 12 |
 | Not implemented, on purpose | 9 |
 | Accepted risk | 1 |
 
@@ -32,6 +32,8 @@ Evidence grades: **tested** (we made it fire), **verified** (read back from AWS)
 - CloudTrail + alarms on break-glass and root use. Tested.
 - Branch protection on `main`, including admins. Tested.
 - IAM policy simulator before permission changes. Found 3 gaps before they broke an apply.
+- Cost guardrails: clusters auto-stop, stay small; Databricks budget alerts. Verified.
+- Serverless compute can reach only our governed bucket. Verified.
 
 ## Biggest gaps
 

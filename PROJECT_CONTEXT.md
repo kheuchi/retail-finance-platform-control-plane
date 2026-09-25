@@ -41,6 +41,7 @@ moves money or approves payments. A human signs off.
 | AWS foundation | Done: Terraform, CI/CD via OIDC, CloudTrail, alarms, budget |
 | Network | Done: private VPC, no internet egress, PrivateLink to Databricks |
 | Databricks | Done: classic Enterprise workspace, Unity Catalog on our S3 |
+| Guardrails | Done: auto-stopping small clusters, serverless locked to our bucket, budget alerts |
 | Data, ML, agent | Not started |
 | Running cost | ~USD 2/day for network endpoints; clusters extra when running |
 
@@ -48,10 +49,9 @@ moves money or approves payments. A human signs off.
 
 > Detail: [`cmdb.yml`](cmdb.yml) → `phases`
 
-1. Cluster guardrails: auto-termination, size limits.
-2. Synthetic ERP and POS data, ingested into Bronze.
-3. Silver and Gold finance tables with reconciliation checks.
-4. Teardown by **2026-10-06** (trial end): workspace off, network off.
+1. Synthetic ERP and POS data, ingested into Bronze (new `retail-finance-data-products` repo).
+2. Silver and Gold finance tables with reconciliation checks.
+3. Teardown by **2026-10-06** (trial end): workspace off, network off.
 
 ## Open risks
 

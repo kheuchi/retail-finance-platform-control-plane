@@ -409,10 +409,10 @@ threats:
 # ──────────── controls_summary ────────────
 controls_summary:
   Accepted risk: 1
-  Implemented: 59
+  Implemented: 62
   Not implemented: 9
-  Partial: 4
-  Planned: 13
+  Partial: 3
+  Planned: 12
 
 # ──────────── controls ────────────
 controls:
@@ -908,18 +908,18 @@ controls:
     gap: Deliberate, to preserve the Free plan credit
   - id: CST-6
     control: Databricks spend monitoring
-    status: Partial
-    where: Databricks billed via AWS Marketplace
-    evidence: Declared
+    status: Implemented
+    where: infra databricks/guardrails.tf (databricks_budget.trial)
+    evidence: 'Verified via API 2026-09-25: alerts at USD 100/200/300/380, email on each'
     threats: T-12
-    gap: Marketplace charges land on the AWS bill, so the AWS Budget should see them. Not yet observed.
+    gap: Monthly window resets on 2026-10-01 mid-trial. Alerts only; nothing blocks spend.
   - id: CST-7
-    control: Cluster auto-termination and cost guardrails
-    status: Planned
-    where: docs/architecture/frankfurt-foundation.md
-    evidence: None
+    control: Cluster auto-termination and cost guardrails (finance-small policy)
+    status: Implemented
+    where: infra databricks/guardrails.tf
+    evidence: 'Verified via API: autotermination 10-30 min, 0-2 workers, 1 cluster per user; users group has no free-form cluster creation (Terraform check asserts it)'
     threats: T-12
-    gap: Agreed in design; enforceable only once a workspace exists
+    gap: Workspace admins bypass cluster policies; for the owner the policy is a default
   - id: CST-8
     control: A hard spending stop, as opposed to an alert
     status: Not implemented
@@ -1000,6 +1000,13 @@ controls:
     evidence: Verified
     threats: T-01
     gap: 'Secret expires ~2026-10-08. Target: OIDC federation policy, no secret'
+  - id: NET-7
+    control: Serverless compute egress restricted to the governed bucket
+    status: Implemented
+    where: infra databricks/guardrails.tf (databricks_account_network_policy)
+    evidence: 'Verified via API: RESTRICTED_ACCESS, ENFORCED, 0 internet destinations, 1 storage destination'
+    threats: T-07
+    gap: Serverless still runs on Databricks infrastructure, outside our VPC
   - id: CHG-17
     control: IAM policy simulator run before permission-dependent applies
     status: Implemented
@@ -1051,6 +1058,8 @@ progress:
       - Unity Catalog storage credential + external location, validated
       - Network verified in AWS
       - Roadmap chart; docs refactored to short markdown + cmdb.yml
+      - 'Guardrails: finance-small cluster policy, serverless egress restricted, Databricks budget alerts (verified)'
+      - 'Found: undocumented 32-char network policy ID limit; locked users-group entitlements; budget perpetual diff' 
 
 # ──────────── lessons ────────────
 lessons:
