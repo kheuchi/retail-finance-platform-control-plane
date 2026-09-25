@@ -1,8 +1,12 @@
 # Project Context
 
+**Contents:** [Goal](#goal) · [Rules](#rules) · [How assistants report](#how-assistants-report) · [Current state (2026-09-25)](#current-state-2026-09-25) · [Next actions](#next-actions) · [Open risks](#open-risks)
+
 The one page a human or an AI assistant reads first. Detail is in [cmdb.yml](cmdb.yml).
 
 ## Goal
+
+> Detail: [`cmdb.yml`](cmdb.yml) → `program`
 
 Show how a large retailer's accounting department could run governed finance data,
 ML and an AI agent on AWS + Databricks, built the way an enterprise would build it.
@@ -11,6 +15,8 @@ The agent may investigate, summarise and recommend. It never posts journal entri
 moves money or approves payments. A human signs off.
 
 ## Rules
+
+> Detail: [`cmdb.yml`](cmdb.yml) → `rules`
 
 1. No secrets, Terraform state or account IDs in Git.
 2. Short-lived access only. CI uses OIDC. No root account.
@@ -28,6 +34,8 @@ moves money or approves payments. A human signs off.
 
 ## Current state (2026-09-25)
 
+> Detail: [`cmdb.yml`](cmdb.yml) → `phases, progress`
+
 | Area | State |
 |---|---|
 | AWS foundation | Done: Terraform, CI/CD via OIDC, CloudTrail, alarms, budget |
@@ -38,6 +46,8 @@ moves money or approves payments. A human signs off.
 
 ## Next actions
 
+> Detail: [`cmdb.yml`](cmdb.yml) → `phases`
+
 1. Cluster guardrails: auto-termination, size limits.
 2. Synthetic ERP and POS data, ingested into Bronze.
 3. Silver and Gold finance tables with reconciliation checks.
@@ -45,6 +55,8 @@ moves money or approves payments. A human signs off.
 
 ## Open risks
 
+> Detail: [`cmdb.yml`](cmdb.yml) → `risks`
+
 GitHub 2FA off (accepted) · network costs above budget if left on ·
 trial auto-converts to paid on 2026-10-06 · Databricks secret expires ~2026-10-08 ·
-employer credentials on the workstation. Full list: `cmdb.yml` → `risks`.
+employer credentials on the workstation.

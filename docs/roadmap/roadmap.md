@@ -1,5 +1,7 @@
 # Roadmap
 
+**Contents:** [The plan in one line](#the-plan-in-one-line) · [Stages](#stages) · [Use cases](#use-cases) · [Scope rule](#scope-rule)
+
 ![Plan and roadmap](roadmap.svg)
 
 ## The plan in one line
@@ -8,6 +10,8 @@ Raw ERP and POS data → governed lakehouse → finance models → an agent that
 cited commentary for the controller to approve.
 
 ## Stages
+
+> Detail: [`../../cmdb.yml`](../../cmdb.yml) → `phases`
 
 | # | Stage | Status | Done when |
 |---|---|---|---|
@@ -21,10 +25,14 @@ cited commentary for the controller to approve.
 
 ## Use cases
 
+> Detail: [`../../cmdb.yml`](../../cmdb.yml) → `program.needs`
+
 1. **Refund & margin leakage:** find unusual refunds and margin erosion by store.
 2. **Month-end close:** forecast revenue and cash, explain variance vs budget.
 
 ## Scope rule
+
+> Detail: [`../../cmdb.yml`](../../cmdb.yml) → `rules`
 
 The trial ends **2026-10-06**. If time runs short, keep one thin end-to-end slice
 working and drop extra datasets or models, never the security, lineage or teardown.

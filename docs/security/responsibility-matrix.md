@@ -1,5 +1,7 @@
 # Responsibility Matrix
 
+**Contents:** [Shared responsibility](#shared-responsibility) · [Who does what here](#who-does-what-here) · [Missing roles](#missing-roles)
+
 **Who owns what.** One person owns everything that isn't a vendor's. That is the
 honest segregation-of-duties position of this project.
 
@@ -16,6 +18,8 @@ AWS guarantees the lock works. We make sure the door is locked.
 
 ## Who does what here
 
+> Detail: [`../../cmdb.yml`](../../cmdb.yml) → `rules`
+
 | Actor | Does | Limits |
 |---|---|---|
 | Owner (one human) | Approves and is accountable for every change | — |
@@ -27,6 +31,8 @@ The assistant never uses root, never commits secrets, and never reports a result
 has not verified. Accountability stays with the owner.
 
 ## Missing roles
+
+> Detail: [`../../cmdb.yml`](../../cmdb.yml) → `risks`
 
 A **security reviewer** is the most valuable addition: the only role that breaks the
 "same person writes, approves and reviews" loop. It needs a person, not a budget.

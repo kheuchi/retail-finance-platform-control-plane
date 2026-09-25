@@ -1,9 +1,13 @@
 # Control Matrix
 
+**Contents:** [Summary (2026-09-25)](#summary-2026-09-25) · [Strongest controls](#strongest-controls) · [Biggest gaps](#biggest-gaps)
+
 **Which security controls exist, and how we know.** The full list of 86 controls,
 with where each lives and its evidence, is in [cmdb.yml](../../cmdb.yml) → `controls`.
 
 ## Summary (2026-09-25)
+
+> Detail: [`../../cmdb.yml`](../../cmdb.yml) → `controls_summary`
 
 | Status | Count |
 |---|---|
@@ -21,6 +25,8 @@ Evidence grades: **tested** (we made it fire), **verified** (read back from AWS)
 
 ## Strongest controls
 
+> Detail: [`../../cmdb.yml`](../../cmdb.yml) → `controls`
+
 - No stored AWS keys anywhere; CI uses OIDC pinned to repo IDs.
 - Private network: no internet gateway, no NAT, PrivateLink only. Verified in AWS.
 - CloudTrail + alarms on break-glass and root use. Tested.
@@ -28,6 +34,8 @@ Evidence grades: **tested** (we made it fire), **verified** (read back from AWS)
 - IAM policy simulator before permission changes. Found 3 gaps before they broke an apply.
 
 ## Biggest gaps
+
+> Detail: [`../../cmdb.yml`](../../cmdb.yml) → `controls, findings`
 
 - GitHub 2FA off (accepted).
 - No alarm on audit-trail or IAM tampering.

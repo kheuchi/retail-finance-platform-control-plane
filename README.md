@@ -1,5 +1,7 @@
 # Retail Finance Data, ML and Agentic AI Platform
 
+**Contents:** [Where we are](#where-we-are) · [Start here](#start-here)
+
 An enterprise-style portfolio project on **AWS + Databricks** for the accounting
 department of a large (fictional) retailer: governed finance data, forecasting,
 anomaly detection, and an AI agent that drafts cited analysis for a human to approve.
@@ -7,6 +9,8 @@ anomaly detection, and an AI agent that drafts cited analysis for a human to app
 ![Plan and roadmap](docs/roadmap/roadmap.svg)
 
 ## Where we are
+
+> Detail: [`cmdb.yml`](cmdb.yml) → `phases`
 
 - **Done:** secure AWS foundation, CI/CD, audit and alerting, private Databricks
   workspace with Unity Catalog on our own S3.

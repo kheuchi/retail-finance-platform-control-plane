@@ -1,5 +1,7 @@
 # Repository Map
 
+**Contents:** [Rules](#rules)
+
 | Repository | Does | Status |
 |---|---|---|
 | `retail-finance-platform-control-plane` (this one, private) | Context, roadmap, decisions, security docs | Active |

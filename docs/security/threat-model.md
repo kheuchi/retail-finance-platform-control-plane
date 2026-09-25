@@ -1,5 +1,7 @@
 # Threat Model
 
+**Contents:** [What we protect](#what-we-protect) · [Who we defend against, most likely first](#who-we-defend-against-most-likely-first) · [Top threats today](#top-threats-today) · [Findings from this review](#findings-from-this-review) · [Accepted on purpose](#accepted-on-purpose)
+
 **What we protect, who might attack it, what stops them.** All 17 threats with
 mitigations and residual risk are in [cmdb.yml](../../cmdb.yml) → `threats`.
 
@@ -16,6 +18,8 @@ infrastructure) · finance data in S3 · the budget.
 
 ## Top threats today
 
+> Detail: [`../../cmdb.yml`](../../cmdb.yml) → `threats`
+
 | Threat | Severity | Status |
 |---|---|---|
 | GitHub account takeover → merge to `main` → AWS deploy role | Critical | Open: 2FA off, accepted by owner |
@@ -27,6 +31,8 @@ infrastructure) · finance data in S3 · the budget.
 
 ## Findings from this review
 
+> Detail: [`../../cmdb.yml`](../../cmdb.yml) → `findings`
+
 | ID | Finding | Status |
 |---|---|---|
 | F-1 | GitHub 2FA off | Accepted, open |
@@ -35,6 +41,8 @@ infrastructure) · finance data in S3 · the budget.
 | F-4 | No account-level S3 public access block | Open |
 
 ## Accepted on purpose
+
+> Detail: [`../../cmdb.yml`](../../cmdb.yml) → `risks, decisions`
 
 One AWS account, not many (would cost the credit) · account ID is public (repo is
 public) · one person does everything · encryption uses AWS-managed keys.
