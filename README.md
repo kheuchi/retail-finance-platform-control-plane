@@ -22,6 +22,7 @@ anomaly detection, and an AI agent that drafts cited analysis for a human to app
 
 | File | What it is |
 |---|---|
+| [STATUS.md](STATUS.md) | Where we are, where we go, in plain words |
 | [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) | Goal, rules, current state, next actions |
 | [docs/roadmap/roadmap.md](docs/roadmap/roadmap.md) | The plan, stage by stage |
 | [docs/security/](docs/security/) | Threat model, controls, who owns what |
