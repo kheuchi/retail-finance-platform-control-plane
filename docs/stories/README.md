@@ -56,11 +56,11 @@ Every story has the same sections: **Context** (why) · **What we built** · **T
 
 ## Epic 4 · Transform & Quality
 
-> **TL;DR:** turn Bronze into trusted finance tables. ⏭ Next. Planned stories with acceptance criteria.
+> **TL;DR:** turn Bronze into trusted finance tables. ⏳ In progress: Silver done, reconciliation next.
 
 | # | Story | One line |
 |---|---|---|
-| 4.1 | [Silver tables](4.1-silver-tables.md) | Real types, dedup, bad rows quarantined |
+| 4.1 | [Silver tables](4.1-silver-tables.md) | ✅ How Spark cleans the data; a timeout and an FX bug the quarantine caught |
 | 4.2 | [GL vs POS reconciliation](4.2-gl-pos-reconciliation.md) | Prove the ledger matches the tills; catch A3 |
 | 4.3 | [Gold finance tables](4.3-gold-finance-tables.md) | Revenue, margin, refunds, actual vs budget |
 | 4.4 | [Quality and lineage evidence](4.4-quality-and-lineage.md) | Checks that fail the job, lineage an auditor can follow |

@@ -10,7 +10,7 @@ Updated 2026-09-26. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 |---|---|
 | The plan in one line | Raw ERP and POS data → governed lakehouse → finance models → an agent that drafts cited commentary for the controller to approve |
 | Where are we? | Stages 1-3 done: secure platform built, 4.2m rows in Bronze, none lost |
-| What is next? | Stage 4: clean the data, reconcile the books, publish trusted tables |
+| What is next? | Stage 4 in progress: Silver done (clean, 0 rows lost); next reconcile GL vs POS, then Gold |
 | Deadline | Databricks trial ends 2026-10-06, teardown that day |
 | Running cost | ~USD 2/day network + trial credit for Databricks |
 
@@ -27,7 +27,7 @@ Updated 2026-09-26. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 | 1 | Foundation | ✅ Done | Terraform, CI/CD, audit trail, security alarms, budget in place | [1.1-1.5](docs/stories/README.md#epic-1--foundation) |
 | 2 | Lakehouse | ✅ Done | Private Databricks workspace, no internet, Unity Catalog on our S3 | [2.1-2.5](docs/stories/README.md#epic-2--lakehouse) |
 | 3 | Ingest | ✅ Done | 40 stores, 21 months of synthetic data in Bronze: 4.2m rows, zero loss | [3.1-3.3](docs/stories/README.md#epic-3--ingest) |
-| 4 | Transform & Quality | ⏭ Next | Gold finance tables reconcile to controlled inputs | [4.1-4.4](docs/stories/README.md#epic-4--transform--quality) (planned) |
+| 4 | Transform & Quality | ⏳ In progress | Gold finance tables reconcile to controlled inputs | [4.1](docs/stories/4.1-silver-tables.md) ✅, [4.2-4.5](docs/stories/README.md#epic-4--transform--quality) |
 | 5 | ML Models | Planned | Refund fraud, margin leakage and forecast models tracked in MLflow | |
 | 6 | Serve & Monitor | Planned | Models score on a schedule, with drift checks | |
 | 7 | AI Agent | Planned | Cited variance commentary; no action without human approval | |
