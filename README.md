@@ -34,9 +34,10 @@ data platform, observability & cost).
 | [STATUS.md](STATUS.md) | Status and roadmap: where we are, where we go |
 | [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) | Goal, rules, current state, next actions |
 | [docs/architecture/](docs/architecture/hld.md) | HLD + 4 LLDs, with draw.io sources |
+| [docs/stories/](docs/stories/README.md) | How each piece was built and the tricky parts; planned stories for what is next |
 | [docs/security/](docs/security/) | Threat model, controls, who owns what |
 | [REPOSITORIES.md](REPOSITORIES.md) | Which repo does what |
-| [cmdb.yml](cmdb.yml) | Full detail: decisions, risks, threats, controls, history |
+| [cmdb.yml](cmdb.yml) | Inventory: decisions, risks, threats, controls, stories index, history |
 
 This repo holds coordination and evidence only. Infrastructure code lives in
 [retail-finance-platform-infra](https://github.com/kheuchi/retail-finance-platform-infra).

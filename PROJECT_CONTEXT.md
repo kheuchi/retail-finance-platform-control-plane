@@ -2,7 +2,7 @@
 
 **Contents:** [Goal](#goal) · [Rules](#rules) · [How assistants report](#how-assistants-report) · [Current state (2026-09-25)](#current-state-2026-09-25) · [Next actions](#next-actions) · [Open risks](#open-risks)
 
-The one page a human or an AI assistant reads first. Detail is in [cmdb.yml](cmdb.yml).
+The one page a human or an AI assistant reads first. Inventory: [cmdb.yml](cmdb.yml). Explanations: [stories](docs/stories/README.md).
 
 ## Goal
 
@@ -23,7 +23,7 @@ moves money or approves payments. A human signs off.
 3. No infrastructure change without a reviewed Terraform plan, merged by PR.
 4. Synthetic data only. No real personal or card data.
 5. Budgets before spend. USD 50/month on AWS. Tear down after the trial.
-6. **Docs stay short and readable. Detail goes in `cmdb.yml`.**
+6. **Docs stay short and readable. Facts go in `cmdb.yml` (inventory); explanations go in stories.**
 
 ## How assistants report
 
@@ -50,8 +50,8 @@ moves money or approves payments. A human signs off.
 
 > Detail: [`cmdb.yml`](cmdb.yml) → `phases`
 
-1. Silver: typed, validated tables; reconciliation checks (GL vs POS).
-2. Gold: certified revenue, margin, refund and variance tables.
+1. Silver: typed, validated tables; reconciliation checks (GL vs POS). Stories [4.1](docs/stories/4.1-silver-tables.md), [4.2](docs/stories/4.2-gl-pos-reconciliation.md).
+2. Gold: certified revenue, margin, refund and variance tables. Stories [4.3](docs/stories/4.3-gold-finance-tables.md), [4.4](docs/stories/4.4-quality-and-lineage.md).
 3. Teardown by **2026-10-06** (trial end): workspace off, network off.
 
 ## Open risks

@@ -2,7 +2,8 @@
 
 **Contents:** [TL;DR](#tldr) · [Diagram](#diagram) · [Change path](#change-path) · [AWS roles](#aws-roles) · [Databricks identities](#databricks-identities) · [People](#people) · [Known gaps](#known-gaps)
 
-Updated 2026-09-26. Back to [HLD](hld.md). Detail:
+Updated 2026-09-26. Back to [HLD](hld.md). Stories: [1.1](../stories/1.1-aws-account-baseline.md) · [1.2](../stories/1.2-passwordless-cicd.md) · [1.3](../stories/1.3-least-privilege-deploy-role.md) · [1.5](../stories/1.5-security-review-going-public.md) · [2.3](../stories/2.3-workspace-as-code.md).
+Detail:
 [infra `cmdb.yml`](https://github.com/kheuchi/retail-finance-platform-infra/blob/main/cmdb.yml) → `iam`, `ci_cd` ·
 [`cmdb.yml`](../../cmdb.yml) → `controls`, `decisions`.
 

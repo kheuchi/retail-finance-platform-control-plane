@@ -2,7 +2,7 @@
 
 **Contents:** [TL;DR](#tldr) · [Roadmap](#roadmap) · [Where we are](#where-we-are) · [Where we go](#where-we-go) · [Use cases](#use-cases) · [Deadlines and cost](#deadlines-and-cost) · [Scope rule](#scope-rule) · [Bronze, Silver, Gold](#bronze-silver-gold)
 
-Updated 2026-09-26. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Architecture: [HLD](docs/architecture/hld.md).
+Updated 2026-09-26. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Architecture: [HLD](docs/architecture/hld.md). How we built it: [stories](docs/stories/README.md).
 
 ## TL;DR
 
@@ -20,21 +20,22 @@ Updated 2026-09-26. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 
 ## Where we are
 
-> **TL;DR:** 3 of 7 stages done. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`
+> **TL;DR:** 3 of 7 stages done. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`, `stories`
 
-| # | Stage | Status | Done when |
-|---|---|---|---|
-| 1 | Foundation | ✅ Done | Terraform, CI/CD, audit trail, security alarms, budget in place |
-| 2 | Lakehouse | ✅ Done | Private Databricks workspace, no internet, Unity Catalog on our S3 |
-| 3 | Ingest | ✅ Done | 40 stores, 21 months of synthetic data in Bronze: 4.2m rows, zero loss |
-| 4 | Transform & Quality | ⏭ Next | Gold finance tables reconcile to controlled inputs |
-| 5 | ML Models | Planned | Refund fraud, margin leakage and forecast models tracked in MLflow |
-| 6 | Serve & Monitor | Planned | Models score on a schedule, with drift checks |
-| 7 | AI Agent | Planned | Cited variance commentary; no action without human approval |
+| # | Stage | Status | Done when | Stories |
+|---|---|---|---|---|
+| 1 | Foundation | ✅ Done | Terraform, CI/CD, audit trail, security alarms, budget in place | [1.1-1.5](docs/stories/README.md#epic-1--foundation) |
+| 2 | Lakehouse | ✅ Done | Private Databricks workspace, no internet, Unity Catalog on our S3 | [2.1-2.5](docs/stories/README.md#epic-2--lakehouse) |
+| 3 | Ingest | ✅ Done | 40 stores, 21 months of synthetic data in Bronze: 4.2m rows, zero loss | [3.1-3.3](docs/stories/README.md#epic-3--ingest) |
+| 4 | Transform & Quality | ⏭ Next | Gold finance tables reconcile to controlled inputs | [4.1-4.4](docs/stories/README.md#epic-4--transform--quality) (planned) |
+| 5 | ML Models | Planned | Refund fraud, margin leakage and forecast models tracked in MLflow | |
+| 6 | Serve & Monitor | Planned | Models score on a schedule, with drift checks | |
+| 7 | AI Agent | Planned | Cited variance commentary; no action without human approval | |
 
 ## Where we go
 
 > **TL;DR:** Silver, then Gold, then models and the agent reading Gold only.
+> Acceptance criteria: stories [4.1](docs/stories/4.1-silver-tables.md) · [4.2](docs/stories/4.2-gl-pos-reconciliation.md) · [4.3](docs/stories/4.3-gold-finance-tables.md) · [4.4](docs/stories/4.4-quality-and-lineage.md)
 
 1. **Silver:** give every column its real type, reject bad rows, check that the general
    ledger matches the sales. This should catch the planted fake journals.

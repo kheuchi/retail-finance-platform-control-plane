@@ -2,7 +2,8 @@
 
 **Contents:** [TL;DR](#tldr) · [Diagram](#diagram) · [Pipeline](#pipeline) · [Catalog layout](#catalog-layout) · [Access](#access) · [Sources and anomalies](#sources-and-anomalies) · [Deploy](#deploy)
 
-Updated 2026-09-26. Back to [HLD](hld.md). Detail:
+Updated 2026-09-26. Back to [HLD](hld.md). Stories: [2.4](../stories/2.4-unity-catalog-on-our-s3.md) · [3.1](../stories/3.1-synthetic-accounting-data.md) · [3.2](../stories/3.2-catalog-and-bundle-deploy.md) · [3.3](../stories/3.3-first-job-in-the-private-vpc.md) · planned [4.1-4.4](../stories/README.md#epic-4--transform--quality).
+Detail:
 [data `cmdb.yml`](https://github.com/kheuchi/retail-finance-data-products/blob/main/cmdb.yml) → `sources`, `anomalies`, `volumes`, `pipeline` ·
 [infra `cmdb.yml`](https://github.com/kheuchi/retail-finance-platform-infra/blob/main/cmdb.yml) → `stacks.databricks`.
 

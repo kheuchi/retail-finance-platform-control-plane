@@ -10,17 +10,18 @@
 #   rules              the non-negotiable project rules
 #   phases             the 7 roadmap stages and status
 #   architecture       HLD/LLD diagrams, key flows, draw.io toolchain
-#   decisions          every decision D-001.. with status and reason
+#   stories            index of stories (the explanations), one per piece of work
+#   decisions          every decision D-001.. with status, one-line reason, story
 #   risks              open and accepted risks R-01..
 #   findings           security review findings F-1..F-4
 #   threats            threat model T-01..T-17
 #   controls_summary   control counts by status
 #   controls           all controls with where, evidence, gap
 #   progress           what happened, by date
-#   lessons            lessons worth keeping
+#   lessons            lessons worth keeping, each with its story
 # ======================================================================
 
-about: Detailed record for the retail-finance platform program. Markdown stays short; detail lives here.
+about: Inventory for the retail-finance platform program (facts, IDs, status, one-line reasons). Explanations live in docs/stories/.
 updated: '2026-09-26'
 
 # ──────────── program ────────────
@@ -58,22 +59,26 @@ rules:
   - Synthetic data only; no real PII or card data
   - Agents read-only; consequential actions need a human
   - Budgets before spend; tear down after the trial
-  - 'Docs: short markdown, detail in cmdb.yml'
+  - 'Docs: short markdown; cmdb.yml is the inventory (facts, one-line reasons); stories hold the explanations'
 
 # ──────────── phases ────────────
 phases:
   - id: 1
     name: Foundation
     status: Done
+    stories: ['1.1', '1.2', '1.3', '1.4', '1.5']
   - id: 2
     name: Lakehouse
     status: Done
+    stories: ['2.1', '2.2', '2.3', '2.4', '2.5']
   - id: 3
     name: Ingest
     status: Done
+    stories: ['3.1', '3.2', '3.3']
   - id: 4
     name: Transform & Quality
     status: Next
+    stories: ['4.1', '4.2', '4.3', '4.4']
   - id: 5
     name: ML Models
     status: Planned
@@ -108,144 +113,177 @@ architecture:
       - Back-to-back exports from one Git Bash loop can silently fail; run one process at a time (Start-Process -Wait)
       - 'AWS icons that render blank: simple_notification_service, vpc_flow_logs, security_token_service (use sns, flow_logs, sts)'
 
+# ──────────── stories ────────────
+stories:
+  about: Deep explanations live in the stories; this file stays the inventory. As-built = written after the work; planned = acceptance criteria first.
+  dir: docs/stories/
+  items:
+    - {id: '1.1', title: 'AWS account baseline', epic: 1, type: as-built, status: 'Done', dates: '2026-09-14', file: 1.1-aws-account-baseline.md}
+    - {id: '1.2', title: 'Passwordless CI/CD (GitHub OIDC)', epic: 1, type: as-built, status: 'Done', dates: '2026-09-14..15', file: 1.2-passwordless-cicd.md}
+    - {id: '1.3', title: 'Least-privilege deploy role, two-phase apply, break-glass', epic: 1, type: as-built, status: 'Done', dates: '2026-09-16', file: 1.3-least-privilege-deploy-role.md}
+    - {id: '1.4', title: 'Audit trail and alarms', epic: 1, type: as-built, status: 'Done', dates: '2026-09-16..17', file: 1.4-audit-and-alarms.md}
+    - {id: '1.5', title: 'Security review, history scrub, going public', epic: 1, type: as-built, status: 'Done', dates: '2026-09-16..22', file: 1.5-security-review-going-public.md}
+    - {id: '2.1', title: 'Where Databricks runs (cloud, tier, NAT vs PrivateLink)', epic: 2, type: as-built, status: 'Done', dates: '2026-09-16..24', file: 2.1-where-databricks-runs.md}
+    - {id: '2.2', title: 'Fully private network', epic: 2, type: as-built, status: 'Done', dates: '2026-09-22..26', file: 2.2-private-network.md}
+    - {id: '2.3', title: 'Workspace as code', epic: 2, type: as-built, status: 'Done', dates: '2026-09-24', file: 2.3-workspace-as-code.md}
+    - {id: '2.4', title: 'Unity Catalog on our S3', epic: 2, type: as-built, status: 'Done', dates: '2026-09-17..25', file: 2.4-unity-catalog-on-our-s3.md}
+    - {id: '2.5', title: 'Guardrails (policies, egress, budget)', epic: 2, type: as-built, status: 'Done', dates: '2026-09-25..26', file: 2.5-guardrails.md}
+    - {id: '3.1', title: 'Synthetic accounting data', epic: 3, type: as-built, status: 'Done', dates: '2026-09-25..26', file: 3.1-synthetic-accounting-data.md}
+    - {id: '3.2', title: 'Catalog and bundle deploy', epic: 3, type: as-built, status: 'Done', dates: '2026-09-25..26', file: 3.2-catalog-and-bundle-deploy.md}
+    - {id: '3.3', title: 'First job in the private VPC', epic: 3, type: as-built, status: 'Done', dates: '2026-09-26', file: 3.3-first-job-in-the-private-vpc.md}
+    - {id: '4.1', title: 'Silver tables', epic: 4, type: planned, status: 'Next', file: 4.1-silver-tables.md}
+    - {id: '4.2', title: 'GL vs POS reconciliation', epic: 4, type: planned, status: 'Next', file: 4.2-gl-pos-reconciliation.md}
+    - {id: '4.3', title: 'Gold finance tables', epic: 4, type: planned, status: 'Planned', file: 4.3-gold-finance-tables.md}
+    - {id: '4.4', title: 'Quality and lineage evidence', epic: 4, type: planned, status: 'Planned', file: 4.4-quality-and-lineage.md}
+    - {id: 'X.1', title: 'Documentation system', epic: cross-cutting, type: as-built, status: 'Done (living)', dates: '2026-09-14..26', file: X.1-documentation-system.md}
+
 # ──────────── decisions ────────────
 decisions:
   - id: D-001
-    decision: Use a retail finance department scenario
-    status: Accepted
-    reason: User-selected business domain
+    decision: 'Use a retail finance department scenario'
+    status: 'Accepted'
+    reason: 'User-selected business domain'
+    story: '3.1'
   - id: D-002
-    decision: Build the governed cloud foundation before workloads
-    status: Accepted
-    reason: Establish enterprise controls first
+    decision: 'Build the governed cloud foundation before workloads'
+    status: 'Accepted'
+    reason: 'Establish enterprise controls first'
+    story: '1.1'
   - id: D-003
-    decision: Use Terraform for reproducible infrastructure
-    status: Accepted
-    reason: User requirement
+    decision: 'Use Terraform for reproducible infrastructure'
+    status: 'Accepted'
+    reason: 'User requirement'
+    story: '1.1'
   - id: D-004
-    decision: Use AWS Databricks for the lakehouse and ML platform
-    status: Accepted
-    reason: User requirement
+    decision: 'Use AWS Databricks for the lakehouse and ML platform'
+    status: 'Accepted'
+    reason: 'User requirement'
+    story: '2.1'
   - id: D-005
-    decision: Keep project context agent-agnostic
-    status: Accepted
-    reason: Supports multiple tools and human handoff
+    decision: 'Keep project context agent-agnostic'
+    status: 'Accepted'
+    reason: 'Supports multiple tools and human handoff'
+    story: 'X.1'
   - id: D-006
-    decision: Use AWS Control Tower versus a custom landing zone
-    status: Deferred by D-009
-    reason: Requires account, budget and constraint discovery
+    decision: 'Use AWS Control Tower versus a custom landing zone'
+    status: 'Deferred by D-009'
+    reason: 'Requires account, budget and constraint discovery'
+    story: '1.1'
   - id: D-007
-    decision: Prohibit root identity for project operations
-    status: Accepted
-    reason: Root has unrestricted account authority and is reserved for root-only recovery/bootstrap tasks
+    decision: 'Prohibit root identity for project operations'
+    status: 'Accepted'
+    reason: 'Root can do anything; reserved for root-only recovery tasks'
+    story: '1.1'
   - id: D-008
-    decision: One-week initial delivery window
-    status: Accepted
-    reason: User constraint; requires a thin end-to-end slice and documented future roadmap
+    decision: 'One-week initial delivery window'
+    status: 'Accepted'
+    reason: 'User constraint; requires a thin end-to-end slice and documented future roadmap'
   - id: D-009
-    decision: Preserve Free plan; do not deploy Organizations or Control Tower
-    status: Accepted
-    reason: Retain the USD 100 credit; implement a single-account baseline and keep the multi-account landing zone
-      deployable as a reference design
+    decision: 'Preserve Free plan; do not deploy Organizations or Control Tower'
+    status: 'Accepted'
+    reason: 'Organizations or Control Tower would end the USD 100 credit; multi-account kept as a reference design'
+    story: '1.1'
   - id: D-010
-    decision: Use eu-west-3 as primary project region
-    status: Superseded
-    reason: Basic Databricks support exists, but custom model/agent serving is unavailable
+    decision: 'Use eu-west-3 as primary project region'
+    status: 'Superseded'
+    reason: 'Basic Databricks support exists, but custom model/agent serving is unavailable'
+    story: '1.1'
   - id: D-011
-    decision: Separate control plane, infrastructure, data, ML, and agent repositories
-    status: Accepted
-    reason: Independent ownership, permissions, CI/CD, state, and release lifecycles
+    decision: 'Separate control plane, infrastructure, data, ML, and agent repositories'
+    status: 'Accepted'
+    reason: 'Independent ownership, permissions, CI/CD, state, and release lifecycles'
+    story: '3.2'
   - id: D-012
-    decision: Use eu-central-1 for workloads/AI; retain state in eu-west-3
-    status: Superseded
-    reason: The split was safe but added needless complexity at this early project stage
+    decision: 'Use eu-central-1 for workloads/AI; retain state in eu-west-3'
+    status: 'Superseded'
+    reason: 'The split was safe but added needless complexity at this early project stage'
+    story: '1.1'
   - id: D-013
-    decision: Standardize all regional resources on eu-central-1
-    status: Accepted
-    reason: Simpler governance and operations; required Databricks and Bedrock model capabilities remain available
+    decision: 'Standardize all regional resources on eu-central-1'
+    status: 'Accepted'
+    reason: 'One region is simpler; the needed Databricks and Bedrock features are available'
+    story: '1.1'
   - id: D-014
-    decision: Sign up for the Databricks free trial through AWS Marketplace rather than directly on databricks.com
-    status: Superseded by D-014b
-    reason: 'Verified in Databricks documentation: the Marketplace route puts Databricks charges on the AWS bill,
-      which brings them inside the existing USD 50 AWS Budget. The direct route bills separately and leaves the
-      Budget blind to them. Corrects an earlier statement in this project that the Budget could not see Databricks
-      spend at all'
+    decision: 'Sign up for the Databricks free trial through AWS Marketplace rather than directly on databricks.com'
+    status: 'Superseded by D-014b'
+    reason: 'Databricks charges on the AWS bill, inside the AWS Budget. Blocked on the Free plan'
+    story: '2.1'
   - id: D-015
-    decision: Use a serverless Databricks workspace rather than a classic workspace
-    status: Superseded by D-015b
-    reason: 'A classic workspace deploys a VPC and NAT Gateway in our account and is billed hourly by AWS separately
-      from the Databricks trial credit, which conflicts with NET-2 and the USD 50 ceiling. Trade-off: the serverless
-      workspace uses Databricks-managed root storage, so the dbx-root bucket may go unused while dbx-uc still serves
-      Unity Catalog managed storage'
+    decision: 'Use a serverless Databricks workspace rather than a classic workspace'
+    status: 'Superseded by D-015b'
+    reason: 'Avoid the hourly NAT cost of a classic workspace'
+    story: '2.1'
   - id: D-016
-    decision: Publish retail-finance-platform-infra, accepting exposure of the AWS account identifier
-    status: Accepted
-    reason: Buys branch protection, administrator enforcement, secret scanning and push protection at no cost, resolving
-      F-2. The identifier is not a credential and the controls guarding the named resources are unchanged
+    decision: 'Publish retail-finance-platform-infra, accepting exposure of the AWS account identifier'
+    status: 'Accepted'
+    reason: 'Free branch protection, secret scanning and push protection; an account ID is not a credential'
+    story: '1.5'
   - id: D-014b
-    decision: Sign up for Databricks through AWS Marketplace
-    status: Accepted
-    reason: 'Superseded the blocked attempt: the AWS account is now on the Paid plan, so Marketplace offers are
-      available and Databricks charges land on the AWS bill inside the existing Budget'
+    decision: 'Sign up for Databricks through AWS Marketplace'
+    status: 'Accepted'
+    reason: 'Paid plan unblocked Marketplace; charges land on the AWS bill'
+    story: '2.1'
   - id: D-015b
-    decision: Use a classic workspace in a customer-managed VPC, not serverless
-    status: Accepted
-    reason: Serverless demonstrates none of the network, containment or encryption controls this project exists
-      to evidence. Supersedes D-015
+    decision: 'Use a classic workspace in a customer-managed VPC, not serverless'
+    status: 'Accepted'
+    reason: 'Serverless shows none of the network controls this project exists to evidence'
+    story: '2.1'
   - id: D-018
-    decision: Upgrade the AWS account from the Free plan to the Paid plan
-    status: Accepted
-    reason: The Free plan closes the account and deletes all resources when credits run out or the term ends, which
-      would destroy the portfolio. Remaining credits carry over on upgrade
+    decision: 'Upgrade the AWS account from the Free plan to the Paid plan'
+    status: 'Accepted'
+    reason: 'Free plan blocks Marketplace and deletes everything when credits end; credits carry over'
+    story: '2.1'
   - id: D-019
-    decision: Build the Databricks VPC in the fully-private shape, with no NAT gateway
-    status: Accepted
-    reason: 'Stronger control and lower cost: no public egress path exists at all, at roughly USD 15 per month against
-      roughly USD 32 for a NAT gateway. Consistent with control NET-2'
+    decision: 'Build the Databricks VPC in the fully-private shape, with no NAT gateway'
+    status: 'Accepted'
+    reason: 'No public egress path at all. The early estimate (~15 vs ~32/month) predates PrivateLink; actual ~64 vs ~38 (D-021)'
+    story: '2.1'
   - id: D-020
-    decision: Reject Azure and GCP as the Databricks host
-    status: Accepted
-    reason: Azure forces a hybrid workspace on the trial tier and so mandates a NAT gateway; GCP classic compute
-      runs on GKE, which Databricks has deprecated. Both would also abandon the AWS foundation
+    decision: 'Reject Azure and GCP as the Databricks host'
+    status: 'Accepted'
+    reason: 'Azure trial forces a NAT (hybrid workspace); GCP classic compute runs on deprecated GKE'
+    story: '2.1'
   - id: D-017
-    decision: Leave GitHub two-factor authentication disabled for now
-    status: Accepted
-    reason: Owner decision on 2026-09-21. Recorded as an open, accepted risk rather than closed, because it is the
-      highest-severity item in the threat model and nothing added since mitigates it
+    decision: 'Leave GitHub two-factor authentication disabled for now'
+    status: 'Accepted'
+    reason: 'Owner decision 2026-09-21; highest-severity open risk (R-01)'
+    story: '1.5'
   - id: D-021
-    decision: Databricks Enterprise tier with back-end PrivateLink
-    status: Accepted
+    decision: 'Databricks Enterprise tier with back-end PrivateLink'
+    status: 'Accepted'
     date: '2026-09-24'
-    reason: PrivateLink requires Enterprise. It is the only design where 'no public egress path exists' is literally
-      true. Costs more than NAT (~USD 64 vs ~38/month); chosen for the enterprise story, and justified by MNPI-grade
-      finance data.
+    reason: 'PrivateLink needs Enterprise; the only design with literally no public egress (~USD 64 vs ~38/month)'
+    story: '2.1'
   - id: D-022
-    decision: Manage Databricks in a separate Terraform stack (databricks/)
-    status: Accepted
+    decision: 'Manage Databricks in a separate Terraform stack (databricks/)'
+    status: 'Accepted'
     date: '2026-09-24'
-    reason: Blast radius, separate credentials, separate lifecycle. Reads bootstrap outputs; never the reverse.
+    reason: 'Smaller blast radius, separate credentials and lifecycle; reads bootstrap outputs, never the reverse'
+    story: '2.3'
   - id: D-023
-    decision: Terraform authenticates to Databricks as a service principal (OAuth M2M), 14-day secret
-    status: Accepted
+    decision: 'Terraform authenticates to Databricks as a service principal (OAuth M2M), 14-day secret'
+    status: 'Accepted'
     date: '2026-09-24'
-    reason: 'Everything in code, no console clicks. Secret lifetime matches the trial. Target: GitHub OIDC federation
-      policy, no stored secret.'
+    reason: 'Everything in code; secret lifetime matches the trial. Target: GitHub OIDC federation'
+    story: '2.3'
   - id: D-025
-    decision: Generate the accounting data synthetically; real inputs only for ECB FX rates and holidays
-    status: Accepted
+    decision: 'Generate the accounting data synthetically; real inputs only for ECB FX rates and holidays'
+    status: 'Accepted'
     date: '2026-09-25'
-    reason: No public dataset has a ledger, budget and cashier-level refunds; public retail sets carry customer IDs;
-      synthetic data lets us plant known anomalies as ground truth; the workspace has no internet egress anyway.
+    reason: 'No public dataset has ledger + budget + cashier refunds; planted anomalies give ground truth; no internet in the VPC'
+    story: '3.1'
   - id: D-026
-    decision: Data code lives in a separate public repo, retail-finance-data-products
-    status: Accepted
+    decision: 'Data code lives in a separate public repo, retail-finance-data-products'
+    status: 'Accepted'
     date: '2026-09-25'
-    reason: Owner decision, per D-011. Public for the same reasons as the infra repo (free branch protection, secret scanning).
+    reason: 'Per D-011; public for free branch protection and secret scanning'
+    story: '3.2'
   - id: D-024
-    decision: Markdown stays short and human-readable; detail lives in cmdb.yml
-    status: Accepted
+    decision: 'Markdown stays short and human-readable; detail lives in cmdb.yml'
+    status: 'Accepted'
     date: '2026-09-25'
-    reason: Owner request. Long prose docs were hard to read. Full earlier versions remain in Git history.
+    reason: 'Long prose docs were hard to read; full versions stay in Git history'
+    story: 'X.1'
 
 # ──────────── risks ────────────
 risks:
@@ -1103,17 +1141,22 @@ progress:
       - 'First clusters in the private VPC. Library install failed twice; VPC flow logs showed the PrivateLink endpoint rejecting control-plane ports 8443-8449; fixed'
       - 'Job succeeded: 8 Bronze Delta tables, every row count matches the generator (zero loss)'
       - 'Docs: STATUS.md merged with the roadmap; draw.io HLD + 4 LLDs (network, identity & CI/CD, data platform, observability & cost)'
+      - 'Stories: 13 as-built (Epics 1-3), 4 planned (Epic 4) with acceptance criteria, 1 cross-cutting; cmdb reshaped as inventory'
 
 # ──────────── lessons ────────────
 lessons:
-  - Grant permissions in one apply, use them in the next (two-phase apply).
-  - Run the IAM policy simulator before applies that need new permissions; test negative cases too.
-  - count = 0 hides resources from Checkov; a clean scan of code that creates nothing proves nothing.
-  - Data sources are read at plan time even when unused; gate them too.
-  - Terraform does not store null outputs; read them with try().
-  - 'Some IAM actions have no resource type (DescribeTrails, log deliveries): ''*'' is the only form.'
-  - Verify against the remote, not a local clone (orphaned tags after history rewrite).
-  - A Databricks trial credit covers DBUs, never the cloud infrastructure the workspace creates.
-  - CloudWatch filter '$.readOnly = false' parses but never matches; use 'IS FALSE'.
-  - Check which cloud account a CLI is pointed at before running anything.
-  - 'When a private network misbehaves, read the VPC flow logs first: REJECT records name the blocked port.'
+  - {lesson: 'Grant permissions in one apply, use them in the next (two-phase apply).', story: '1.3'}
+  - {lesson: 'Run the IAM policy simulator before applies that need new permissions; test negative cases too.', story: '1.3'}
+  - {lesson: 'Some IAM actions have no resource type (DescribeTrails, log deliveries): ''*'' is the only form.', story: '1.3'}
+  - {lesson: 'CloudWatch filter ''$.readOnly = false'' parses but never matches; use ''IS FALSE''.', story: '1.4'}
+  - {lesson: 'Verify against the remote, not a local clone (orphaned tags after history rewrite).', story: '1.5'}
+  - {lesson: 'A Databricks trial credit covers DBUs, never the cloud infrastructure the workspace creates.', story: '2.1'}
+  - {lesson: 'Check which cloud account a CLI is pointed at before running anything.', story: '2.1'}
+  - {lesson: 'count = 0 hides resources from Checkov; a clean scan of code that creates nothing proves nothing.', story: '2.2'}
+  - {lesson: 'Data sources are read at plan time even when unused; gate them too.', story: '2.2'}
+  - {lesson: 'Terraform does not store null outputs; read them with try().', story: '2.3'}
+  - {lesson: 'When an error blames auth but other resources authenticate, suspect the resource (missing account_id).', story: '2.3'}
+  - {lesson: 'Find undocumented API limits with read-only calls, then encode them as preconditions.', story: '2.5'}
+  - {lesson: 'Deploy jobs into the service principal''s own folder, never /Workspace/Shared.', story: '3.2'}
+  - {lesson: 'When a private network misbehaves, read the VPC flow logs first: REJECT records name the blocked port.', story: '3.3'}
+  - {lesson: 'Security groups must allow a flow on both ends; flow logs show which end drops it.', story: '3.3'}

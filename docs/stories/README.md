@@ -1,0 +1,72 @@
+# Stories
+
+**Contents:** [TL;DR](#tldr) · [How to read a story](#how-to-read-a-story) · [Epic 1 · Foundation](#epic-1--foundation) · [Epic 2 · Lakehouse](#epic-2--lakehouse) · [Epic 3 · Ingest](#epic-3--ingest) · [Epic 4 · Transform & Quality](#epic-4--transform--quality) · [Cross-cutting](#cross-cutting)
+
+Updated 2026-09-26. Index in [`cmdb.yml`](../../cmdb.yml) → `stories`. Status: [STATUS.md](../../STATUS.md). Architecture: [HLD](../architecture/hld.md).
+
+## TL;DR
+
+| Question | Answer |
+|---|---|
+| What is a story? | One piece of work: why we did it, what we built, what went wrong, how we proved it |
+| As-built vs planned? | Epics 1-3 are **as-built**, written after the work. Epic 4 onward is **planned**, written before, with acceptance criteria |
+| Where is the inventory? | [`cmdb.yml`](../../cmdb.yml): IDs, status, dates, one-line reasons. Stories hold the explanations |
+| Best stories to learn from | [1.3](1.3-least-privilege-deploy-role.md) (IAM traps), [2.1](2.1-where-databricks-runs.md) (cloud choice), [3.3](3.3-first-job-in-the-private-vpc.md) (network debugging) |
+
+## How to read a story
+
+> **TL;DR:** read the TL;DR table first; open "Tricky parts" if you want to understand the hard bits.
+
+Every story has the same sections: **Context** (why) · **What we built** · **Tricky parts**
+(symptom → cause → fix → lesson) · **Proof** · **References** (docs, cmdb keys, commits).
+
+## Epic 1 · Foundation
+
+> **TL;DR:** a safe AWS account that only CI can change, with an audit trail and alarms. ✅ Done 2026-09-14 → 09-21.
+
+| # | Story | One line |
+|---|---|---|
+| 1.1 | [AWS account baseline](1.1-aws-account-baseline.md) | Stop using root, pick a region, remote state, budget |
+| 1.2 | [Passwordless CI/CD](1.2-passwordless-cicd.md) | GitHub reaches AWS with OIDC tokens, no stored keys |
+| 1.3 | [Least-privilege deploy role](1.3-least-privilege-deploy-role.md) | Tight permissions, the two-phase apply, break-glass |
+| 1.4 | [Audit trail and alarms](1.4-audit-and-alarms.md) | CloudTrail, and an alarm filter that silently never fired |
+| 1.5 | [Security review, going public](1.5-security-review-going-public.md) | Threat model, history scrub, public repo, lost tags |
+
+## Epic 2 · Lakehouse
+
+> **TL;DR:** a private Databricks workspace in our own VPC, governed by Unity Catalog. ✅ Done 2026-09-22 → 09-25.
+
+| # | Story | One line |
+|---|---|---|
+| 2.1 | [Where Databricks runs](2.1-where-databricks-runs.md) | Azure, GCP, serverless, NAT: why we ended on AWS + PrivateLink |
+| 2.2 | [Fully private network](2.2-private-network.md) | VPC with no internet, built gated off, then switched on |
+| 2.3 | [Workspace as code](2.3-workspace-as-code.md) | Service principal, cross-account role, a misleading error |
+| 2.4 | [Unity Catalog on our S3](2.4-unity-catalog-on-our-s3.md) | Buckets, the UC role, external IDs, IAM delays |
+| 2.5 | [Guardrails](2.5-guardrails.md) | Cluster policies, serverless egress, budget alerts, 3 API surprises |
+
+## Epic 3 · Ingest
+
+> **TL;DR:** realistic accounting data with planted frauds, loaded into Bronze with zero loss. ✅ Done 2026-09-25 → 09-26.
+
+| # | Story | One line |
+|---|---|---|
+| 3.1 | [Synthetic accounting data](3.1-synthetic-accounting-data.md) | Why synthetic, how the books balance, the 3 anomalies |
+| 3.2 | [Catalog and bundle deploy](3.2-catalog-and-bundle-deploy.md) | finance catalog, volumes, grants, Asset Bundle from CI |
+| 3.3 | [First job in the private VPC](3.3-first-job-in-the-private-vpc.md) | Four failed runs, then flow logs named the blocked port |
+
+## Epic 4 · Transform & Quality
+
+> **TL;DR:** turn Bronze into trusted finance tables. ⏭ Next. Planned stories with acceptance criteria.
+
+| # | Story | One line |
+|---|---|---|
+| 4.1 | [Silver tables](4.1-silver-tables.md) | Real types, dedup, bad rows quarantined |
+| 4.2 | [GL vs POS reconciliation](4.2-gl-pos-reconciliation.md) | Prove the ledger matches the tills; catch A3 |
+| 4.3 | [Gold finance tables](4.3-gold-finance-tables.md) | Revenue, margin, refunds, actual vs budget |
+| 4.4 | [Quality and lineage evidence](4.4-quality-and-lineage.md) | Checks that fail the job, lineage an auditor can follow |
+
+## Cross-cutting
+
+| # | Story | One line |
+|---|---|---|
+| X.1 | [Documentation system](X.1-documentation-system.md) | Short docs, cmdb inventory, diagrams, stories |

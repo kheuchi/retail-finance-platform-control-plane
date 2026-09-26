@@ -2,7 +2,8 @@
 
 **Contents:** [TL;DR](#tldr) · [Diagram](#diagram) · [Audit trail](#audit-trail) · [Network evidence](#network-evidence) · [Cost controls](#cost-controls) · [Change gates](#change-gates) · [Limits](#limits)
 
-Updated 2026-09-26. Back to [HLD](hld.md). Detail:
+Updated 2026-09-26. Back to [HLD](hld.md). Stories: [1.4](../stories/1.4-audit-and-alarms.md) · [2.5](../stories/2.5-guardrails.md) · [3.3](../stories/3.3-first-job-in-the-private-vpc.md).
+Detail:
 [infra `cmdb.yml`](https://github.com/kheuchi/retail-finance-platform-infra/blob/main/cmdb.yml) → `stacks.bootstrap.resources`, `costs_usd_month`, `checkov` ·
 [`cmdb.yml`](../../cmdb.yml) → `controls`, `risks`.
 

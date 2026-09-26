@@ -2,7 +2,7 @@
 
 **Contents:** [TL;DR](#tldr) · [Diagram](#diagram) · [The four zones](#the-four-zones) · [Key flows](#key-flows) · [Design choices](#design-choices) · [Zoom in (LLDs)](#zoom-in-llds) · [Edit the diagram](#edit-the-diagram)
 
-Updated 2026-09-26. Detail: [`cmdb.yml`](../../cmdb.yml) → `architecture`, `decisions`.
+Updated 2026-09-26. Detail: [`cmdb.yml`](../../cmdb.yml) → `architecture`, `decisions`. How it was built: [stories](../stories/README.md).
 
 ## TL;DR
 
@@ -59,12 +59,12 @@ Updated 2026-09-26. Detail: [`cmdb.yml`](../../cmdb.yml) → `architecture`, `de
 
 ## Zoom in (LLDs)
 
-| LLD | Question it answers |
-|---|---|
-| [1 · Network](lld-network.md) | How does traffic flow, and why can't it leave? |
-| [2 · Identity & CI/CD](lld-identity-cicd.md) | Who can change what, and how? |
-| [3 · Data platform](lld-data-platform.md) | How do files become trusted finance tables? |
-| [4 · Observability & cost](lld-observability-cost.md) | What is recorded, what alerts, what limits spend? |
+| LLD | Question it answers | Build stories |
+|---|---|---|
+| [1 · Network](lld-network.md) | How does traffic flow, and why can't it leave? | [2.1](../stories/2.1-where-databricks-runs.md), [2.2](../stories/2.2-private-network.md), [3.3](../stories/3.3-first-job-in-the-private-vpc.md) |
+| [2 · Identity & CI/CD](lld-identity-cicd.md) | Who can change what, and how? | [1.2](../stories/1.2-passwordless-cicd.md), [1.3](../stories/1.3-least-privilege-deploy-role.md), [2.3](../stories/2.3-workspace-as-code.md) |
+| [3 · Data platform](lld-data-platform.md) | How do files become trusted finance tables? | [2.4](../stories/2.4-unity-catalog-on-our-s3.md), [3.1](../stories/3.1-synthetic-accounting-data.md), [3.2](../stories/3.2-catalog-and-bundle-deploy.md), [4.x](../stories/README.md#epic-4--transform--quality) |
+| [4 · Observability & cost](lld-observability-cost.md) | What is recorded, what alerts, what limits spend? | [1.4](../stories/1.4-audit-and-alarms.md), [2.5](../stories/2.5-guardrails.md) |
 
 ML and AI agent LLDs will follow when those stages start.
 

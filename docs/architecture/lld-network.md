@@ -2,7 +2,8 @@
 
 **Contents:** [TL;DR](#tldr) · [Diagram](#diagram) · [Layout](#layout) · [Endpoints](#endpoints) · [Security groups](#security-groups) · [Proof](#proof) · [Cost](#cost)
 
-Updated 2026-09-26. Back to [HLD](hld.md). Detail:
+Updated 2026-09-26. Back to [HLD](hld.md). Stories: [2.1](../stories/2.1-where-databricks-runs.md) · [2.2](../stories/2.2-private-network.md) · [3.3](../stories/3.3-first-job-in-the-private-vpc.md).
+Detail:
 [infra `cmdb.yml`](https://github.com/kheuchi/retail-finance-platform-infra/blob/main/cmdb.yml) → `stacks.bootstrap.resources.databricks_network`, `incidents`.
 Code: `bootstrap/databricks_network.tf`.
 
