@@ -9,6 +9,7 @@
 #   program            scenario, needs, agent boundary, cloud and Databricks facts
 #   rules              the non-negotiable project rules
 #   phases             the 7 roadmap stages and status
+#   architecture       HLD/LLD diagrams, key flows, draw.io toolchain
 #   decisions          every decision D-001.. with status and reason
 #   risks              open and accepted risks R-01..
 #   findings           security review findings F-1..F-4
@@ -82,6 +83,30 @@ phases:
   - id: 7
     name: AI Agent
     status: Planned
+
+# ──────────── architecture ────────────
+architecture:
+  docs: docs/architecture/ (hld.md + lld-*.md, each with .drawio source and exported .png)
+  diagrams:
+    - {file: hld, covers: 'GitHub, AWS foundation, Databricks VPC, data buckets, Databricks control plane, planned ML and agent'}
+    - {file: lld-network, covers: 'VPC 10.20.0.0/16, 2 AZ x (workspace /22 + endpoint /24), 4 interface + 1 gateway endpoint, SG rules, cost'}
+    - {file: lld-identity-cicd, covers: 'PR -> checks -> gated deploy; OIDC plan/deploy roles; cross-account and UC roles with external IDs; service principal; groups'}
+    - {file: lld-data-platform, covers: 'generate -> landing volume -> Auto Loader -> Bronze (done) -> Silver (next) -> Gold (planned); catalog layout; grants'}
+    - {file: lld-observability-cost, covers: 'CloudTrail, audit bucket, metric filters, alarms, SNS; flow logs; budgets, cluster policies, serverless egress; change gates'}
+  planned: [lld-ml, lld-agent]
+  key_flows:
+    - login: browser -> workspace over HTTPS (only internet path)
+    - control: cluster -> PrivateLink (443, 6666, 8443-8451) -> Databricks control plane
+    - data: cluster -> S3 gateway endpoint -> dbx-uc
+    - infra_change: GitHub Actions -> OIDC -> github-plan / github-deploy
+    - job_change: GitHub Actions -> OAuth service principal -> bundle deploy
+  toolchain:
+    drawio: draw.io desktop, installed 2026-09-26 via 'winget install --id JGraph.Draw --scope user'
+    export: DrawIO.exe --export --format png --scale 1.5 --border 20 --output <abs path>.png <abs path>.drawio
+    gotchas:
+      - Export needs absolute Windows paths; relative paths silently produce nothing
+      - Back-to-back exports from one Git Bash loop can silently fail; run one process at a time (Start-Process -Wait)
+      - 'AWS icons that render blank: simple_notification_service, vpc_flow_logs, security_token_service (use sns, flow_logs, sts)'
 
 # ──────────── decisions ────────────
 decisions:
@@ -1077,6 +1102,7 @@ progress:
       - 'Data repo: seeded generator (40 stores, 3.9m sales lines), 8 tests, bundle, CI with required checks'
       - 'First clusters in the private VPC. Library install failed twice; VPC flow logs showed the PrivateLink endpoint rejecting control-plane ports 8443-8449; fixed'
       - 'Job succeeded: 8 Bronze Delta tables, every row count matches the generator (zero loss)'
+      - 'Docs: STATUS.md merged with the roadmap; draw.io HLD + 4 LLDs (network, identity & CI/CD, data platform, observability & cost)'
 
 # ──────────── lessons ────────────
 lessons:

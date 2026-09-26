@@ -1,29 +1,40 @@
-# Status
+# Status and roadmap
 
-**Contents:** [In one line](#in-one-line) · [Where we are](#where-we-are) · [Where we go](#where-we-go) · [Deadlines and cost](#deadlines-and-cost) · [Bronze, Silver, Gold](#bronze-silver-gold)
+**Contents:** [TL;DR](#tldr) · [Roadmap](#roadmap) · [Where we are](#where-we-are) · [Where we go](#where-we-go) · [Use cases](#use-cases) · [Deadlines and cost](#deadlines-and-cost) · [Scope rule](#scope-rule) · [Bronze, Silver, Gold](#bronze-silver-gold)
 
-Updated 2026-09-26. Full history: [`cmdb.yml`](cmdb.yml) → `progress`.
+Updated 2026-09-26. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Architecture: [HLD](docs/architecture/hld.md).
 
-## In one line
+## TL;DR
 
-The secure platform is built and the first data is in. Next we clean it and turn it
-into trusted finance numbers.
+| Question | Answer |
+|---|---|
+| The plan in one line | Raw ERP and POS data → governed lakehouse → finance models → an agent that drafts cited commentary for the controller to approve |
+| Where are we? | Stages 1-3 done: secure platform built, 4.2m rows in Bronze, none lost |
+| What is next? | Stage 4: clean the data, reconcile the books, publish trusted tables |
+| Deadline | Databricks trial ends 2026-10-06, teardown that day |
+| Running cost | ~USD 2/day network + trial credit for Databricks |
+
+## Roadmap
+
+![Plan and roadmap](docs/roadmap.svg)
 
 ## Where we are
 
-> Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`
+> **TL;DR:** 3 of 7 stages done. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`
 
-| # | Stage | Status | What it means |
+| # | Stage | Status | Done when |
 |---|---|---|---|
-| 1 | Foundation | ✅ Done | AWS account, budget, CI/CD, audit trail, security alarms |
-| 2 | Lakehouse | ✅ Done | Private Databricks workspace, no internet access, Unity Catalog on our S3 |
-| 3 | Ingest | ✅ Done | 40 stores, 21 months of synthetic data: 4.2m rows loaded, none lost |
-| 4 | Transform & Quality | ⏭ Next | Clean the data, check the books balance, publish trusted tables |
-| 5 | ML Models | Planned | Spot refund fraud and margin leakage; forecast revenue |
-| 6 | Serve & Monitor | Planned | Run the models on a schedule, watch them drift |
-| 7 | AI Agent | Planned | Draft cited variance commentary for a human to approve |
+| 1 | Foundation | ✅ Done | Terraform, CI/CD, audit trail, security alarms, budget in place |
+| 2 | Lakehouse | ✅ Done | Private Databricks workspace, no internet, Unity Catalog on our S3 |
+| 3 | Ingest | ✅ Done | 40 stores, 21 months of synthetic data in Bronze: 4.2m rows, zero loss |
+| 4 | Transform & Quality | ⏭ Next | Gold finance tables reconcile to controlled inputs |
+| 5 | ML Models | Planned | Refund fraud, margin leakage and forecast models tracked in MLflow |
+| 6 | Serve & Monitor | Planned | Models score on a schedule, with drift checks |
+| 7 | AI Agent | Planned | Cited variance commentary; no action without human approval |
 
 ## Where we go
+
+> **TL;DR:** Silver, then Gold, then models and the agent reading Gold only.
 
 1. **Silver:** give every column its real type, reject bad rows, check that the general
    ledger matches the sales. This should catch the planted fake journals.
@@ -31,25 +42,44 @@ into trusted finance numbers.
    actual vs budget.
 3. **Models, then the agent,** reading Gold only.
 
+## Use cases
+
+> **TL;DR:** two jobs the accounting team cares about. Detail: [`cmdb.yml`](cmdb.yml) → `program.needs`
+
+| Use case | What it gives finance |
+|---|---|
+| Refund & margin leakage | Unusual refunds and margin erosion, by store and cashier |
+| Month-end close | Revenue and cash forecast, variance vs budget explained |
+
 ## Deadlines and cost
 
-> Detail: [`cmdb.yml`](cmdb.yml) → `risks`
+> **TL;DR:** one hard date, small daily cost. Detail: [`cmdb.yml`](cmdb.yml) → `risks`
 
-- **2026-10-06:** Databricks trial ends. Tear down that day
-  ([runbook](https://github.com/kheuchi/retail-finance-platform-infra/blob/main/docs/runbooks/teardown.md)).
-- **Running cost:** about USD 2/day for the private network, plus a few cents per job
-  run. Databricks usage comes out of the USD 400 trial credit, with alerts at 100, 200,
-  300 and 380.
+| Item | Value |
+|---|---|
+| Databricks trial ends | **2026-10-06**, tear down that day ([runbook](https://github.com/kheuchi/retail-finance-platform-infra/blob/main/docs/runbooks/teardown.md)) |
+| Service principal secret expires | ~2026-10-08 |
+| Private network | ~USD 2/day |
+| Job runs | A few cents each |
+| Databricks usage | USD 400 trial credit, alerts at 100, 200, 300, 380 |
+
+## Scope rule
+
+> **TL;DR:** cut features, never controls. Detail: [`cmdb.yml`](cmdb.yml) → `rules`
+
+If time runs short, keep one thin end-to-end slice working and drop extra datasets or
+models, never the security, lineage or teardown.
 
 ## Bronze, Silver, Gold
 
-Three layers of the same data, each more trustworthy than the last.
+> **TL;DR:** three layers of the same data, each more trustworthy than the last.
+> The terms come from Databricks and are now common data engineering vocabulary.
 
 | Layer | Think of it as | In this project |
 |---|---|---|
-| **Bronze** | The delivery, unopened | Files exactly as the systems sent them. Everything is text. Never edited, so we can always go back |
-| **Silver** | Unpacked and checked | Correct types (dates, amounts), duplicates removed, bad rows set aside, the books reconciled |
-| **Gold** | Ready for the boss | A few tables finance trusts and reads: revenue, margin, refunds, budget variance |
+| **Bronze** | The delivery, unopened | Files exactly as the systems sent them. Everything is text. Never edited |
+| **Silver** | Unpacked and checked | Correct types, duplicates removed, bad rows set aside, the books reconciled |
+| **Gold** | Ready for the boss | A few tables finance trusts: revenue, margin, refunds, budget variance |
 
-Why keep all three: if a number in Gold looks wrong, you can trace it back through
-Silver to the exact file in Bronze. That trace is what an auditor asks for.
+If a number in Gold looks wrong, you can trace it back through Silver to the exact
+file in Bronze. That trace is what an auditor asks for.

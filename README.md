@@ -1,12 +1,21 @@
 # Retail Finance Data, ML and Agentic AI Platform
 
-**Contents:** [Where we are](#where-we-are) · [Start here](#start-here)
+**Contents:** [Architecture](#architecture) · [Where we are](#where-we-are) · [Start here](#start-here)
 
 An enterprise-style portfolio project on **AWS + Databricks** for the accounting
 department of a large (fictional) retailer: governed finance data, forecasting,
 anomaly detection, and an AI agent that drafts cited analysis for a human to approve.
 
-![Plan and roadmap](docs/roadmap/roadmap.svg)
+![Plan and roadmap](docs/roadmap.svg)
+
+## Architecture
+
+> Detail: [`cmdb.yml`](cmdb.yml) → `architecture`
+
+[![High-level design](docs/architecture/hld.png)](docs/architecture/hld.md)
+
+Click the diagram for the HLD; it links to the four LLDs (network, identity & CI/CD,
+data platform, observability & cost).
 
 ## Where we are
 
@@ -22,9 +31,9 @@ anomaly detection, and an AI agent that drafts cited analysis for a human to app
 
 | File | What it is |
 |---|---|
-| [STATUS.md](STATUS.md) | Where we are, where we go, in plain words |
+| [STATUS.md](STATUS.md) | Status and roadmap: where we are, where we go |
 | [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) | Goal, rules, current state, next actions |
-| [docs/roadmap/roadmap.md](docs/roadmap/roadmap.md) | The plan, stage by stage |
+| [docs/architecture/](docs/architecture/hld.md) | HLD + 4 LLDs, with draw.io sources |
 | [docs/security/](docs/security/) | Threat model, controls, who owns what |
 | [REPOSITORIES.md](REPOSITORIES.md) | Which repo does what |
 | [cmdb.yml](cmdb.yml) | Full detail: decisions, risks, threats, controls, history |
