@@ -78,7 +78,7 @@ phases:
   - id: 4
     name: Transform & Quality
     status: Next
-    stories: ['4.1', '4.2', '4.3', '4.4']
+    stories: ['4.1', '4.2', '4.3', '4.4', '4.5']
   - id: 5
     name: ML Models
     status: Planned
@@ -135,6 +135,7 @@ stories:
     - {id: '4.2', title: 'GL vs POS reconciliation', epic: 4, type: planned, status: 'Next', file: 4.2-gl-pos-reconciliation.md}
     - {id: '4.3', title: 'Gold finance tables', epic: 4, type: planned, status: 'Planned', file: 4.3-gold-finance-tables.md}
     - {id: '4.4', title: 'Quality and lineage evidence', epic: 4, type: planned, status: 'Planned', file: 4.4-quality-and-lineage.md}
+    - {id: '4.5', title: 'Split the service principal (platform, deployer, runner)', epic: 4, type: planned, status: 'Planned', file: 4.5-split-service-principals.md}
     - {id: 'X.1', title: 'Documentation system', epic: cross-cutting, type: as-built, status: 'Done (living)', dates: '2026-09-14..26', file: X.1-documentation-system.md}
 
 # ──────────── decisions ────────────
@@ -329,6 +330,12 @@ risks:
     severity: Medium
     status: Accepted
     risk: Audit logs in the same account as workloads (needs a Log Archive account)
+  - id: R-10
+    severity: High
+    status: Open
+    risk: 'terraform-platform (account admin) also deploys the data bundle and is the run-as identity of the data jobs'
+    mitigation: 'Story 4.5, after Gold: separate deployer and runner service principals with least privilege'
+    story: '4.5'
   - id: R-09
     severity: High
     status: Planned control

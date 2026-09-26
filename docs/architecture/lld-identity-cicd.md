@@ -74,3 +74,4 @@ Permissions are tested with the IAM policy simulator before each apply, includin
 |---|---|
 | Databricks secret lives 14 days (expires ~2026-10-08) | Move to GitHub OIDC federation |
 | Front-end access is public (UI over internet) | Accepted for a demo; enterprise would add front-end PrivateLink or IP access lists |
+| `terraform-platform` also deploys and runs data jobs (account admin running data code) | Split into platform, deployer, runner ([story 4.5](../stories/4.5-split-service-principals.md)) |

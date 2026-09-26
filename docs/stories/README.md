@@ -64,6 +64,7 @@ Every story has the same sections: **Context** (why) · **What we built** · **T
 | 4.2 | [GL vs POS reconciliation](4.2-gl-pos-reconciliation.md) | Prove the ledger matches the tills; catch A3 |
 | 4.3 | [Gold finance tables](4.3-gold-finance-tables.md) | Revenue, margin, refunds, actual vs budget |
 | 4.4 | [Quality and lineage evidence](4.4-quality-and-lineage.md) | Checks that fail the job, lineage an auditor can follow |
+| 4.5 | [Split the service principal](4.5-split-service-principals.md) | Platform, deployer and runner identities (after Gold) |
 
 ## Cross-cutting
 
