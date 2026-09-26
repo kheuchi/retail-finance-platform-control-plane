@@ -278,6 +278,12 @@ decisions:
     date: '2026-09-25'
     reason: 'Per D-011; public for free branch protection and secret scanning'
     story: '3.2'
+  - id: D-027
+    decision: 'Make retail-finance-platform-control-plane public'
+    status: 'Accepted'
+    date: '2026-09-26'
+    reason: 'Architecture, stories and security docs must be visible to portfolio readers; history scanned clean first'
+    story: '1.5'
   - id: D-024
     decision: 'Markdown stays short and human-readable; detail lives in cmdb.yml'
     status: 'Accepted'
@@ -1142,6 +1148,7 @@ progress:
       - 'Job succeeded: 8 Bronze Delta tables, every row count matches the generator (zero loss)'
       - 'Docs: STATUS.md merged with the roadmap; draw.io HLD + 4 LLDs (network, identity & CI/CD, data platform, observability & cost)'
       - 'Stories: 13 as-built (Epics 1-3), 4 planned (Epic 4) with acceptance criteria, 1 cross-cutting; cmdb reshaped as inventory'
+      - 'Control plane made public after a full history scan; secret scanning + push protection on (D-027)'
 
 # ──────────── lessons ────────────
 lessons:

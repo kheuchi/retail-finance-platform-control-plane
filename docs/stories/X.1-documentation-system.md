@@ -44,7 +44,8 @@ Every doc starts with a TL;DR table and a contents line, and points to cmdb keys
   silently produced nothing. Some AWS icon names render blank. Detail: `cmdb.yml` → `architecture.toolchain`.
 
 ### 3. Private vs public
-- The control plane is private, so these docs are invisible to portfolio readers unless mirrored.
+- The control plane was private, so these docs were invisible to portfolio readers.
+  Made public on 2026-09-26 after a full history scan (D-027, [1.5](1.5-security-review-going-public.md)).
 
 ## References
 
