@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1150" viewBox="0 0 1600 1150" font-family="Segoe UI, Helvetica, Arial, sans-serif">
 <rect x="0" y="0" width="1600" height="1150" rx="0" fill="#ffffff" stroke="none" stroke-width="1.5"/>
 <text x="800.0" y="48" font-size="30" font-weight="bold" fill="#0f172a" text-anchor="middle" >Plan &amp; Roadmap: Retail Finance Data, ML and AI Agent Platform</text>
-<text x="800.0" y="78" font-size="15" font-weight="normal" fill="#475569" text-anchor="middle" >For the accounting department of a large retailer · AWS eu-central-1 + Databricks · updated 2026-09-25</text>
+<text x="800.0" y="78" font-size="15" font-weight="normal" fill="#475569" text-anchor="middle" >For the accounting department of a large retailer · AWS eu-central-1 + Databricks · updated 2026-09-26</text>
 <rect x="22" y="105" width="210" height="262" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
 <rect x="22" y="105" width="210" height="58" rx="10" fill="#2563eb" stroke="none" stroke-width="1.5"/>
 <rect x="22" y="145" width="210" height="18" rx="0" fill="#2563eb" stroke="none" stroke-width="1.5"/>
@@ -51,8 +51,8 @@
 <circle cx="490" cy="134" r="15" fill="#ffffff"/>
 <text x="490" y="139" font-size="15" font-weight="bold" fill="#7c3aed" text-anchor="middle" >3</text>
 <text x="512" y="140" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="start" >Ingest</text>
-<rect x="478" y="175" width="78" height="22" rx="11" fill="#fef3c7" stroke="none" stroke-width="1.5"/>
-<text x="517" y="191" font-size="12" font-weight="bold" fill="#b45309" text-anchor="middle" >NEXT</text>
+<rect x="478" y="175" width="78" height="22" rx="11" fill="#dcfce7" stroke="none" stroke-width="1.5"/>
+<text x="517" y="191" font-size="12" font-weight="bold" fill="#15803d" text-anchor="middle" >DONE</text>
 <text x="480" y="223" font-size="13" font-weight="bold" fill="#6b7280" text-anchor="start" >•</text>
 <text x="494" y="223" font-size="13" font-weight="normal" fill="#374151" text-anchor="start" >Synthetic ERP and POS data</text>
 <text x="480" y="243" font-size="13" font-weight="bold" fill="#6b7280" text-anchor="start" >•</text>
@@ -61,7 +61,7 @@
 <text x="480" y="278" font-size="13" font-weight="bold" fill="#6b7280" text-anchor="start" >•</text>
 <text x="494" y="278" font-size="13" font-weight="normal" fill="#374151" text-anchor="start" >Auto Loader into Bronze</text>
 <text x="480" y="298" font-size="13" font-weight="bold" fill="#6b7280" text-anchor="start" >•</text>
-<text x="494" y="298" font-size="13" font-weight="normal" fill="#374151" text-anchor="start" >Data contracts per source</text>
+<text x="494" y="298" font-size="13" font-weight="normal" fill="#374151" text-anchor="start" >4.2m rows, zero loss</text>
 <line x1="677" y1="236.0" x2="681" y2="236.0" stroke="#94a3b8" stroke-width="2.5"/>
 <polygon points="687,236.0 679,231.0 679,241.0" fill="#94a3b8"/>
 <rect x="688" y="105" width="210" height="262" rx="10" fill="#fffbeb" stroke="#d97706" stroke-width="1.5"/>
@@ -70,8 +70,8 @@
 <circle cx="712" cy="134" r="15" fill="#ffffff"/>
 <text x="712" y="139" font-size="15" font-weight="bold" fill="#d97706" text-anchor="middle" >4</text>
 <text x="734" y="140" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="start" >Transform &amp; Quality</text>
-<rect x="700" y="175" width="78" height="22" rx="11" fill="#f1f5f9" stroke="none" stroke-width="1.5"/>
-<text x="739" y="191" font-size="12" font-weight="bold" fill="#475569" text-anchor="middle" >PLANNED</text>
+<rect x="700" y="175" width="78" height="22" rx="11" fill="#fef3c7" stroke="none" stroke-width="1.5"/>
+<text x="739" y="191" font-size="12" font-weight="bold" fill="#b45309" text-anchor="middle" >NEXT</text>
 <text x="702" y="223" font-size="13" font-weight="bold" fill="#6b7280" text-anchor="start" >•</text>
 <text x="716" y="223" font-size="13" font-weight="normal" fill="#374151" text-anchor="start" >Bronze → Silver → Gold</text>
 <text x="702" y="243" font-size="13" font-weight="bold" fill="#6b7280" text-anchor="start" >•</text>
@@ -144,10 +144,10 @@
 <text x="1368" y="313" font-size="13" font-weight="bold" fill="#6b7280" text-anchor="start" >•</text>
 <text x="1382" y="313" font-size="13" font-weight="normal" fill="#374151" text-anchor="start" >Human approval for any</text>
 <text x="1382" y="328" font-size="13" font-weight="normal" fill="#374151" text-anchor="start" >action</text>
-<rect x="22" y="377" width="432" height="8" rx="4" fill="#16a34a" stroke="none" stroke-width="1.5"/>
-<rect x="466" y="377" width="1098" height="8" rx="4" fill="#e2e8f0" stroke="none" stroke-width="1.5"/>
+<rect x="22" y="377" width="654" height="8" rx="4" fill="#16a34a" stroke="none" stroke-width="1.5"/>
+<rect x="688" y="377" width="876" height="8" rx="4" fill="#e2e8f0" stroke="none" stroke-width="1.5"/>
 <text x="22" y="403" font-size="12" font-weight="bold" fill="#15803d" text-anchor="start" >Built and verified</text>
-<text x="466" y="403" font-size="12" font-weight="bold" fill="#475569" text-anchor="start" >Remaining: target is a thin end-to-end slice before the Databricks trial ends on 2026-10-06</text>
+<text x="688" y="403" font-size="12" font-weight="bold" fill="#475569" text-anchor="start" >Remaining: target is a thin end-to-end slice before the Databricks trial ends on 2026-10-06</text>
 <rect x="22" y="427" width="1556" height="64" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
 <text x="42" y="467" font-size="17" font-weight="bold" fill="#0f172a" text-anchor="start" >Stack</text>
 <rect x="110" y="441" width="209.6" height="36" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>

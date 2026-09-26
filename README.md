@@ -14,7 +14,8 @@ anomaly detection, and an AI agent that drafts cited analysis for a human to app
 
 - **Done:** secure AWS foundation, CI/CD, audit and alerting, private Databricks
   workspace with Unity Catalog on our own S3.
-- **Next:** ingest synthetic ERP and POS data into the lakehouse.
+- **Also done:** synthetic ERP and POS data generated and loaded into Bronze.
+- **Next:** Silver and Gold finance tables with reconciliation checks.
 - **Deadline:** Databricks trial ends 2026-10-06, then teardown.
 
 ## Start here

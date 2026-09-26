@@ -17,8 +17,8 @@ cited commentary for the controller to approve.
 |---|---|---|---|
 | 1 | Foundation | Done | Terraform, CI/CD, audit, alarms, budget in place |
 | 2 | Lakehouse | Done | Private workspace + Unity Catalog on our S3 |
-| 3 | Ingest | Next | Synthetic GL, sales, refunds, budget, FX land in Bronze |
-| 4 | Transform & Quality | Planned | Gold finance tables reconcile to controlled inputs |
+| 3 | Ingest | Done | Synthetic GL, sales, refunds, budget, FX land in Bronze (4.2m rows, zero loss) |
+| 4 | Transform & Quality | Next | Gold finance tables reconcile to controlled inputs |
 | 5 | ML Models | Planned | Anomaly and forecast models tracked in MLflow |
 | 6 | Serve & Monitor | Planned | Models score on a schedule, with drift checks |
 | 7 | AI Agent | Planned | Cited variance commentary; no action without approval |

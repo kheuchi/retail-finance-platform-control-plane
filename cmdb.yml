@@ -20,7 +20,7 @@
 # ======================================================================
 
 about: Detailed record for the retail-finance platform program. Markdown stays short; detail lives here.
-updated: '2026-09-25'
+updated: '2026-09-26'
 
 # ──────────── program ────────────
 program:
@@ -69,10 +69,10 @@ phases:
     status: Done
   - id: 3
     name: Ingest
-    status: Next
+    status: Done
   - id: 4
     name: Transform & Quality
-    status: Planned
+    status: Next
   - id: 5
     name: ML Models
     status: Planned
@@ -1071,6 +1071,12 @@ progress:
       - Roadmap chart; docs refactored to short markdown + cmdb.yml
       - 'Guardrails: finance-small cluster policy, serverless egress restricted, Databricks budget alerts (verified)'
       - 'Found: undocumented 32-char network policy ID limit; locked users-group entitlements; budget perpetual diff' 
+  - date: '2026-09-26'
+    summary:
+      - 'finance catalog: raw, bronze, silver, gold, ops schemas; landing and artifacts volumes; groups and grants'
+      - 'Data repo: seeded generator (40 stores, 3.9m sales lines), 8 tests, bundle, CI with required checks'
+      - 'First clusters in the private VPC. Library install failed twice; VPC flow logs showed the PrivateLink endpoint rejecting control-plane ports 8443-8449; fixed'
+      - 'Job succeeded: 8 Bronze Delta tables, every row count matches the generator (zero loss)'
 
 # ──────────── lessons ────────────
 lessons:
@@ -1084,3 +1090,4 @@ lessons:
   - A Databricks trial credit covers DBUs, never the cloud infrastructure the workspace creates.
   - CloudWatch filter '$.readOnly = false' parses but never matches; use 'IS FALSE'.
   - Check which cloud account a CLI is pointed at before running anything.
+  - 'When a private network misbehaves, read the VPC flow logs first: REJECT records name the blocked port.'
