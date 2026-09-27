@@ -13,8 +13,8 @@ Detail:
 |---|---|
 | Where does data come from? | A seeded generator: 40 stores, 21 months, 8 sources. FX rates are real ECB data |
 | How does it land? | CSV files in a Unity Catalog volume, then Auto Loader into Bronze |
-| What is done? | Bronze and Silver: 8 tables each, 4.2m rows, 0 lost, 0 quarantined |
-| What is next? | Gold finance tables (reconciliation done: 4/4 fake journals, 0 false alarms) |
+| What is done? | Bronze, Silver (0 lost), reconciliation (4/4 fake journals) and 4 Gold tables |
+| What is next? | Quality and lineage evidence, then ML on Gold |
 | Who reads what? | Engineers: everything. Analysts, ML and the agent: Gold only |
 | How is it tested? | 15 tests in CI (generator + Silver rules on local Spark); the planted anomalies are the answer key |
 
@@ -46,7 +46,7 @@ file in Bronze. That trace is what an auditor asks for.
 | 2 · ingest | Same job, Auto Loader | New files only, into `bronze.*`; adds source file and load time |
 | 3 · Silver ✅ | Job `transform_silver` | Real types, dedup, bad rows to `silver.quarantine`, EUR via `silver.fx_daily` |
 | 4 · Reconciliation ✅ | Job `build_gold`, task `reconcile_gl_pos` | GL revenue vs POS net sales per store and day → `gold.recon_*`; score in `ops.detection_scores` |
-| 4 · Gold (planned) | | Revenue, margin, refunds, actual vs budget |
+| 5 · Gold tables ✅ | Same job, task `finance_tables` | `gold.daily_revenue`, `gold.margin`, `gold.refunds`, `gold.budget_variance`; written only if they add up to Silver and analysts cannot read below Gold |
 
 ## Catalog layout
 

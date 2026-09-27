@@ -133,7 +133,7 @@ stories:
     - {id: '3.3', title: 'First job in the private VPC', epic: 3, type: as-built, status: 'Done', dates: '2026-09-26', file: 3.3-first-job-in-the-private-vpc.md}
     - {id: '4.1', title: 'Silver tables', epic: 4, type: as-built, status: 'Done', dates: '2026-09-26..27', file: 4.1-silver-tables.md}
     - {id: '4.2', title: 'GL vs POS reconciliation', epic: 4, type: as-built, status: 'Done', dates: '2026-09-27', file: 4.2-gl-pos-reconciliation.md}
-    - {id: '4.3', title: 'Gold finance tables', epic: 4, type: planned, status: 'Planned', file: 4.3-gold-finance-tables.md}
+    - {id: '4.3', title: 'Gold finance tables', epic: 4, type: as-built, status: 'Done', dates: '2026-09-27', file: 4.3-gold-finance-tables.md}
     - {id: '4.4', title: 'Quality and lineage evidence', epic: 4, type: planned, status: 'Planned', file: 4.4-quality-and-lineage.md}
     - {id: '4.5', title: 'Split the service principal (platform, deployer, runner)', epic: 4, type: planned, status: 'Planned', file: 4.5-split-service-principals.md}
     - {id: 'X.1', title: 'Documentation system', epic: cross-cutting, type: as-built, status: 'Done (living)', dates: '2026-09-14..26', file: X.1-documentation-system.md}
@@ -1169,6 +1169,7 @@ progress:
       - 'AGENTS.md (+ CLAUDE.md import) added; PROJECT_CONTEXT.md retired (D-028); Bronze/Silver/Gold moved to LLD 3'
       - 'Review step added to every story; AGENTS.md in infra and data repos'
       - 'GL vs POS reconciliation (story 4.2): 21,222 store-days, 4 differences, A3 detection 4/4 found, 0 missed, 0 false positives; first story through the independent review'
+      - 'Gold finance tables (story 4.3): 2025 net sales EUR 38.88m, margin 34.31%, returns 1.42%; S031 (A2) and S017-C03 (A1) top the rankings unprompted; access allow-list passed on live grants'
 
 # ──────────── lessons ────────────
 lessons:
@@ -1191,3 +1192,5 @@ lessons:
   - {lesson: 'Quarantine, never filter: 123 silently dropped rows would have hidden a bug in our own FX table.', story: '4.1'}
   - {lesson: 'Reconcile the way the books were built (convert unrounded, round once per day); then a 1-cent tolerance is honest.', story: '4.2'}
   - {lesson: 'An independent reviewer that sees only the story and diff finds what the author never tested (1 high, 4 medium on 4.2).', story: '4.2'}
+  - {lesson: 'Probe the full data before fixing acceptance criteria: it caught a partial month and a criterion the data did not support.', story: '4.3'}
+  - {lesson: 'Unity Catalog shows inherited grants on child objects; judge each grant where it was made, or a leak check blocks every run.', story: '4.3'}
