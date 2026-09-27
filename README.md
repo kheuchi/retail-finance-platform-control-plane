@@ -23,8 +23,8 @@ data platform, observability & cost).
 
 - **Done:** secure AWS foundation, CI/CD, audit and alerting, private Databricks
   workspace with Unity Catalog on our own S3.
-- **Also done:** synthetic ERP and POS data generated and loaded into Bronze.
-- **Next:** Silver and Gold finance tables with reconciliation checks.
+- **Also done:** synthetic ERP and POS data loaded into Bronze, cleaned into Silver (0 rows lost).
+- **Next:** GL vs POS reconciliation, then Gold finance tables.
 - **Deadline:** Databricks trial ends 2026-10-06, then teardown.
 
 ## Start here
@@ -32,7 +32,7 @@ data platform, observability & cost).
 | File | What it is |
 |---|---|
 | [STATUS.md](STATUS.md) | Status and roadmap: where we are, where we go |
-| [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) | Goal, rules, current state, next actions |
+| [AGENTS.md](AGENTS.md) | Rules and way of working, for any AI assistant or new contributor |
 | [docs/architecture/](docs/architecture/hld.md) | HLD + 4 LLDs, with draw.io sources |
 | [docs/stories/](docs/stories/README.md) | How each piece was built and the tricky parts; planned stories for what is next |
 | [docs/security/](docs/security/) | Threat model, controls, who owns what |

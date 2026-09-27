@@ -25,6 +25,7 @@ As-built · Cross-cutting · 2026-09-14 → 09-26 · All repos · ✅ Done (livi
 | Layer | Answers | Where |
 |---|---|---|
 | Overview | Where are we, what is it? | [README](../../README.md), [STATUS](../../STATUS.md) |
+| Assistant rules | How must any AI assistant work here? | [AGENTS.md](../../AGENTS.md) (auto-loaded via `CLAUDE.md`) |
 | Architecture | How is it built? | [HLD](../architecture/hld.md) + LLDs |
 | Stories | Why, and what went wrong? | [docs/stories/](README.md) |
 | Inventory | Exact facts: IDs, ports, dates, status | `cmdb.yml` in each repo |

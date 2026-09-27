@@ -1,8 +1,8 @@
 # LLD 3 · Data platform
 
-**Contents:** [TL;DR](#tldr) · [Diagram](#diagram) · [Pipeline](#pipeline) · [Catalog layout](#catalog-layout) · [Access](#access) · [Sources and anomalies](#sources-and-anomalies) · [Deploy](#deploy)
+**Contents:** [TL;DR](#tldr) · [Diagram](#diagram) · [Bronze, Silver, Gold](#bronze-silver-gold) · [Pipeline](#pipeline) · [Catalog layout](#catalog-layout) · [Access](#access) · [Sources and anomalies](#sources-and-anomalies) · [Deploy](#deploy)
 
-Updated 2026-09-26. Back to [HLD](hld.md). Stories: [2.4](../stories/2.4-unity-catalog-on-our-s3.md) · [3.1](../stories/3.1-synthetic-accounting-data.md) · [3.2](../stories/3.2-catalog-and-bundle-deploy.md) · [3.3](../stories/3.3-first-job-in-the-private-vpc.md) · planned [4.1-4.4](../stories/README.md#epic-4--transform--quality).
+Updated 2026-09-27. Back to [HLD](hld.md). Stories: [2.4](../stories/2.4-unity-catalog-on-our-s3.md) · [3.1](../stories/3.1-synthetic-accounting-data.md) · [3.2](../stories/3.2-catalog-and-bundle-deploy.md) · [3.3](../stories/3.3-first-job-in-the-private-vpc.md) · [4.1](../stories/4.1-silver-tables.md) · planned [4.2-4.4](../stories/README.md#epic-4--transform--quality).
 Detail:
 [data `cmdb.yml`](https://github.com/kheuchi/retail-finance-data-products/blob/main/cmdb.yml) → `sources`, `anomalies`, `volumes`, `pipeline` ·
 [infra `cmdb.yml`](https://github.com/kheuchi/retail-finance-platform-infra/blob/main/cmdb.yml) → `stacks.databricks`.
@@ -13,24 +13,39 @@ Detail:
 |---|---|
 | Where does data come from? | A seeded generator: 40 stores, 21 months, 8 sources. FX rates are real ECB data |
 | How does it land? | CSV files in a Unity Catalog volume, then Auto Loader into Bronze |
-| What is done? | Bronze: 8 Delta tables, 4.2m rows, every count matches the generator |
-| What is next? | Silver (typed, checked, reconciled), then Gold (finance tables) |
+| What is done? | Bronze and Silver: 8 tables each, 4.2m rows, 0 lost, 0 quarantined |
+| What is next? | GL vs POS reconciliation, then Gold (finance tables) |
 | Who reads what? | Engineers: everything. Analysts, ML and the agent: Gold only |
-| How is it tested? | 8 generator tests in CI; the planted anomalies are the answer key |
+| How is it tested? | 15 tests in CI (generator + Silver rules on local Spark); the planted anomalies are the answer key |
 
 ## Diagram
 
 ![Data platform LLD](lld-data-platform.png)
 
+## Bronze, Silver, Gold
+
+> **TL;DR:** three layers of the same data, each more trustworthy than the last.
+> The terms come from Databricks (the "medallion architecture") and are now common data engineering vocabulary.
+
+| Layer | Think of it as | In this project |
+|---|---|---|
+| **Bronze** | The delivery, unopened | Files exactly as the systems sent them. Everything is text. Never edited ✅ |
+| **Silver** | Unpacked and checked | Correct types, duplicates removed, bad rows set aside ([4.1](../stories/4.1-silver-tables.md)) ✅ |
+| **Gold** | Ready for the boss | The books reconciled, then the few tables finance trusts: revenue, margin, refunds, budget variance |
+
+If a number in Gold looks wrong, you can trace it back through Silver to the exact
+file in Bronze. That trace is what an auditor asks for.
+
 ## Pipeline
 
-> **TL;DR:** one job, two tasks today. Silver and Gold tasks come next.
+> **TL;DR:** two jobs today (Bronze, Silver); Gold comes next.
 
 | Step | Where | What |
 |---|---|---|
-| 1 · generate | Job task, job cluster | Writes CSV per source to `raw.landing` |
-| 2 · ingest | Job task, Auto Loader | New files only, into `bronze.*`; adds source file and load time |
-| 3 · Silver (next) | | Real types, dedup, bad rows quarantined, GL vs POS reconciliation |
+| 1 · generate | Job `generate_and_ingest` | Writes CSV per source to `raw.landing` |
+| 2 · ingest | Same job, Auto Loader | New files only, into `bronze.*`; adds source file and load time |
+| 3 · Silver ✅ | Job `transform_silver` | Real types, dedup, bad rows to `silver.quarantine`, EUR via `silver.fx_daily` |
+| 3b · Reconciliation (next) | | GL revenue vs POS net sales, per store and day |
 | 4 · Gold (planned) | | Revenue, margin, refunds, actual vs budget |
 
 ## Catalog layout

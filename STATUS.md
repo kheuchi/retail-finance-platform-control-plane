@@ -1,16 +1,18 @@
 # Status and roadmap
 
-**Contents:** [TL;DR](#tldr) · [Roadmap](#roadmap) · [Where we are](#where-we-are) · [Where we go](#where-we-go) · [Use cases](#use-cases) · [Deadlines and cost](#deadlines-and-cost) · [Scope rule](#scope-rule) · [Bronze, Silver, Gold](#bronze-silver-gold)
+**Contents:** [TL;DR](#tldr) · [Roadmap](#roadmap) · [Where we are](#where-we-are) · [Where we go](#where-we-go) · [Use cases](#use-cases) · [Deadlines and cost](#deadlines-and-cost) · [Open risks](#open-risks) · [Scope rule](#scope-rule)
 
-Updated 2026-09-26. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Architecture: [HLD](docs/architecture/hld.md). How we built it: [stories](docs/stories/README.md).
+Updated 2026-09-27. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Architecture: [HLD](docs/architecture/hld.md). How we built it: [stories](docs/stories/README.md). Rules for assistants: [AGENTS.md](AGENTS.md).
 
 ## TL;DR
 
 | Question | Answer |
 |---|---|
+| Goal | Show how a large retailer's accounting department could run governed finance data, ML and an AI agent on AWS + Databricks, built the enterprise way |
 | The plan in one line | Raw ERP and POS data → governed lakehouse → finance models → an agent that drafts cited commentary for the controller to approve |
-| Where are we? | Stages 1-3 done: secure platform built, 4.2m rows in Bronze, none lost |
-| What is next? | Stage 4 in progress: Silver done (clean, 0 rows lost); next reconcile GL vs POS, then Gold |
+| Agent boundary | May investigate, summarise, recommend. Never posts entries, moves money or approves payments: a human signs off |
+| Where are we? | Stages 1-3 done; stage 4 started: Silver clean (4.2m rows, 0 lost, 0 quarantined) |
+| What is next? | Reconcile GL vs POS (story 4.2), then Gold (4.3) |
 | Deadline | Databricks trial ends 2026-10-06, teardown that day |
 | Running cost | ~USD 2/day network + trial credit for Databricks |
 
@@ -34,14 +36,16 @@ Updated 2026-09-26. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 
 ## Where we go
 
-> **TL;DR:** Silver, then Gold, then models and the agent reading Gold only.
+> **TL;DR:** reconciliation, then Gold, then models and the agent reading Gold only.
+> What the layers mean: [LLD 3 · Bronze, Silver, Gold](docs/architecture/lld-data-platform.md#bronze-silver-gold).
 > Acceptance criteria: stories [4.1](docs/stories/4.1-silver-tables.md) · [4.2](docs/stories/4.2-gl-pos-reconciliation.md) · [4.3](docs/stories/4.3-gold-finance-tables.md) · [4.4](docs/stories/4.4-quality-and-lineage.md)
 
-1. **Silver:** give every column its real type, reject bad rows, check that the general
-   ledger matches the sales. This should catch the planted fake journals.
-2. **Gold:** publish the tables finance actually uses: daily revenue, margin, refunds,
+1. ~~**Silver:** real types, bad rows set aside, nothing lost~~ ✅ done 2026-09-27.
+2. **Reconciliation:** check that the general ledger matches the sales. It must catch the
+   4 planted fake journals, and nothing else.
+3. **Gold:** publish the tables finance actually uses: daily revenue, margin, refunds,
    actual vs budget.
-3. **Models, then the agent,** reading Gold only.
+4. **Models, then the agent,** reading Gold only.
 
 ## Use cases
 
@@ -64,6 +68,18 @@ Updated 2026-09-26. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 | Job runs | A few cents each |
 | Databricks usage | USD 400 trial credit, alerts at 100, 200, 300, 380 |
 
+## Open risks
+
+> **TL;DR:** five that matter now. Detail: [`cmdb.yml`](cmdb.yml) → `risks`
+
+| Risk | State |
+|---|---|
+| GitHub 2FA off | Accepted (owner decision) |
+| Network costs above budget if left on | Teardown 2026-10-06 |
+| Trial converts to paid on 2026-10-06 | Teardown or cancel that day |
+| Databricks secret expires ~2026-10-08 | Move to OIDC federation |
+| One service principal does platform, deploy and run-as | Split after Gold ([story 4.5](docs/stories/4.5-split-service-principals.md)) |
+
 ## Scope rule
 
 > **TL;DR:** cut features, never controls. Detail: [`cmdb.yml`](cmdb.yml) → `rules`
@@ -71,16 +87,3 @@ Updated 2026-09-26. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 If time runs short, keep one thin end-to-end slice working and drop extra datasets or
 models, never the security, lineage or teardown.
 
-## Bronze, Silver, Gold
-
-> **TL;DR:** three layers of the same data, each more trustworthy than the last.
-> The terms come from Databricks and are now common data engineering vocabulary.
-
-| Layer | Think of it as | In this project |
-|---|---|---|
-| **Bronze** | The delivery, unopened | Files exactly as the systems sent them. Everything is text. Never edited |
-| **Silver** | Unpacked and checked | Correct types, duplicates removed, bad rows set aside, the books reconciled |
-| **Gold** | Ready for the boss | A few tables finance trusts: revenue, margin, refunds, budget variance |
-
-If a number in Gold looks wrong, you can trace it back through Silver to the exact
-file in Bronze. That trace is what an auditor asks for.

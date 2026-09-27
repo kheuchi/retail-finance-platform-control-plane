@@ -285,6 +285,12 @@ decisions:
     date: '2026-09-26'
     reason: 'Architecture, stories and security docs must be visible to portfolio readers; history scanned clean first'
     story: '1.5'
+  - id: D-028
+    decision: 'AGENTS.md holds the rules for any assistant; PROJECT_CONTEXT.md retired into AGENTS.md and STATUS.md'
+    status: 'Accepted'
+    date: '2026-09-27'
+    reason: 'Tools auto-load AGENTS.md or CLAUDE.md, not PROJECT_CONTEXT.md; its state section had gone stale next to STATUS.md; working rules lived only in one assistant''s memory'
+    story: 'X.1'
   - id: D-024
     decision: 'Markdown stays short and human-readable; detail lives in cmdb.yml'
     status: 'Accepted'
@@ -1160,6 +1166,7 @@ progress:
     summary:
       - 'Silver built (story 4.1): 8 tables, 0 quarantined, every count equal to Bronze. Two fixes on the way: a timeout (work done 3x) and an FX table that missed 1 January'
       - 'Infra docs brought to the control-plane standard; service principal split planned (story 4.5, R-10)'
+      - 'AGENTS.md (+ CLAUDE.md import) added; PROJECT_CONTEXT.md retired (D-028); Bronze/Silver/Gold moved to LLD 3'
 
 # ──────────── lessons ────────────
 lessons:
