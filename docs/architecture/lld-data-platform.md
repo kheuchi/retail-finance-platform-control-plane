@@ -46,6 +46,7 @@ file in Bronze. That trace is what an auditor asks for.
 | 2 · ingest | Same job, Auto Loader | New files only, into `bronze.*`; adds source file and load time |
 | 3 · Silver ✅ | Job `transform_silver` | Real types, dedup, bad rows to `silver.quarantine`, EUR via `silver.fx_daily` |
 | 4 · Reconciliation ✅ | Job `build_gold`, task `reconcile_gl_pos` | GL revenue vs POS net sales per store and day → `gold.recon_*`; score in `ops.detection_scores` |
+| 0 · Quality gates ✅ | Tasks `quality_silver` (first) and `quality_gold` (last) | Critical checks stop the run; `ops.dq_results`, `ops.gold_certification`, `ops.lineage_evidence` |
 | 5 · Gold tables ✅ | Same job, task `finance_tables` | `gold.daily_revenue`, `gold.margin`, `gold.refunds`, `gold.budget_variance`; written only if they add up to Silver and analysts cannot read below Gold |
 
 ## Catalog layout

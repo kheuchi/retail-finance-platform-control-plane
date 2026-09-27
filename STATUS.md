@@ -11,8 +11,8 @@ Updated 2026-09-27. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 | Goal | Show how a large retailer's accounting department could run governed finance data, ML and an AI agent on AWS + Databricks, built the enterprise way |
 | The plan in one line | Raw ERP and POS data → governed lakehouse → finance models → an agent that drafts cited commentary for the controller to approve |
 | Agent boundary | May investigate, summarise, recommend. Never posts entries, moves money or approves payments: a human signs off |
-| Where are we? | Stages 1-3 done; stage 4: Silver clean, reconciliation 4/4 with 0 false alarms, Gold tables live (both other frauds surface unprompted) |
-| What is next? | Quality and lineage evidence (4.4), service principal split (4.5), then ML (stage 5) |
+| Where are we? | Stages 1-3 done; stage 4 nearly done: clean Silver, reconciliation 4/4, Gold tables, quality gates, Gold certified per run |
+| What is next? | Service principal split (4.5), then ML models (stage 5) |
 | Deadline | Databricks trial ends 2026-10-06, teardown that day |
 | Running cost | ~USD 2/day network + trial credit for Databricks |
 
@@ -29,7 +29,7 @@ Updated 2026-09-27. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 | 1 | Foundation | ✅ Done | Terraform, CI/CD, audit trail, security alarms, budget in place | [1.1-1.5](docs/stories/README.md#epic-1--foundation) |
 | 2 | Lakehouse | ✅ Done | Private Databricks workspace, no internet, Unity Catalog on our S3 | [2.1-2.5](docs/stories/README.md#epic-2--lakehouse) |
 | 3 | Ingest | ✅ Done | 40 stores, 21 months of synthetic data in Bronze: 4.2m rows, zero loss | [3.1-3.3](docs/stories/README.md#epic-3--ingest) |
-| 4 | Transform & Quality | ⏳ In progress | Gold finance tables reconcile to controlled inputs | [4.1](docs/stories/4.1-silver-tables.md) ✅, [4.2](docs/stories/4.2-gl-pos-reconciliation.md) ✅, [4.3](docs/stories/4.3-gold-finance-tables.md) ✅, [4.4-4.5](docs/stories/README.md#epic-4--transform--quality) |
+| 4 | Transform & Quality | ⏳ In progress | Gold finance tables reconcile to controlled inputs | [4.1](docs/stories/4.1-silver-tables.md) ✅, [4.2](docs/stories/4.2-gl-pos-reconciliation.md) ✅, [4.3](docs/stories/4.3-gold-finance-tables.md) ✅, [4.4](docs/stories/4.4-quality-and-lineage.md) ✅, [4.5](docs/stories/4.5-split-service-principals.md) |
 | 5 | ML Models | Planned | Refund fraud, margin leakage and forecast models tracked in MLflow | |
 | 6 | Serve & Monitor | Planned | Models score on a schedule, with drift checks | |
 | 7 | AI Agent | Planned | Cited variance commentary; no action without human approval | |
@@ -76,7 +76,8 @@ Updated 2026-09-27. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 | Network costs above budget if left on | Teardown 2026-10-06 |
 | Trial converts to paid on 2026-10-06 | Teardown or cancel that day |
 | Databricks secret expires ~2026-10-08 | Move to OIDC federation |
-| One service principal does platform, deploy and run-as | Split after Gold ([story 4.5](docs/stories/4.5-split-service-principals.md)) |
+| One service principal does platform, deploy and run-as | Split next ([story 4.5](docs/stories/4.5-split-service-principals.md)) |
+| No UC lineage yet for the 4 Gold finance tables | Row trace and reconciliation lineage cover the audit trail (R-11) |
 
 ## Scope rule
 
