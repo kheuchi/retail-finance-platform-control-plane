@@ -22,7 +22,7 @@ Instructions for any AI assistant (or new human) working on this project. Tool-n
 | Order | File | Gives you |
 |---|---|---|
 | 1 | [STATUS.md](STATUS.md) | Goal, roadmap, where we are, what is next, deadlines, open risks |
-| 2 | [docs/architecture/hld.md](docs/architecture/hld.md) | How the platform fits together (then the LLDs) |
+| 2 | [docs/architecture/hld.md](docs/architecture/hld.md) | How the platform fits together (then the LLDs; [primer](docs/architecture/databricks-primer.md) if Databricks is new) |
 | 3 | [docs/stories/README.md](docs/stories/README.md) | What was built, what went wrong, what is planned |
 | 4 | [cmdb.yml](cmdb.yml) | Inventory: decisions, risks, controls, lessons, stories index |
 

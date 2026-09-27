@@ -66,7 +66,7 @@ Updated 2026-09-26. Detail: [`cmdb.yml`](../../cmdb.yml) → `architecture`, `de
 | [3 · Data platform](lld-data-platform.md) | How do files become trusted finance tables? | [2.4](../stories/2.4-unity-catalog-on-our-s3.md), [3.1](../stories/3.1-synthetic-accounting-data.md), [3.2](../stories/3.2-catalog-and-bundle-deploy.md), [4.x](../stories/README.md#epic-4--transform--quality) |
 | [4 · Observability & cost](lld-observability-cost.md) | What is recorded, what alerts, what limits spend? | [1.4](../stories/1.4-audit-and-alarms.md), [2.5](../stories/2.5-guardrails.md) |
 
-ML and AI agent LLDs will follow when those stages start.
+ML and AI agent LLDs will follow when those stages start. New to Databricks? Read the [primer](databricks-primer.md) first.
 
 ## Edit the diagram
 
