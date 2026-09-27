@@ -1,6 +1,6 @@
 # Stories
 
-**Contents:** [TL;DR](#tldr) · [How to read a story](#how-to-read-a-story) · [Epic 1 · Foundation](#epic-1--foundation) · [Epic 2 · Lakehouse](#epic-2--lakehouse) · [Epic 3 · Ingest](#epic-3--ingest) · [Epic 4 · Transform & Quality](#epic-4--transform--quality) · [Cross-cutting](#cross-cutting)
+**Contents:** [TL;DR](#tldr) · [How to read a story](#how-to-read-a-story) · [Review checklist](#review-checklist) · [Epic 1 · Foundation](#epic-1--foundation) · [Epic 2 · Lakehouse](#epic-2--lakehouse) · [Epic 3 · Ingest](#epic-3--ingest) · [Epic 4 · Transform & Quality](#epic-4--transform--quality) · [Cross-cutting](#cross-cutting)
 
 Updated 2026-09-26. Index in [`cmdb.yml`](../../cmdb.yml) → `stories`. Status: [STATUS.md](../../STATUS.md). Architecture: [HLD](../architecture/hld.md).
 
@@ -18,7 +18,28 @@ Updated 2026-09-26. Index in [`cmdb.yml`](../../cmdb.yml) → `stories`. Status:
 > **TL;DR:** read the TL;DR table first; open "Tricky parts" if you want to understand the hard bits.
 
 Every story has the same sections: **Context** (why) · **What we built** · **Tricky parts**
-(symptom → cause → fix → lesson) · **Proof** · **References** (docs, cmdb keys, commits).
+(symptom → cause → fix → lesson) · **Proof** · **Review** · **References** (docs, cmdb keys, commits).
+Planned stories add **Acceptance criteria** before any code is written.
+
+## Review checklist
+
+> **TL;DR:** the author proves it works; the reviewer tries to prove it doesn't.
+
+Run before a story is marked done, ideally as a separate pass (a fresh assistant session or
+a second person) that sees only the story and the diff, not the author's reasoning.
+
+| Lens | Question |
+|---|---|
+| Evidence | Is every acceptance criterion backed by a number, log or test name? |
+| Break it | What bad input, wrong identity or rerun was tried? |
+| Security | Any secret, broad permission, new egress path, or grant to a named user? |
+| Cost | What does it cost per run and per month; is anything left running? |
+| Data | Can a row be lost or duplicated without the job failing? |
+| Failure | If it stops halfway, what state is left, and is a rerun safe? |
+| Docs | Story, cmdb, STATUS, diagrams current; no fact written twice? |
+| Simplicity | What could be deleted without losing anything? |
+
+Findings go into the story (fixed, or accepted with a reason); accepted risks go to `cmdb.yml` → `risks`.
 
 ## Epic 1 · Foundation
 

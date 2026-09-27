@@ -13,7 +13,7 @@ Instructions for any AI assistant (or new human) working on this project. Tool-n
 | Where are we? | [STATUS.md](STATUS.md) |
 | What must never happen? | Secrets or account IDs in Git, root use, unreviewed infra changes, real personal data, an agent acting without a human |
 | How is work organised? | Stories with acceptance criteria ([docs/stories/](docs/stories/README.md)); facts in `cmdb.yml`; design in [docs/architecture/](docs/architecture/hld.md) |
-| Definition of done | Acceptance criteria ticked, tests green in CI, proof recorded in the story, cmdb and STATUS updated |
+| Definition of done | Acceptance criteria ticked, tests green in CI (continuous integration), proof recorded, review checklist passed, cmdb and STATUS updated |
 
 ## Read first
 
@@ -45,14 +45,15 @@ Infra and data repos have their own `cmdb.yml` (resources, incidents, pipeline);
 
 ## How we work
 
-> **TL;DR:** story first, small PRs, prove it, record it.
+> **TL;DR:** story first, small PRs, prove it, review it, record it.
 
 | Step | What |
 |---|---|
 | 1 · Story | New work gets a planned story with acceptance criteria before building (`docs/stories/`) |
 | 2 · Build | Small PRs; tests first where possible; follow the architecture docs |
 | 3 · Prove | CI green, run on the workspace, numbers recorded; failures diagnosed from evidence (logs, flow logs), not guessed |
-| 4 · Record | Story becomes as-built (proof, tricky parts: symptom → cause → fix → lesson); `cmdb.yml` gets IDs, status, one-line reasons and story links; STATUS updated |
+| 4 · Review | A separate pass (fresh session or second person) runs the [review checklist](docs/stories/README.md#review-checklist) on the story and diff; findings fixed or accepted with a reason |
+| 5 · Record | Story becomes as-built (proof, tricky parts: symptom → cause → fix → lesson); `cmdb.yml` gets IDs, status, one-line reasons and story links; STATUS updated |
 
 **Docs rules:** every `.md` starts with a contents line and a TL;DR table, each section has a
 one-line TL;DR, and points to cmdb keys. Short and plain. Each fact lives in one place:

@@ -31,6 +31,8 @@ As-built · Cross-cutting · 2026-09-14 → 09-26 · All repos · ✅ Done (livi
 | Inventory | Exact facts: IDs, ports, dates, status | `cmdb.yml` in each repo |
 
 Every doc starts with a TL;DR table and a contents line, and points to cmdb keys.
+Stories end with a **review checklist** (borrowed from BMAD's review step, without installing BMAD):
+a separate pass that tries to prove the work wrong before it is marked done.
 
 ## Tricky parts
 
