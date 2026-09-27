@@ -14,7 +14,7 @@ Detail:
 | Where does data come from? | A seeded generator: 40 stores, 21 months, 8 sources. FX rates are real ECB data |
 | How does it land? | CSV files in a Unity Catalog volume, then Auto Loader into Bronze |
 | What is done? | Bronze and Silver: 8 tables each, 4.2m rows, 0 lost, 0 quarantined |
-| What is next? | GL vs POS reconciliation, then Gold (finance tables) |
+| What is next? | Gold finance tables (reconciliation done: 4/4 fake journals, 0 false alarms) |
 | Who reads what? | Engineers: everything. Analysts, ML and the agent: Gold only |
 | How is it tested? | 15 tests in CI (generator + Silver rules on local Spark); the planted anomalies are the answer key |
 
@@ -45,7 +45,7 @@ file in Bronze. That trace is what an auditor asks for.
 | 1 · generate | Job `generate_and_ingest` | Writes CSV per source to `raw.landing` |
 | 2 · ingest | Same job, Auto Loader | New files only, into `bronze.*`; adds source file and load time |
 | 3 · Silver ✅ | Job `transform_silver` | Real types, dedup, bad rows to `silver.quarantine`, EUR via `silver.fx_daily` |
-| 3b · Reconciliation (next) | | GL revenue vs POS net sales, per store and day |
+| 4 · Reconciliation ✅ | Job `build_gold`, task `reconcile_gl_pos` | GL revenue vs POS net sales per store and day → `gold.recon_*`; score in `ops.detection_scores` |
 | 4 · Gold (planned) | | Revenue, margin, refunds, actual vs budget |
 
 ## Catalog layout
