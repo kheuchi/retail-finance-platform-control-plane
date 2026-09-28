@@ -50,7 +50,7 @@ Architecture: [HLD](hld.md). Detail: [`cmdb.yml`](../../cmdb.yml) → `program.d
 | **Task** | One step of a job | e.g. `reconcile_gl_pos`, then `finance_tables` |
 | **Wheel** | Python code packaged as one installable file | `retail_finance_data-*.whl` |
 | **Bundle** | One YAML project: code + jobs + target workspace, deployed like an app | `databricks.yml` in the data repo |
-| **Service principal** | A non-human identity for automation | `terraform-platform` (to be split, [4.5](../stories/4.5-split-service-principals.md)) |
+| **Service principal** | A non-human identity for automation | `terraform-platform` (Terraform), `finance-data-deployer` (deploys), `finance-pipeline-runner` (runs jobs), [4.5](../stories/4.5-split-service-principals.md) |
 
 ## Data and governance
 

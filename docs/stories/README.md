@@ -77,7 +77,7 @@ Findings go into the story (fixed, or accepted with a reason); accepted risks go
 
 ## Epic 4 · Transform & Quality
 
-> **TL;DR:** turn Bronze into trusted finance tables. ⏳ Nearly done: Silver, reconciliation, Gold, quality gates; identity split next.
+> **TL;DR:** turn Bronze into trusted finance tables. ✅ Done 2026-09-26 → 09-28.
 
 | # | Story | One line |
 |---|---|---|
@@ -85,7 +85,7 @@ Findings go into the story (fixed, or accepted with a reason); accepted risks go
 | 4.2 | [GL vs POS reconciliation](4.2-gl-pos-reconciliation.md) | ✅ 4/4 fake journals found, 0 false alarms; the independent review changed the design |
 | 4.3 | [Gold finance tables](4.3-gold-finance-tables.md) | ✅ Revenue, margin, refunds, budget; both remaining frauds surface unprompted |
 | 4.4 | [Quality and lineage evidence](4.4-quality-and-lineage.md) | ✅ Two quality gates, certified Gold, one number traced to its file (lineage gap R-11) |
-| 4.5 | [Split the service principal](4.5-split-service-principals.md) | Platform, deployer and runner identities (after Gold) |
+| 4.5 | [Split the service principal](4.5-split-service-principals.md) | ✅ Deployer and runner; the runner cannot audit access, so the platform does |
 
 ## Cross-cutting
 

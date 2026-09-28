@@ -77,11 +77,11 @@ phases:
     stories: ['3.1', '3.2', '3.3']
   - id: 4
     name: Transform & Quality
-    status: Next
+    status: Done
     stories: ['4.1', '4.2', '4.3', '4.4', '4.5']
   - id: 5
     name: ML Models
-    status: Planned
+    status: Next
   - id: 6
     name: Serve & Monitor
     status: Planned
@@ -135,7 +135,7 @@ stories:
     - {id: '4.2', title: 'GL vs POS reconciliation', epic: 4, type: as-built, status: 'Done', dates: '2026-09-27', file: 4.2-gl-pos-reconciliation.md}
     - {id: '4.3', title: 'Gold finance tables', epic: 4, type: as-built, status: 'Done', dates: '2026-09-27', file: 4.3-gold-finance-tables.md}
     - {id: '4.4', title: 'Quality and lineage evidence', epic: 4, type: as-built, status: 'Done', dates: '2026-09-27', file: 4.4-quality-and-lineage.md}
-    - {id: '4.5', title: 'Split the service principal (platform, deployer, runner)', epic: 4, type: planned, status: 'Planned', file: 4.5-split-service-principals.md}
+    - {id: '4.5', title: 'Split the service principal (platform, deployer, runner)', epic: 4, type: as-built, status: 'Done', dates: '2026-09-28', file: 4.5-split-service-principals.md}
     - {id: 'X.1', title: 'Documentation system', epic: cross-cutting, type: as-built, status: 'Done (living)', dates: '2026-09-14..26', file: X.1-documentation-system.md}
 
 # ──────────── decisions ────────────
@@ -338,15 +338,15 @@ risks:
     risk: Audit logs in the same account as workloads (needs a Log Archive account)
   - id: R-11
     severity: Low
-    status: Open
+    status: Closed 2026-09-28
     risk: 'Unity Catalog records no lineage for the 4 Gold finance tables (daily_revenue, margin, refunds, budget_variance) over four runs'
-    mitigation: 'Reconciliation tables are traced Gold -> Silver -> Bronze; ops.lineage_evidence traces one Gold number to its source file. Tested and ruled out: recording lag, cached writes. Re-check before stage 4 closes'
+    mitigation: 'Reconciliation tables are traced Gold -> Silver -> Bronze; ops.lineage_evidence traces one Gold number to its source file. Resolved 2026-09-28: every Gold table traced on the first run as the runner (cause not isolated)'
     story: '4.4'
   - id: R-10
     severity: High
-    status: Open
+    status: Closed 2026-09-28
     risk: 'terraform-platform (account admin) also deploys the data bundle and is the run-as identity of the data jobs'
-    mitigation: 'Story 4.5, after Gold: separate deployer and runner service principals with least privilege'
+    mitigation: 'Done (story 4.5): finance-data-deployer deploys, finance-pipeline-runner runs; negative tests on every Gold run; access audited in infra CI'
     story: '4.5'
   - id: R-09
     severity: High
@@ -1178,6 +1178,9 @@ progress:
       - 'Gold finance tables (story 4.3): 2025 net sales EUR 38.88m, margin 34.31%, returns 1.42%; S031 (A2) and S017-C03 (A1) top the rankings unprompted; access allow-list passed on live grants'
       - 'Databricks primer added; agent hosting discussed (managed model via PrivateLink, not self-hosted)'
       - 'Quality gates and certification (story 4.4): 12 checks pass, Gold CERTIFIED, one number traced to its file; finance-table lineage gap recorded as R-11'
+  - date: '2026-09-28'
+    summary:
+      - 'Identity split (story 4.5): finance-data-deployer deploys, finance-pipeline-runner runs every job; negative tests pass live; access allow-list moved to a platform audit in infra CI (38 securables, 0 violations); R-10 and R-11 closed; stage 4 done'
 
 # ──────────── lessons ────────────
 lessons:
@@ -1204,3 +1207,5 @@ lessons:
   - {lesson: 'Unity Catalog shows inherited grants on child objects; judge each grant where it was made, or a leak check blocks every run.', story: '4.3'}
   - {lesson: 'Compare money in the currency it was transacted in; FX conversion belongs to reporting, not to integrity checks.', story: '4.4'}
   - {lesson: 'A quality gate must certify the exact data version it checked; record versions at the gate and compare at publish time.', story: '4.4'}
+  - {lesson: 'Separation of duties moves checks: the identity that does the work cannot audit who may see it; run each check as the identity entitled to it.', story: '4.5'}
+  - {lesson: 'A negative test must fail for the reason being tested (a malformed request is refused for the wrong reason).', story: '4.5'}

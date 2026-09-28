@@ -54,7 +54,9 @@ Permissions are tested with the IAM policy simulator before each apply, includin
 
 | Identity | Role |
 |---|---|
-| `terraform-platform` (service principal) | Account admin. Runs Terraform and owns all jobs and data objects |
+| `terraform-platform` (service principal) | Account admin. Runs Terraform only; owns the catalog objects it creates |
+| `finance-data-deployer` (service principal) | Deploys the data bundle from CI; may launch jobs as the runner; cannot grant or create clusters |
+| `finance-pipeline-runner` (service principal) | What every data job runs as: read/write the finance schemas; cannot grant, not admin (checked every run) |
 | `finance-data-engineers` | ALL_PRIVILEGES on the finance catalog |
 | `finance-analysts` | Read Gold only |
 | `users` | No cluster creation (asserted by a Terraform check) |
@@ -74,4 +76,3 @@ Permissions are tested with the IAM policy simulator before each apply, includin
 |---|---|
 | Databricks secret lives 14 days (expires ~2026-10-08) | Move to GitHub OIDC federation |
 | Front-end access is public (UI over internet) | Accepted for a demo; enterprise would add front-end PrivateLink or IP access lists |
-| `terraform-platform` also deploys and runs data jobs (account admin running data code) | Split into platform, deployer, runner ([story 4.5](../stories/4.5-split-service-principals.md)) |
