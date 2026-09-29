@@ -1,6 +1,6 @@
 # Stories
 
-**Contents:** [TL;DR](#tldr) · [How to read a story](#how-to-read-a-story) · [Review checklist](#review-checklist) · [Epic 1 · Foundation](#epic-1--foundation) · [Epic 2 · Lakehouse](#epic-2--lakehouse) · [Epic 3 · Ingest](#epic-3--ingest) · [Epic 4 · Transform & Quality](#epic-4--transform--quality) · [Cross-cutting](#cross-cutting)
+**Contents:** [TL;DR](#tldr) · [How to read a story](#how-to-read-a-story) · [Review checklist](#review-checklist) · [Epic 1 · Foundation](#epic-1--foundation) · [Epic 2 · Lakehouse](#epic-2--lakehouse) · [Epic 3 · Ingest](#epic-3--ingest) · [Epic 4 · Transform & Quality](#epic-4--transform--quality) · [Epic 5 · ML Models](#epic-5--ml-models) · [Cross-cutting](#cross-cutting)
 
 Updated 2026-09-26. Index in [`cmdb.yml`](../../cmdb.yml) → `stories`. Status: [STATUS.md](../../STATUS.md). Architecture: [HLD](../architecture/hld.md).
 
@@ -86,6 +86,15 @@ Findings go into the story (fixed, or accepted with a reason); accepted risks go
 | 4.3 | [Gold finance tables](4.3-gold-finance-tables.md) | ✅ Revenue, margin, refunds, budget; both remaining frauds surface unprompted |
 | 4.4 | [Quality and lineage evidence](4.4-quality-and-lineage.md) | ✅ Two quality gates, certified Gold, one number traced to its file (lineage gap R-11) |
 | 4.5 | [Split the service principal](4.5-split-service-principals.md) | ✅ Deployer and runner; the runner cannot audit access, so the platform does |
+
+## Epic 5 · ML Models
+
+> **TL;DR:** find the frauds without being told, forecast the month-end. ⏭ Next. Planned stories.
+
+| # | Story | One line |
+|---|---|---|
+| 5.1 | [Fraud detection](5.1-fraud-detection.md) | Two unsupervised detectors, scored against the answer key |
+| 5.2 | [Revenue forecast](5.2-revenue-forecast.md) | Next 3 months per store; ships only if it beats the baseline |
 
 ## Cross-cutting
 

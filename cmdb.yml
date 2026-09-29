@@ -82,6 +82,7 @@ phases:
   - id: 5
     name: ML Models
     status: Next
+    stories: ['5.1', '5.2']
   - id: 6
     name: Serve & Monitor
     status: Planned
@@ -136,6 +137,8 @@ stories:
     - {id: '4.3', title: 'Gold finance tables', epic: 4, type: as-built, status: 'Done', dates: '2026-09-27', file: 4.3-gold-finance-tables.md}
     - {id: '4.4', title: 'Quality and lineage evidence', epic: 4, type: as-built, status: 'Done', dates: '2026-09-27', file: 4.4-quality-and-lineage.md}
     - {id: '4.5', title: 'Split the service principal (platform, deployer, runner)', epic: 4, type: as-built, status: 'Done', dates: '2026-09-28', file: 4.5-split-service-principals.md}
+    - {id: '5.1', title: 'Fraud detection models (cashier refunds, store margin drift)', epic: 5, type: planned, status: 'Next', file: 5.1-fraud-detection.md}
+    - {id: '5.2', title: 'Revenue forecast (next 3 months per store, vs baseline)', epic: 5, type: planned, status: 'Next', file: 5.2-revenue-forecast.md}
     - {id: 'X.1', title: 'Documentation system', epic: cross-cutting, type: as-built, status: 'Done (living)', dates: '2026-09-14..26', file: X.1-documentation-system.md}
 
 # ──────────── decisions ────────────
