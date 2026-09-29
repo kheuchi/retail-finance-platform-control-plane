@@ -2,7 +2,7 @@
 
 **Contents:** [TL;DR](#tldr) · [How to read a story](#how-to-read-a-story) · [Review checklist](#review-checklist) · [Epic 1 · Foundation](#epic-1--foundation) · [Epic 2 · Lakehouse](#epic-2--lakehouse) · [Epic 3 · Ingest](#epic-3--ingest) · [Epic 4 · Transform & Quality](#epic-4--transform--quality) · [Epic 5 · ML Models](#epic-5--ml-models) · [Cross-cutting](#cross-cutting)
 
-Updated 2026-09-26. Index in [`cmdb.yml`](../../cmdb.yml) → `stories`. Status: [STATUS.md](../../STATUS.md). Architecture: [HLD](../architecture/hld.md).
+Updated 2026-09-29. **Short on time? Read the one-page [MEMO](MEMO.md).** Index in [`cmdb.yml`](../../cmdb.yml) → `stories`. Status: [STATUS.md](../../STATUS.md). Architecture: [HLD](../architecture/hld.md).
 
 ## TL;DR
 
