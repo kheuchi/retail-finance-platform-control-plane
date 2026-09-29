@@ -11,8 +11,8 @@ Updated 2026-09-27. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 | Goal | Show how a large retailer's accounting department could run governed finance data, ML and an AI agent on AWS + Databricks, built the enterprise way |
 | The plan in one line | Raw ERP and POS data → governed lakehouse → finance models → an agent that drafts cited commentary for the controller to approve |
 | Agent boundary | May investigate, summarise, recommend. Never posts entries, moves money or approves payments: a human signs off |
-| Where are we? | Stages 1-4 done: governed data, reconciliation 4/4, certified Gold, least-privilege identities |
-| What is next? | Stage 5: fraud and forecast models on certified Gold, trained and scored on our clusters |
+| Where are we? | Stages 1-5 done: governed data, reconciliation 4/4, certified Gold, least-privilege identities, fraud models find both other frauds |
+| What is next? | Stage 6 (schedule + drift, thin) and stage 7 (AI agent for month-end commentary) |
 | Deadline | Databricks trial ends 2026-10-06, teardown that day |
 | Running cost | ~USD 2/day network + trial credit for Databricks |
 
@@ -22,7 +22,7 @@ Updated 2026-09-27. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 
 ## Where we are
 
-> **TL;DR:** 4 of 7 stages done. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`, `stories`
+> **TL;DR:** 5 of 7 stages done. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`, `stories`
 
 | # | Stage | Status | Done when | Stories |
 |---|---|---|---|---|
@@ -30,8 +30,8 @@ Updated 2026-09-27. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 | 2 | Lakehouse | ✅ Done | Private Databricks workspace, no internet, Unity Catalog on our S3 | [2.1-2.5](docs/stories/README.md#epic-2--lakehouse) |
 | 3 | Ingest | ✅ Done | 40 stores, 21 months of synthetic data in Bronze: 4.2m rows, zero loss | [3.1-3.3](docs/stories/README.md#epic-3--ingest) |
 | 4 | Transform & Quality | ✅ Done | Gold finance tables reconcile to controlled inputs | [4.1](docs/stories/4.1-silver-tables.md) ✅, [4.2](docs/stories/4.2-gl-pos-reconciliation.md) ✅, [4.3](docs/stories/4.3-gold-finance-tables.md) ✅, [4.4](docs/stories/4.4-quality-and-lineage.md) ✅, [4.5](docs/stories/4.5-split-service-principals.md) ✅ |
-| 5 | ML Models | ⏭ Next | Refund fraud, margin leakage and forecast models tracked in MLflow | |
-| 6 | Serve & Monitor | Planned | Models score on a schedule, with drift checks | |
+| 5 | ML Models | ✅ Done | Refund fraud, margin leakage and forecast models tracked in MLflow | [5.1](docs/stories/5.1-fraud-detection.md) ✅, [5.2](docs/stories/5.2-revenue-forecast.md) ✅ |
+| 6 | Serve & Monitor | ⏭ Next | Models score on a schedule, with drift checks | |
 | 7 | AI Agent | Planned | Cited variance commentary; no action without human approval | |
 
 ## Where we go
@@ -76,6 +76,7 @@ Updated 2026-09-27. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 | Network costs above budget if left on | Teardown 2026-10-06 |
 | Trial converts to paid on 2026-10-06 | Teardown or cancel that day |
 | Databricks secret expires ~2026-10-08 | Move to OIDC federation |
+| Employee-level fraud scores readable by analysts | Accepted (R-12): pseudonymous, synthetic; production would restrict |
 
 ## Scope rule
 

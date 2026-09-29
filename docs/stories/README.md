@@ -89,12 +89,12 @@ Findings go into the story (fixed, or accepted with a reason); accepted risks go
 
 ## Epic 5 · ML Models
 
-> **TL;DR:** find the frauds without being told, forecast the month-end. ⏭ Next. Planned stories.
+> **TL;DR:** find the frauds without being told, forecast the month-end. ✅ Done 2026-09-29.
 
 | # | Story | One line |
 |---|---|---|
-| 5.1 | [Fraud detection](5.1-fraud-detection.md) | Two unsupervised detectors, scored against the answer key |
-| 5.2 | [Revenue forecast](5.2-revenue-forecast.md) | Next 3 months per store; ships only if it beats the baseline |
+| 5.1 | [Fraud detection](5.1-fraud-detection.md) | ✅ Both planted frauds ranked #1 without labels |
+| 5.2 | [Revenue forecast](5.2-revenue-forecast.md) | ✅ Fair backtest: the baseline beats the model and ships |
 
 ## Cross-cutting
 

@@ -81,11 +81,11 @@ phases:
     stories: ['4.1', '4.2', '4.3', '4.4', '4.5']
   - id: 5
     name: ML Models
-    status: Next
+    status: Done
     stories: ['5.1', '5.2']
   - id: 6
     name: Serve & Monitor
-    status: Planned
+    status: Next
   - id: 7
     name: AI Agent
     status: Planned
@@ -137,8 +137,8 @@ stories:
     - {id: '4.3', title: 'Gold finance tables', epic: 4, type: as-built, status: 'Done', dates: '2026-09-27', file: 4.3-gold-finance-tables.md}
     - {id: '4.4', title: 'Quality and lineage evidence', epic: 4, type: as-built, status: 'Done', dates: '2026-09-27', file: 4.4-quality-and-lineage.md}
     - {id: '4.5', title: 'Split the service principal (platform, deployer, runner)', epic: 4, type: as-built, status: 'Done', dates: '2026-09-28', file: 4.5-split-service-principals.md}
-    - {id: '5.1', title: 'Fraud detection models (cashier refunds, store margin drift)', epic: 5, type: planned, status: 'Next', file: 5.1-fraud-detection.md}
-    - {id: '5.2', title: 'Revenue forecast (next 3 months per store, vs baseline)', epic: 5, type: planned, status: 'Next', file: 5.2-revenue-forecast.md}
+    - {id: '5.1', title: 'Fraud detection models (cashier refunds, store margin drift)', epic: 5, type: as-built, status: 'Done', dates: '2026-09-29', file: 5.1-fraud-detection.md}
+    - {id: '5.2', title: 'Revenue forecast (next 3 months per store, vs baseline)', epic: 5, type: as-built, status: 'Done', dates: '2026-09-29', file: 5.2-revenue-forecast.md}
     - {id: 'X.1', title: 'Documentation system', epic: cross-cutting, type: as-built, status: 'Done (living)', dates: '2026-09-14..26', file: X.1-documentation-system.md}
 
 # ──────────── decisions ────────────
@@ -339,6 +339,12 @@ risks:
     severity: Medium
     status: Accepted
     risk: Audit logs in the same account as workloads (needs a Log Archive account)
+  - id: R-12
+    severity: Medium
+    status: Accepted
+    risk: 'gold.fraud_scores gives every analyst a fraud score per cashier (employee): GDPR and works-council territory for a DE/CH retailer'
+    mitigation: 'Cashier IDs are pseudonymous and the data synthetic. Production: move employee-level scores to an internal-audit schema with its own group'
+    story: '5.1'
   - id: R-11
     severity: Low
     status: Closed 2026-09-28
@@ -1184,6 +1190,9 @@ progress:
   - date: '2026-09-28'
     summary:
       - 'Identity split (story 4.5): finance-data-deployer deploys, finance-pipeline-runner runs every job; negative tests pass live; access allow-list moved to a platform audit in infra CI (38 securables, 0 violations); R-10 and R-11 closed; stage 4 done'
+  - date: '2026-09-29'
+    summary:
+      - 'ML (stories 5.1, 5.2): unsupervised detectors rank both planted frauds #1 without labels; models registered in finance.ml; fair backtest: the seasonal-naive baseline beats gradient boosting and ships; employee-level scores accepted as R-12'
 
 # ──────────── lessons ────────────
 lessons:
@@ -1212,3 +1221,5 @@ lessons:
   - {lesson: 'A quality gate must certify the exact data version it checked; record versions at the gate and compare at publish time.', story: '4.4'}
   - {lesson: 'Separation of duties moves checks: the identity that does the work cannot audit who may see it; run each check as the identity entitled to it.', story: '4.5'}
   - {lesson: 'A negative test must fail for the reason being tested (a malformed request is refused for the wrong reason).', story: '4.5'}
+  - {lesson: 'A backtest can be rigged by accident: check how many training examples each side really had before trusting who wins.', story: '5.2'}
+  - {lesson: 'A detector baseline built from recent months absorbs a slow fraud; compare with a window that skips the recent past.', story: '5.1'}

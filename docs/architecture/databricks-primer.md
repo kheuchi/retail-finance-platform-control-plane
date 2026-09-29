@@ -77,7 +77,7 @@ Architecture: [HLD](hld.md). Detail: [`cmdb.yml`](../../cmdb.yml) → `program.d
 |---|---|---|
 | **SQL warehouse** | Compute dedicated to SQL queries and dashboards | Planned, for analysts and Genie |
 | **Genie** | Ask a question in plain language, get SQL and an answer over chosen tables | Planned for analyst Q&A on Gold (stage 7) |
-| **MLflow** | Tracks experiments, models and their versions | Planned for fraud and forecast models (stage 5) |
+| **MLflow** | Tracks experiments, models and their versions | Experiment `finance-ml`; models registered in `finance.ml` (stage 5) |
 | **Model Serving** | Hosts a model or agent behind an API (serverless) | Planned for the agent (stage 7) |
 | **Agent Framework** | Build, evaluate and trace AI agents with tools governed by UC | Planned: month-end variance commentary with human approval |
 
