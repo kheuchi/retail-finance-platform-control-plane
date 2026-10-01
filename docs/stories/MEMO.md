@@ -2,7 +2,8 @@
 
 **Contents:** [TL;DR](#tldr) · [Stage by stage](#stage-by-stage) · [Top 10 lessons](#top-10-lessons) · [Open items](#open-items)
 
-One page. Each line links to the full story. Updated 2026-09-29. Index: [stories](README.md).
+One page. Each line links to the full story. Updated 2026-10-01. Index: [stories](README.md).
+To explain how it works underneath (decisions, mechanics, likely questions): [WALKTHROUGH](WALKTHROUGH.md).
 
 ## TL;DR
 
@@ -40,7 +41,7 @@ One page. Each line links to the full story. Updated 2026-09-29. Index: [stories
 | [4.5](4.5-split-service-principals.md) | Deployer and runner identities | The runner cannot see who else has access | The worker cannot be the auditor: move the check |
 | [5.1](5.1-fraud-detection.md) | Fraud detectors, both frauds #1 | The baseline was slowly absorbing the fraud | Compare with a past that skips recent months |
 | [5.2](5.2-revenue-forecast.md) | Forecast; baseline beats the model | The first backtest was rigged by accident | Count each side's training data before trusting the winner |
-| [X.1](X.1-documentation-system.md) | Short docs, cmdb, diagrams, stories, AGENTS.md | 1,411 lines nobody would read | One fact, one place: cmdb says what, stories say why |
+| [Docs](README.md#how-the-docs-work) | Short docs, cmdb, diagrams, stories, AGENTS.md | 1,411 lines nobody would read | One fact, one place: cmdb says what, stories say why |
 
 ## Top 10 lessons
 

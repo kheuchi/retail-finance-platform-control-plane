@@ -1,8 +1,8 @@
 # Stories
 
-**Contents:** [TL;DR](#tldr) · [How to read a story](#how-to-read-a-story) · [Review checklist](#review-checklist) · [Epic 1 · Foundation](#epic-1--foundation) · [Epic 2 · Lakehouse](#epic-2--lakehouse) · [Epic 3 · Ingest](#epic-3--ingest) · [Epic 4 · Transform & Quality](#epic-4--transform--quality) · [Epic 5 · ML Models](#epic-5--ml-models) · [Cross-cutting](#cross-cutting)
+**Contents:** [TL;DR](#tldr) · [How to read a story](#how-to-read-a-story) · [How the docs work](#how-the-docs-work) · [Review checklist](#review-checklist) · [Epic 1 · Foundation](#epic-1--foundation) · [Epic 2 · Lakehouse](#epic-2--lakehouse) · [Epic 3 · Ingest](#epic-3--ingest) · [Epic 4 · Transform & Quality](#epic-4--transform--quality) · [Epic 5 · ML Models](#epic-5--ml-models)
 
-Updated 2026-09-29. **Short on time? Read the one-page [MEMO](MEMO.md).** Index in [`cmdb.yml`](../../cmdb.yml) → `stories`. Status: [STATUS.md](../../STATUS.md). Architecture: [HLD](../architecture/hld.md).
+Updated 2026-10-01. **Short on time? Read the one-page [MEMO](MEMO.md). Need to explain it? Read the [WALKTHROUGH](WALKTHROUGH.md).** Index in [`cmdb.yml`](../../cmdb.yml) → `stories`. Status: [STATUS.md](../../STATUS.md). Architecture: [HLD](../architecture/hld.md).
 
 ## TL;DR
 
@@ -11,6 +11,7 @@ Updated 2026-09-29. **Short on time? Read the one-page [MEMO](MEMO.md).** Index 
 | What is a story? | One piece of work: why we did it, what we built, what went wrong, how we proved it |
 | As-built vs planned? | Epics 1-3 are **as-built**, written after the work. Epic 4 onward is **planned**, written before, with acceptance criteria |
 | Where is the inventory? | [`cmdb.yml`](../../cmdb.yml): IDs, status, dates, one-line reasons. Stories hold the explanations |
+| MEMO vs walkthrough? | [MEMO](MEMO.md): one line per story (built, trap, lesson). [WALKTHROUGH](WALKTHROUGH.md): how each layer works, why, and the questions you will get |
 | Best stories to learn from | [1.3](1.3-least-privilege-deploy-role.md) (IAM traps), [2.1](2.1-where-databricks-runs.md) (cloud choice), [3.3](3.3-first-job-in-the-private-vpc.md) (network debugging) |
 
 ## How to read a story
@@ -20,6 +21,24 @@ Updated 2026-09-29. **Short on time? Read the one-page [MEMO](MEMO.md).** Index 
 Every story has the same sections: **Context** (why) · **What we built** · **Tricky parts**
 (symptom → cause → fix → lesson) · **Proof** · **Review** · **References** (docs, cmdb keys, commits).
 Planned stories add **Acceptance criteria** before any code is written.
+
+## How the docs work
+
+> **TL;DR:** each fact lives in one place: `cmdb.yml` says *what*, stories say *why and how* (D-024, D-028).
+
+| Layer | Answers | Where |
+|---|---|---|
+| Overview | Where are we, what is it? | [README](../../README.md), [STATUS](../../STATUS.md) |
+| Assistant rules | How must any AI assistant work here? | [AGENTS.md](../../AGENTS.md) (auto-loaded via `CLAUDE.md`) |
+| Architecture | How is it built? | [HLD](../architecture/hld.md) + 5 LLDs, draw.io sources next to the PNGs |
+| Stories | Why, and what went wrong? | This folder; [MEMO](MEMO.md) and [WALKTHROUGH](WALKTHROUGH.md) summarise them |
+| Inventory | Exact facts: IDs, ports, dates, status | `cmdb.yml` in each repo |
+
+Every doc starts with a contents line and a TL;DR table, has a one-line TL;DR per section, and
+points to cmdb keys. How it came about (2026-09-25): the markdown had grown to 1,411 lines nobody
+would read. Decisions, threats and controls were **parsed** into `cmdb.yml`, not retyped, so none
+were lost; the long versions stay in Git history. draw.io exports need absolute Windows paths,
+one at a time (`cmdb.yml` → `architecture.toolchain`).
 
 ## Review checklist
 
@@ -95,9 +114,3 @@ Findings go into the story (fixed, or accepted with a reason); accepted risks go
 |---|---|---|
 | 5.1 | [Fraud detection](5.1-fraud-detection.md) | ✅ Both planted frauds ranked #1 without labels |
 | 5.2 | [Revenue forecast](5.2-revenue-forecast.md) | ✅ Fair backtest: the baseline beats the model and ships |
-
-## Cross-cutting
-
-| # | Story | One line |
-|---|---|---|
-| X.1 | [Documentation system](X.1-documentation-system.md) | Short docs, cmdb inventory, diagrams, stories |

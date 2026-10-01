@@ -35,7 +35,7 @@ data platform, observability & cost, ML).
 | [AGENTS.md](AGENTS.md) | Rules and way of working, for any AI assistant or new contributor |
 | [docs/architecture/](docs/architecture/hld.md) | HLD + 5 LLDs, with draw.io sources |
 | [Databricks primer](docs/architecture/databricks-primer.md) | Every Databricks term used here, in plain words |
-| [docs/stories/MEMO.md](docs/stories/MEMO.md) | **One page**: what we built, the tricky parts, the top 10 lessons |
+| [docs/stories/MEMO.md](docs/stories/MEMO.md) | **One page**: what we built, the tricky parts, the top 10 lessons · deeper: [WALKTHROUGH](docs/stories/WALKTHROUGH.md) |
 | [docs/stories/](docs/stories/README.md) | How each piece was built and the tricky parts; planned stories for what is next |
 | [docs/security/](docs/security/) | Threat model, controls, who owns what |
 | [REPOSITORIES.md](REPOSITORIES.md) | Which repo does what |

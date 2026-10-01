@@ -141,7 +141,7 @@ stories:
     - {id: '4.5', title: 'Split the service principal (platform, deployer, runner)', epic: 4, type: as-built, status: 'Done', dates: '2026-09-28', file: 4.5-split-service-principals.md}
     - {id: '5.1', title: 'Fraud detection models (cashier refunds, store margin drift)', epic: 5, type: as-built, status: 'Done', dates: '2026-09-29', file: 5.1-fraud-detection.md}
     - {id: '5.2', title: 'Revenue forecast (next 3 months per store, vs baseline)', epic: 5, type: as-built, status: 'Done', dates: '2026-09-29', file: 5.2-revenue-forecast.md}
-    - {id: 'X.1', title: 'Documentation system', epic: cross-cutting, type: as-built, status: 'Done (living)', dates: '2026-09-14..26', file: X.1-documentation-system.md}
+    - {id: 'X.1', title: 'Documentation system', epic: cross-cutting, type: as-built, status: 'Done (living)', dates: '2026-09-14..26', file: 'README.md#how-the-docs-work'}
 
 # ──────────── decisions ────────────
 decisions:
@@ -1195,6 +1195,9 @@ progress:
   - date: '2026-09-29'
     summary:
       - 'ML (stories 5.1, 5.2): unsupervised detectors rank both planted frauds #1 without labels; models registered in finance.ml; fair backtest: the seasonal-naive baseline beats gradient boosting and ships; employee-level scores accepted as R-12'
+  - date: '2026-10-01'
+    summary:
+      - 'Docs: HLD shows ML and the planned agent where they run (ML in one colour); LLD 5 (ML) added; WALKTHROUGH.md explains each layer for interviews; story X.1 merged into the stories README'
 
 # ──────────── lessons ────────────
 lessons:
