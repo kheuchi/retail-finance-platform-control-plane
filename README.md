@@ -14,8 +14,8 @@ anomaly detection, and an AI agent that drafts cited analysis for a human to app
 
 [![High-level design](docs/architecture/hld.png)](docs/architecture/hld.md)
 
-Click the diagram for the HLD; it links to the four LLDs (network, identity & CI/CD,
-data platform, observability & cost).
+Click the diagram for the HLD; it links to the five LLDs (network, identity & CI/CD,
+data platform, observability & cost, ML).
 
 ## Where we are
 
@@ -33,7 +33,7 @@ data platform, observability & cost).
 |---|---|
 | [STATUS.md](STATUS.md) | Status and roadmap: where we are, where we go |
 | [AGENTS.md](AGENTS.md) | Rules and way of working, for any AI assistant or new contributor |
-| [docs/architecture/](docs/architecture/hld.md) | HLD + 4 LLDs, with draw.io sources |
+| [docs/architecture/](docs/architecture/hld.md) | HLD + 5 LLDs, with draw.io sources |
 | [Databricks primer](docs/architecture/databricks-primer.md) | Every Databricks term used here, in plain words |
 | [docs/stories/MEMO.md](docs/stories/MEMO.md) | **One page**: what we built, the tricky parts, the top 10 lessons |
 | [docs/stories/](docs/stories/README.md) | How each piece was built and the tricky parts; planned stories for what is next |

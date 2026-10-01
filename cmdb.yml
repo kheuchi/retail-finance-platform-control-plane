@@ -94,18 +94,20 @@ phases:
 architecture:
   docs: docs/architecture/ (hld.md + lld-*.md, each with .drawio source and exported .png)
   diagrams:
-    - {file: hld, covers: 'GitHub, AWS foundation, Databricks VPC, data buckets, Databricks control plane, planned ML and agent'}
+    - {file: hld, covers: 'GitHub, AWS foundation, Databricks VPC (jobs incl. ML; agent job and Bedrock endpoint planned), data buckets, Databricks control plane (MLflow, UC incl. finance.ml); updated 2026-10-01'}
     - {file: lld-network, covers: 'VPC 10.20.0.0/16, 2 AZ x (workspace /22 + endpoint /24), 4 interface + 1 gateway endpoint, SG rules, cost'}
     - {file: lld-identity-cicd, covers: 'PR -> checks -> gated deploy; OIDC plan/deploy roles; cross-account and UC roles with external IDs; service principal; groups'}
     - {file: lld-data-platform, covers: 'generate -> landing volume -> Auto Loader -> Bronze (done) -> Silver (next) -> Gold (planned); catalog layout; grants'}
     - {file: lld-observability-cost, covers: 'CloudTrail, audit bucket, metric filters, alarms, SNS; flow logs; budgets, cluster policies, serverless egress; change gates'}
-  planned: [lld-ml, lld-agent]
+    - {file: lld-ml, covers: 'train_models job on certified Gold: two Isolation Forest detectors, forecast vs baseline, MLflow, finance.ml registry, Gold scores, results, limits'}
+  planned: [lld-agent]
   key_flows:
     - login: browser -> workspace over HTTPS (only internet path)
     - control: cluster -> PrivateLink (443, 6666, 8443-8451) -> Databricks control plane
     - data: cluster -> S3 gateway endpoint -> dbx-uc
     - infra_change: GitHub Actions -> OIDC -> github-plan / github-deploy
-    - job_change: GitHub Actions -> OAuth service principal -> bundle deploy
+    - job_change: GitHub Actions -> OAuth finance-data-deployer -> bundle deploy; jobs run as finance-pipeline-runner
+    - agent_model (planned): agent job in the VPC -> Bedrock interface endpoint (PrivateLink), eu-central-1
   toolchain:
     drawio: draw.io desktop, installed 2026-09-26 via 'winget install --id JGraph.Draw --scope user'
     export: DrawIO.exe --export --format png --scale 1.5 --border 20 --output <abs path>.png <abs path>.drawio

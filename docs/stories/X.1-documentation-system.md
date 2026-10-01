@@ -9,7 +9,7 @@ As-built · Cross-cutting · 2026-09-14 → 09-26 · All repos · ✅ Done (livi
 | | |
 |---|---|
 | Goal | Anyone, including future you, understands the project in minutes |
-| Built | Short `.md` docs, `cmdb.yml` inventory per repo, HLD + 4 LLDs in draw.io, stories |
+| Built | Short `.md` docs, `cmdb.yml` inventory per repo, HLD + 5 LLDs in draw.io, stories |
 | Rule | Each fact lives in one place: cmdb = *what*, stories = *why and how* |
 | Hardest part | Keeping docs short while losing nothing |
 | Decision | D-024 |
