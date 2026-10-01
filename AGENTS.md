@@ -40,7 +40,7 @@ Infra and data repos have their own `cmdb.yml` (resources, incidents, pipeline);
 6. **Budgets before spend.** USD 50/month AWS budget; Databricks trial ends 2026-10-06, tear down that day.
 7. **Agents are read-only** on finance data; posting entries, moving money or approving payments always needs a human.
 8. **Commits use the owner's personal GitHub identity**, never an employer address. Check before committing.
-9. **Before any cloud CLI command, check which account it targets.** The workstation also holds employer credentials (gcloud).
+9. **Before any cloud CLI command, check which account it targets.**
 10. **Ask first** before destroying resources, rewriting history, changing visibility or spending money beyond a job run.
 
 ## How we work

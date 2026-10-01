@@ -14,7 +14,7 @@
 #   decisions          every decision D-001.. with status, one-line reason, story
 #   risks              open and accepted risks R-01..
 #   findings           security review findings F-1..F-4
-#   threats            threat model T-01..T-17
+#   threats            threat model T-01..T-16
 #   controls_summary   control counts by status
 #   controls           all controls with where, evidence, gap
 #   progress           what happened, by date
@@ -324,11 +324,6 @@ risks:
     status: Open
     risk: Service principal secret expires ~2026-10-08; Databricks plans then fail in CI
     mitigation: Move to GitHub OIDC federation policy
-  - id: R-05
-    severity: High
-    status: Open
-    risk: Employer cloud credentials on the same workstation (T-17)
-    mitigation: Azure CLI cleared 2026-09-22; gcloud still holds 3 employer service accounts
   - id: R-06
     severity: Medium
     status: Accepted
@@ -505,16 +500,6 @@ threats:
     mitigations: None yet
     residual: All ingested content must be treated as untrusted input to the model; agent tools must be read-only
       and separately authorised
-  - id: T-17
-    threat: Employer cloud credentials on the same workstation are used against this project, or this project's
-      commands run against an employer account
-    stride: T, E, D
-    severity: High
-    mitigations: Awareness only. Azure CLI credentials were cleared on 2026-09-22 after being found authenticated
-      to an employer tenant with a corporate subscription as the default target
-    residual: gcloud still holds three employer service accounts. Git author addresses from two employers were scrubbed
-      from history on 2026-09-21. This is the concrete form of the operator-error threat ranked most likely in this
-      model, and the damage runs in both directions
 
 # ──────────── controls_summary ────────────
 controls_summary:
@@ -1207,7 +1192,6 @@ lessons:
   - {lesson: 'CloudWatch filter ''$.readOnly = false'' parses but never matches; use ''IS FALSE''.', story: '1.4'}
   - {lesson: 'Verify against the remote, not a local clone (orphaned tags after history rewrite).', story: '1.5'}
   - {lesson: 'A Databricks trial credit covers DBUs, never the cloud infrastructure the workspace creates.', story: '2.1'}
-  - {lesson: 'Check which cloud account a CLI is pointed at before running anything.', story: '2.1'}
   - {lesson: 'count = 0 hides resources from Checkov; a clean scan of code that creates nothing proves nothing.', story: '2.2'}
   - {lesson: 'Data sources are read at plan time even when unused; gate them too.', story: '2.2'}
   - {lesson: 'Terraform does not store null outputs; read them with try().', story: '2.3'}

@@ -24,7 +24,6 @@ infrastructure) · finance data in S3 · the budget.
 |---|---|---|
 | GitHub account takeover → merge to `main` → AWS deploy role | Critical | Open: 2FA off, accepted by owner |
 | Audit trail stopped or IAM widened with no alert | High | Open: alarms planned |
-| Employer cloud credentials on the same laptop | High | Azure cleared; gcloud still holds 3 |
 | Cost overrun from running infrastructure | Medium | Budget alerts; teardown 2026-10-06 |
 | Data leaving the network | Low | **No egress path exists**: no internet gateway, no NAT, verified in AWS |
 | Another Databricks customer using our roles | Low | External IDs and principal tags on every trust |
