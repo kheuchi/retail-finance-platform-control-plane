@@ -1,6 +1,6 @@
 # Stories
 
-**Contents:** [TL;DR](#tldr) · [How to read a story](#how-to-read-a-story) · [How the docs work](#how-the-docs-work) · [Review checklist](#review-checklist) · [Epic 1 · Foundation](#epic-1--foundation) · [Epic 2 · Lakehouse](#epic-2--lakehouse) · [Epic 3 · Ingest](#epic-3--ingest) · [Epic 4 · Transform & Quality](#epic-4--transform--quality) · [Epic 5 · ML Models](#epic-5--ml-models)
+**Contents:** [TL;DR](#tldr) · [How to read a story](#how-to-read-a-story) · [How the docs work](#how-the-docs-work) · [Review checklist](#review-checklist) · [Epic 1 · Foundation](#epic-1--foundation) · [Epic 2 · Lakehouse](#epic-2--lakehouse) · [Epic 3 · Ingest](#epic-3--ingest) · [Epic 4 · Transform & Quality](#epic-4--transform--quality) · [Epic 5 · ML Models](#epic-5--ml-models) · [Epic 6 · Serve & Monitor](#epic-6--serve--monitor)
 
 Updated 2026-10-01. **Short on time? Read the one-page [MEMO](MEMO.md). Need to explain it? Read the [WALKTHROUGH](WALKTHROUGH.md).** Index in [`cmdb.yml`](../../cmdb.yml) → `stories`. Status: [STATUS.md](../../STATUS.md). Architecture: [HLD](../architecture/hld.md).
 
@@ -114,3 +114,12 @@ Findings go into the story (fixed, or accepted with a reason); accepted risks go
 |---|---|---|
 | 5.1 | [Fraud detection](5.1-fraud-detection.md) | ✅ Both planted frauds ranked #1 without labels |
 | 5.2 | [Revenue forecast](5.2-revenue-forecast.md) | ✅ Fair backtest: the baseline beats the model and ships |
+
+## Epic 6 · Serve & Monitor
+
+> **TL;DR:** the chain runs as one scheduled job and says when data or configuration drifts. 🔄 Started 2026-10-01.
+
+| # | Story | One line |
+|---|---|---|
+| 6.1 | [Scheduled pipeline](6.1-scheduled-pipeline.md) | 🔄 Bronze → Silver → Gold → ML as one job, retries, failure email, schedule committed paused |
+| 6.2 | [Drift checks](6.2-drift-checks.md) | 🔄 PSI on model inputs; nightly `bundle plan` catches hand edits |

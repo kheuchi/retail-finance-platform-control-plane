@@ -141,6 +141,8 @@ stories:
     - {id: '4.5', title: 'Split the service principal (platform, deployer, runner)', epic: 4, type: as-built, status: 'Done', dates: '2026-09-28', file: 4.5-split-service-principals.md}
     - {id: '5.1', title: 'Fraud detection models (cashier refunds, store margin drift)', epic: 5, type: as-built, status: 'Done', dates: '2026-09-29', file: 5.1-fraud-detection.md}
     - {id: '5.2', title: 'Revenue forecast (next 3 months per store, vs baseline)', epic: 5, type: as-built, status: 'Done', dates: '2026-09-29', file: 5.2-revenue-forecast.md}
+    - {id: '6.1', title: 'Scheduled pipeline (orchestrator job, retries, failure email)', epic: 6, type: planned, status: 'In progress', dates: '2026-10-01', file: 6.1-scheduled-pipeline.md}
+    - {id: '6.2', title: 'Drift checks (PSI on model inputs, config drift via bundle plan)', epic: 6, type: planned, status: 'In progress', dates: '2026-10-01', file: 6.2-drift-checks.md}
     - {id: 'X.1', title: 'Documentation system', epic: cross-cutting, type: as-built, status: 'Done (living)', dates: '2026-09-14..26', file: 'README.md#how-the-docs-work'}
 
 # ──────────── decisions ────────────

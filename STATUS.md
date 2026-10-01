@@ -31,7 +31,7 @@ Updated 2026-09-27. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 | 3 | Ingest | ✅ Done | 40 stores, 21 months of synthetic data in Bronze: 4.2m rows, zero loss | [3.1-3.3](docs/stories/README.md#epic-3--ingest) |
 | 4 | Transform & Quality | ✅ Done | Gold finance tables reconcile to controlled inputs | [4.1](docs/stories/4.1-silver-tables.md) ✅, [4.2](docs/stories/4.2-gl-pos-reconciliation.md) ✅, [4.3](docs/stories/4.3-gold-finance-tables.md) ✅, [4.4](docs/stories/4.4-quality-and-lineage.md) ✅, [4.5](docs/stories/4.5-split-service-principals.md) ✅ |
 | 5 | ML Models | ✅ Done | Refund fraud, margin leakage and forecast models tracked in MLflow | [5.1](docs/stories/5.1-fraud-detection.md) ✅, [5.2](docs/stories/5.2-revenue-forecast.md) ✅ |
-| 6 | Serve & Monitor | ⏭ Next | Models score on a schedule, with drift checks | |
+| 6 | Serve & Monitor | 🔄 In progress | Models score on a schedule, with drift checks | [6.1](docs/stories/6.1-scheduled-pipeline.md), [6.2](docs/stories/6.2-drift-checks.md) |
 | 7 | AI Agent | Planned | Cited variance commentary; no action without human approval | |
 
 ## Where we go
