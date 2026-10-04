@@ -2,7 +2,7 @@
 
 **Contents:** [TL;DR](#tldr) · [Context](#context) · [Options](#options) · [Decision](#decision) · [Consequences](#consequences) · [Revisit when](#revisit-when)
 
-Accepted · 2026-10-04 · cmdb: D-004, D-009, D-010 → D-013, D-020 · Stories: [1.1](../../stories/1.1-aws-account-baseline.md), [2.1](../../stories/2.1-where-databricks-runs.md)
+Accepted · 2026-10-04 · cmdb: D-009, D-013, D-020 · Stories: [1.1](../../stories/1.1-aws-account-baseline.md), [2.1](../../stories/2.1-where-databricks-runs.md)
 
 ## TL;DR
 
@@ -22,6 +22,8 @@ managed LLM in the same region. The budget is a USD 50/month AWS budget plus a D
 
 ## Options
 
+> **TL;DR:** only AWS met private Databricks, EU LLMs and the budget at once.
+
 | Option | For | Against |
 |---|---|---|
 | **AWS** | Databricks classic with back-end PrivateLink; Bedrock with EU model routing; largest market | Databricks is a second vendor on top |
@@ -32,9 +34,13 @@ managed LLM in the same region. The budget is a USD 50/month AWS budget plus a D
 
 ## Decision
 
+> **TL;DR:** AWS Frankfurt, one account, multi-account as the target.
+
 AWS in eu-central-1, one account, with the multi-account design kept as the documented target.
 
 ## Consequences
+
+> **TL;DR:** simple and in-region; no account boundaries yet.
 
 | Good | Bad |
 |---|---|
@@ -43,6 +49,8 @@ AWS in eu-central-1, one account, with the multi-account design kept as the docu
 | Frankfurt meets EU residency | |
 
 ## Revisit when
+
+> **TL;DR:** another company cloud, or more than one environment.
 
 The company standardises on another cloud, or the project moves beyond a single environment
 (then: Organizations with separate prod, non-prod, log-archive and security accounts).

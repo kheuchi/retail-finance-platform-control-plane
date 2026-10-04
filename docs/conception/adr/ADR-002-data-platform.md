@@ -2,7 +2,7 @@
 
 **Contents:** [TL;DR](#tldr) · [Context](#context) · [Options](#options) · [Decision](#decision) · [Consequences](#consequences) · [Revisit when](#revisit-when)
 
-Accepted · 2026-10-04 · cmdb: D-004, D-014b, D-021 · Benchmark: [scores](../benchmark.md#scores) · Docs: [LLD 3](../../architecture/lld-data-platform.md), [primer](../../architecture/databricks-primer.md)
+Accepted · 2026-10-04 · cmdb: D-004 (sponsor requirement, tested by the benchmark), D-014b, D-021 · Benchmark: [scores](../benchmark.md#scores) · Docs: [LLD 3](../../architecture/lld-data-platform.md), [primer](../../architecture/databricks-primer.md)
 
 ## TL;DR
 
@@ -22,6 +22,8 @@ certified data. A small team cannot glue five services together and keep them co
 
 ## Options
 
+> **TL;DR:** governance plus ML on one copy of the data decided it.
+
 | Option | For | Against |
 |---|---|---|
 | **Databricks** | Unity Catalog: grants, lineage, audit for tables, volumes, models; Spark + MLflow + jobs; open Delta format | Two vendors; serverless runs outside our VPC (we use classic compute) |
@@ -32,10 +34,14 @@ certified data. A small team cannot glue five services together and keep them co
 
 ## Decision
 
+> **TL;DR:** Databricks Enterprise on AWS, billed through the Marketplace.
+
 Databricks on AWS, Enterprise tier (required for PrivateLink), signed up through AWS Marketplace so
 charges sit inside the AWS budget.
 
 ## Consequences
+
+> **TL;DR:** lineage and one permission model; a second vendor and its bill.
 
 | Good | Bad |
 |---|---|
@@ -44,6 +50,8 @@ charges sit inside the AWS budget.
 | Skills widely available | DBU pricing is another bill to watch (budget alerts in Databricks too) |
 
 ## Revisit when
+
+> **TL;DR:** an SAP-centric or Microsoft-centric company.
 
 The company is SAP-centric with little ML (consider SAP Business Data Cloud), or a Microsoft shop
 (consider Fabric or Azure Databricks).

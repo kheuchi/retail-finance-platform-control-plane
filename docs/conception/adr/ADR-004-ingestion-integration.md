@@ -22,22 +22,28 @@ loaded by ad-hoc queries. Store systems already produce nightly files.
 
 ## Options
 
+> **TL;DR:** files for bulk, iPaaS for events.
+
 | Option | For | Against |
 |---|---|---|
 | **Files to S3 + Auto Loader** | Cheap at volume; replayable; Bronze keeps the file name for lineage | Batch latency (fine for a close) |
-| iPaaS (MuleSoft, Workato) inbound | Already in many enterprises; many connectors | Record-by-record APIs, per-task pricing; not built for millions of rows |
+| iPaaS (MuleSoft, Workato) inbound | Already in many enterprises; many connectors; some batch support | Designed and priced for app integration (MuleSoft by flows and messages, Workato by tasks); bulk files are cheaper by file transfer |
 | Apache NiFi | Strong for routing files and streams on-premises | Another platform to run; adds little over managed file transfer here |
 | Kafka streaming | Real-time | No real-time need in the close; cost and operations |
-| Managed connectors (Fivetran, Lakeflow Connect, SAP Datasphere) | Less custom code for SAP | Licence cost; SAP Datasphere is the realistic SAP route and lands files or tables the same way |
+| Managed connectors (Fivetran, Lakeflow Connect, SAP Datasphere, SAP Business Data Cloud) | Less custom code for SAP | Licences: Datasphere replication to S3 needs SAP's outbound integration licence; third-party extraction through SAP's ODP interface is restricted by SAP |
 | **iPaaS outbound** | App-to-app events are what it is for; reuses the company's integrations to Teams and ServiceNow | Not built in this project |
 
 ## Decision
 
-Inbound: SAP via SAP Datasphere replication (or a CDC tool) to S3; POS via managed file transfer;
+> **TL;DR:** every source lands as files; approved outputs leave through the iPaaS.
+
+Inbound: SAP via CDS extraction views on the universal journal, replicated by SAP Datasphere to S3 (or shared by SAP Business Data Cloud); POS via managed file transfer;
 ECB via a daily API pull; budget and cashier master via monthly exports. Bronze by Auto Loader,
 untyped, with the source file on every row. Outbound: approved items only, through the iPaaS.
 
 ## Consequences
+
+> **TL;DR:** one ingestion pattern and full lineage; a day of latency.
 
 | Good | Bad |
 |---|---|
@@ -46,5 +52,7 @@ untyped, with the source file on every row. Outbound: approved items only, throu
 | iPaaS used where it adds value | Outbound integration remains to be built |
 
 ## Revisit when
+
+> **TL;DR:** a real-time need.
 
 A real-time need appears (e.g. fraud blocking at the till), which would justify streaming.

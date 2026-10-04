@@ -152,6 +152,7 @@ stories:
     - {id: '5.2', title: 'Revenue forecast (next 3 months per store, vs baseline)', epic: 5, type: as-built, status: 'Done', dates: '2026-09-29', file: 5.2-revenue-forecast.md}
     - {id: '6.1', title: 'Scheduled pipeline (orchestrator job, retries, failure email)', epic: 6, type: as-built, status: 'Done', dates: '2026-10-01..04', file: 6.1-scheduled-pipeline.md}
     - {id: '6.2', title: 'Drift checks (PSI on model inputs, config drift via bundle plan)', epic: 6, type: as-built, status: 'Done', dates: '2026-10-01..04', file: 6.2-drift-checks.md}
+    - {id: '7.1', title: 'Month-end close agent (Bedrock EU over PrivateLink, own read-only identity, approval)', epic: 7, type: planned, status: 'In progress', dates: '2026-10-04', file: 7.1-month-end-agent.md}
     - {id: 'X.1', title: 'Documentation system', epic: cross-cutting, type: as-built, status: 'Done (living)', dates: '2026-09-14..26', file: 'README.md#how-the-docs-work'}
 
 # ──────────── decisions ────────────
@@ -174,7 +175,7 @@ decisions:
   - id: D-004
     decision: 'Use AWS Databricks for the lakehouse and ML platform'
     status: 'Accepted'
-    reason: 'User requirement'
+    reason: 'Sponsor requirement; tested by the platform benchmark (docs/conception/benchmark.md)'
     story: '2.1'
     adr: docs/conception/adr/ADR-002-data-platform.md
   - id: D-005
@@ -208,7 +209,7 @@ decisions:
     story: '1.1'
   - id: D-011
     decision: 'Separate control plane, infrastructure, data, ML, and agent repositories'
-    status: 'Accepted'
+    status: 'Amended 2026-10-04: three repos (control plane, infra, data); ML and the agent live in the data repo'
     reason: 'Independent ownership, permissions, CI/CD, state, and release lifecycles'
     story: '3.2'
   - id: D-012
@@ -322,7 +323,7 @@ decisions:
     reason: 'Long prose docs were hard to read; full versions stay in Git history'
     story: 'X.1'
   - id: D-029
-    decision: 'AI agent = a job in our VPC calling Claude on Bedrock (EU inference profile) over PrivateLink, AWS access via a Unity Catalog service credential, read-only SQL tools, human approval'
+    decision: 'AI agent = a job in our VPC with its own service principal (SELECT on named Gold tables, writes only its own ops tables), calling Claude on Bedrock (EU inference profile) over PrivateLink; AWS access via a Unity Catalog service credential; no employee-level data; human approval'
     status: 'Accepted'
     date: '2026-10-04'
     reason: 'Only option where agent, data and model calls stay on paths we control; Bedrock Agents, Databricks Model Serving and Genie run outside our network'

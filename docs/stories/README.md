@@ -1,6 +1,6 @@
 # Stories
 
-**Contents:** [TL;DR](#tldr) · [How to read a story](#how-to-read-a-story) · [How the docs work](#how-the-docs-work) · [Review checklist](#review-checklist) · [Epic 1 · Foundation](#epic-1--foundation) · [Epic 2 · Lakehouse](#epic-2--lakehouse) · [Epic 3 · Ingest](#epic-3--ingest) · [Epic 4 · Transform & Quality](#epic-4--transform--quality) · [Epic 5 · ML Models](#epic-5--ml-models) · [Epic 6 · Serve & Monitor](#epic-6--serve--monitor)
+**Contents:** [TL;DR](#tldr) · [How to read a story](#how-to-read-a-story) · [How the docs work](#how-the-docs-work) · [Review checklist](#review-checklist) · [Epic 1 · Foundation](#epic-1--foundation) · [Epic 2 · Lakehouse](#epic-2--lakehouse) · [Epic 3 · Ingest](#epic-3--ingest) · [Epic 4 · Transform & Quality](#epic-4--transform--quality) · [Epic 5 · ML Models](#epic-5--ml-models) · [Epic 6 · Serve & Monitor](#epic-6--serve--monitor) · [Epic 7 · AI Agent](#epic-7--ai-agent)
 
 Updated 2026-10-01. **Short on time? Read the one-page [MEMO](MEMO.md). Need to explain it? Read the [WALKTHROUGH](WALKTHROUGH.md).** Index in [`cmdb.yml`](../../cmdb.yml) → `stories`. Status: [STATUS.md](../../STATUS.md). Architecture: [HLD](../architecture/hld.md).
 
@@ -123,3 +123,11 @@ Findings go into the story (fixed, or accepted with a reason); accepted risks go
 |---|---|---|
 | 6.1 | [Scheduled pipeline](6.1-scheduled-pipeline.md) | ✅ One scheduled job, failure email, queueing; the first run found a missing permission |
 | 6.2 | [Drift checks](6.2-drift-checks.md) | ✅ PSI on model inputs (calendar drift found); nightly `bundle plan` caught a hand edit |
+
+## Epic 7 · AI Agent
+
+> **TL;DR:** a cited first draft of the close commentary, read-only, approved by a person. 🔄 Started 2026-10-04 ([ADR-006](../conception/adr/ADR-006-agent-platform.md)).
+
+| # | Story | One line |
+|---|---|---|
+| 7.1 | [Month-end close agent](7.1-month-end-agent.md) | 🔄 Own read-only identity, Bedrock (EU) over PrivateLink, figure check, controller approval |

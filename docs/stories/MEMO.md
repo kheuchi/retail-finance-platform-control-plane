@@ -13,7 +13,7 @@ To explain how it works underneath (decisions, mechanics, likely questions): [WA
 | Proof it works | All 3 planted frauds found: 4/4 fake journals (reconciliation), S017-C03 and S031 ranked #1 by models trained without the answer |
 | How it is run | Everything as code, by pull request; three identities, each unable to do the others' job |
 | What bit us most | Permissions (IAM, grants, visibility), a blocked network port, and our own bugs caught by our own checks |
-| What is left | Scheduling and drift (stage 6), the AI agent (stage 7), teardown 2026-10-06 |
+| What is left | The AI agent (stage 7, [ADR-006](../conception/adr/ADR-006-agent-platform.md)), teardown 2026-10-06 |
 
 ## Stage by stage
 

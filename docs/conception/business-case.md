@@ -11,8 +11,8 @@ Detail: [`cmdb.yml`](../../cmdb.yml) → `conception`, `decisions`.
 |---|---|
 | Who? | The accounting department of a large grocery retailer (Germany and Switzerland, stores and online) |
 | Problem | The month-end close relies on extracts, Excel and sampling: frauds and booking errors surface months late, and nobody can trace a reported number to its source |
-| Solution | A governed lakehouse that reconciles every store-day, ML that ranks suspicious cashiers and stores, a forecast that must beat a baseline, and an AI agent that drafts the close commentary for a controller to approve |
-| Real or simulated? | The workflow is real-world; we build the core (lakehouse, ML, agent) and simulate the edges (SAP, store systems, Teams, case management) |
+| Solution | A governed lakehouse that reconciles every store-day, ML that ranks suspicious cashiers and stores, a forecast that must beat a baseline, and (planned) an AI agent that drafts the close commentary for a controller to approve |
+| Real or simulated? | The workflow is real-world; we build the core (lakehouse, ML; the agent is next) and simulate the edges (SAP, store systems, Teams, case management) |
 | Measured by | Store-days reconciled, time to detect, forecast error, controller hours on commentary, days to close |
 
 ## The company
@@ -22,7 +22,7 @@ Detail: [`cmdb.yml`](../../cmdb.yml) → `conception`, `decisions`.
 | | |
 |---|---|
 | Business | Grocery retail: stores in Germany (EUR) and Switzerland (CHF), plus an online shop |
-| Systems | SAP S/4HANA for finance (general ledger), a store POS system per till, a planning tool for budgets |
+| Systems | SAP S/4HANA for finance (general ledger, universal journal ACDOCA), a central POS hub collecting every till, a planning tool for budgets |
 | Finance team | Group accounting (general ledger, close), store controlling, FP&A (forecast, budget), internal audit |
 | This project's slice | 40 stores, 21 months, about 1/1,000 of a real chain's volume ([3.1](../stories/3.1-synthetic-accounting-data.md)) |
 
@@ -33,7 +33,7 @@ Detail: [`cmdb.yml`](../../cmdb.yml) → `conception`, `decisions`.
 | Step | How it is done today | Pain |
 |---|---|---|
 | Collect | Accountants export GL lines from SAP and POS summaries from the store system into Excel | Copies of copies; no single version |
-| Reconcile GL vs POS | A sample of stores and days, VLOOKUPs, tolerance by judgement | A fake journal on an unsampled day passes |
+| Reconcile GL vs POS | POS revenue posts to the GL through the POS interface; accountants check a sample of stores and days for manual journals and interface gaps | A fake journal on an unsampled day passes |
 | Refund fraud | Found by store audits or tip-offs, months later | Losses accumulate; the trail is cold |
 | Margin leakage | Noticed when a store's quarterly margin looks odd | Discount abuse runs for a quarter |
 | Forecast | Controllers extend last year in Excel, by hand | Unmeasured accuracy, key-person dependency |
@@ -49,18 +49,18 @@ Detail: [`cmdb.yml`](../../cmdb.yml) → `conception`, `decisions`.
 | # | Stage | Real-world tool | In this project |
 |---|---|---|---|
 | 1 | **Sources** | SAP S/4HANA (GL journals), store POS (receipt lines, refunds), planning tool (budget), ECB (FX rates), HR (cashier master, pseudonymised at source) | Simulated by the generator; ECB rates are real |
-| 2 | **Integration in** | SAP: SAP Datasphere replication (or a CDC tool) to S3. POS: nightly store files through managed file transfer (SFTP) to S3. ECB: daily API pull. Budget: monthly export | Simulated: files written to the landing volume |
+| 2 | **Integration in** | SAP: CDS extraction views on the universal journal through SAP Datasphere replication to S3 (needs SAP's outbound integration licence), or SAP Business Data Cloud sharing to Databricks. POS: nightly files from the central POS hub through managed file transfer (SFTP). ECB: daily API pull. Budget: monthly export | Simulated: files written to the landing volume |
 | 3 | **Landing** | S3 in our AWS account, Frankfurt | Built (Unity Catalog volume) |
 | 4 | **Lakehouse** | Databricks: Bronze (as delivered) → Silver (typed, checked, quarantine) → Gold (finance tables), reconciliation, quality gates, certification | Built ([4.1](../stories/4.1-silver-tables.md)-[4.4](../stories/4.4-quality-and-lineage.md)) |
 | 5 | **ML** | Fraud detectors, margin drift, revenue forecast, drift monitoring | Built ([5.1](../stories/5.1-fraud-detection.md), [5.2](../stories/5.2-revenue-forecast.md), [6.2](../stories/6.2-drift-checks.md)) |
-| 6 | **AI agent** | Reads certified Gold, scores and exceptions; drafts the close commentary with citations; triages alerts | To build (stage 7, [ADR-006](adr/ADR-006-agent-platform.md)) |
+| 6 | **AI agent** | Reads certified Gold, store-level results and exceptions; drafts the close commentary with citations; never sees cashier-level data | Planned (stage 7, [ADR-006](adr/ADR-006-agent-platform.md)) |
 | 7 | **Review** | Controller approves or edits each draft; internal audit owns fraud cases | Simulated: a review status on the draft table |
 | 8 | **Integration out** | The company's iPaaS (e.g. Workato or MuleSoft) posts approved items to the right tool | Not built |
 | 9 | **Channels** | Teams "Finance close" channel; CFO pack (PowerPoint/PDF); ServiceNow cases for internal audit and the GL team; Power BI on Databricks SQL for forecasts | Not built |
 
-**Why no iPaaS on the way in:** iPaaS tools move records between applications through APIs, priced
-per task. Millions of receipt lines a day are bulk files; file transfer to S3 and Auto Loader are the
-standard, cheaper path. On the way out, iPaaS is the right tool: a few approved items to Teams or
+**Why no iPaaS on the way in:** iPaaS tools are designed and priced for application integration
+(MuleSoft by flows and messages, Workato by tasks); some can batch, but millions of receipt lines a
+day are bulk files, and file transfer to S3 with Auto Loader is the standard, cheaper path. On the way out, iPaaS is the right tool: a few approved items to Teams or
 ServiceNow are exactly app-to-app events ([ADR-004](adr/ADR-004-ingestion-integration.md)).
 
 **Who receives what:**
@@ -68,13 +68,14 @@ ServiceNow are exactly app-to-app events ([ADR-004](adr/ADR-004-ingestion-integr
 | Output | Goes to | Channel | Never to |
 |---|---|---|---|
 | Reconciliation exceptions (unsupported journals) | GL team lead | ServiceNow work queue | — |
-| Cashier refund scores, margin alerts | Internal audit | ServiceNow case, restricted | Store managers (GDPR, works council) |
+| Cashier refund scores (employee-level) | Internal audit only | ServiceNow case, restricted | Store managers, the agent, the CFO pack (GDPR, works council, R-12) |
+| Store margin alerts (not personal data) | Store controlling | Power BI, ServiceNow | — |
 | Forecast with range | FP&A, CFO | Power BI | — |
 | Draft close commentary | Financial controller (approves) | Review screen → Teams + CFO pack after approval | Anyone before approval |
 
 ## Use cases
 
-> **TL;DR:** five built, seven candidates for later.
+> **TL;DR:** four built, one planned (the agent), eight candidates.
 
 | Use case | Technique | Before | After | Status |
 |---|---|---|---|---|
@@ -82,7 +83,7 @@ ServiceNow are exactly app-to-app events ([ADR-004](adr/ADR-004-ingestion-integr
 | Refund fraud by cashier | ML, unsupervised | Store audits, tip-offs | Monthly ranked review queue | Built (planted case #1) |
 | Margin leakage by store | ML, unsupervised | Quarterly review | Monthly, against the store's own past | Built (planted case #1) |
 | Revenue forecast | ML vs seasonal baseline | Excel, unmeasured | Measured; the better method ships | Built (baseline wins) |
-| Close commentary and alert triage | **AI agent** (LLM with read-only tools) | Days of controller writing | Cited draft in minutes, controller approves | Stage 7 |
+| Close commentary | **AI agent** (LLM with read-only tools) | Days of controller writing | Cited draft in minutes, controller approves | Planned (stage 7) |
 | Three-way match (PO, receipt, invoice) | Rules + ML for exceptions | Manual exception handling | Auto-match, humans on exceptions | Candidate |
 | Accrual proposals | Agent on open POs and receipts | Spreadsheet estimates | Proposed accruals with evidence | Candidate |
 | Intercompany reconciliation (DE-CH) | Rules + agent explanations | Email ping-pong | Matched, differences explained | Candidate |
@@ -90,6 +91,11 @@ ServiceNow are exactly app-to-app events ([ADR-004](adr/ADR-004-ingestion-integr
 | Expense audit | ML + agent | Sampling | All claims scored | Candidate |
 | Cash forecast | ML | Treasury spreadsheet | Daily, with range | Candidate |
 | Close checklist orchestration | Agent | Checklist in Excel | Status, blockers, reminders | Candidate |
+| Card and cash settlement to bank | Rules | Manual matching of acquirer payouts | Every payout matched to POS takings | Candidate |
+
+**Build or buy:** close tools such as BlackLine, SAP Advanced Financial Closing or Workiva cover
+checklists, reconciliations and reporting out of the box. A company with one of them would plug
+the lakehouse's certified data and the models into it rather than rebuild those features.
 
 ## ML or agent?
 
@@ -98,7 +104,7 @@ ServiceNow are exactly app-to-app events ([ADR-004](adr/ADR-004-ingestion-integr
 | | ML models | AI agent |
 |---|---|---|
 | Does | Scores, ranks, forecasts | Reads certified results, explains, drafts, triages |
-| Input | Feature tables | Gold tables, model scores, reconciliation exceptions, through read-only tools |
+| Input | Feature tables | Gold tables, store-level results, reconciliation exceptions, through read-only tools (no employee-level data) |
 | Output | Numbers with a known error | Text with citations, for a human |
 | Tested by | Backtests, planted cases | Every figure in the draft matches Gold; approval rate; edits needed |
 | Can act? | No | No: read-only; a controller approves; posting entries stays human |
@@ -124,13 +130,15 @@ ServiceNow are exactly app-to-app events ([ADR-004](adr/ADR-004-ingestion-integr
 |---|---|
 | Internal control over financial reporting (segregation of duties) | Separate identities for build, deploy, run; agent read-only; human approval |
 | GDPR and works council (cashier-level scores) | Pseudonymous IDs, scores for internal audit only (R-12); DPIA before production |
-| EU AI Act | Ranking employees for investigation likely counts as high-risk (employment monitoring): human oversight, logging, legal review before production |
-| EU data residency | Frankfurt; EU-only model routing for the agent |
+| EU AI Act | Ranking employees for investigation likely counts as high-risk (monitoring workers, Annex III): human oversight, logging, legal review before production. Timelines may shift; Swiss stores fall under Swiss law |
+| EU data residency | Data in Frankfurt; the agent's model calls processed in EU regions only |
 | No public egress for finance data | Private VPC, PrivateLink ([ADR-003](adr/ADR-003-compute-network.md)) |
-| Portfolio budget (USD 50/month AWS, Databricks trial) | Small clusters, teardown 2026-10-06 |
+| Portfolio budget (USD 50/month AWS budget, Databricks trial) | The private endpoints cost more than the budget per month (~USD 64, +17 for Bedrock): the build runs for a time-boxed window, teardown 2026-10-06 |
 
 ## Scope: built vs simulated
 
+> **TL;DR:** the core is real; the edges are simulated.
+
 | Built | Simulated | Not built |
 |---|---|---|
-| AWS foundation, private network, Databricks workspace, Unity Catalog, Bronze/Silver/Gold, reconciliation, quality gates, ML, scheduling, drift checks, AI agent (stage 7) | SAP, POS and planning systems (synthetic files), the controller's approval (a status column) | iPaaS, Teams, ServiceNow, Power BI, CFO pack |
+| AWS foundation, private network, Databricks workspace, Unity Catalog, Bronze/Silver/Gold, reconciliation, quality gates, ML, scheduling, drift checks; AI agent planned (stage 7) | SAP, POS and planning systems (synthetic files), the controller's approval (a status column) | iPaaS, Teams, ServiceNow, Power BI, CFO pack |

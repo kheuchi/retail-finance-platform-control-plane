@@ -2,7 +2,7 @@
 
 **Contents:** [TL;DR](#tldr) · [Context](#context) · [Options](#options) · [Decision](#decision) · [Consequences](#consequences) · [Revisit when](#revisit-when)
 
-Accepted · 2026-10-04 · cmdb: D-003, D-011, D-022, D-026, D-031 · Stories: [1.2](../../stories/1.2-passwordless-cicd.md), [3.2](../../stories/3.2-catalog-and-bundle-deploy.md), [6.1](../../stories/6.1-scheduled-pipeline.md), [6.2](../../stories/6.2-drift-checks.md)
+Accepted · 2026-10-04 · cmdb: D-003, D-011 (amended), D-022, D-026, D-031 · Stories: [1.2](../../stories/1.2-passwordless-cicd.md), [3.2](../../stories/3.2-catalog-and-bundle-deploy.md), [6.1](../../stories/6.1-scheduled-pipeline.md), [6.2](../../stories/6.2-drift-checks.md)
 
 ## TL;DR
 
@@ -22,6 +22,8 @@ reviewers, risks and cadences. The orchestration need is a daily chain of four j
 
 ## Options
 
+> **TL;DR:** a cross-system orchestrator is not worth it for four Databricks jobs.
+
 | Option | For | Against |
 |---|---|---|
 | **Databricks Jobs + Asset Bundles** | Native retries, queueing, run-as identity, lineage per job; one YAML per job in Git | Tied to Databricks |
@@ -33,11 +35,15 @@ reviewers, risks and cadences. The orchestration need is a daily chain of four j
 
 ## Decision
 
+> **TL;DR:** two Terraform stacks, one bundle, one orchestrator job, a nightly drift check.
+
 Terraform in two stacks (AWS foundation, Databricks) through OIDC-authenticated, gated workflows.
 Bundles deploy jobs as `finance-data-deployer`; jobs run as `finance-pipeline-runner`. One
 orchestrator job chains Bronze → Silver → Gold → ML on a schedule; a nightly `bundle plan` flags drift.
 
 ## Consequences
+
+> **TL;DR:** everything reviewed; drift reported, not reverted.
 
 | Good | Bad |
 |---|---|
@@ -46,5 +52,7 @@ orchestrator job chains Bronze → Silver → Gold → ML on a schedule; a night
 | Separation of duties by identity | Cross-system orchestration (SAP extract finished?) would need more |
 
 ## Revisit when
+
+> **TL;DR:** a chain across several systems.
 
 The chain spans several systems (SAP, iPaaS, BI refresh): then a cross-system orchestrator earns its place.

@@ -11,7 +11,7 @@ Accepted · 2026-10-04 · cmdb: D-015b, D-019, D-021 · Stories: [2.1](../../sto
 | Decision | Job clusters in our own VPC with no internet gateway and no NAT; Databricks reached over PrivateLink, S3 over a gateway endpoint |
 | Rejected | Serverless compute; classic compute with a NAT gateway |
 | Main reason | "Finance data has no road to the internet" becomes literally true and provable |
-| Main cost | ~USD 64/month of endpoints vs ~38 for NAT; Enterprise tier; harder debugging |
+| Main cost | ~USD 64/month of endpoints vs ~38 for NAT (above the USD 50 budget: run time-boxed); Enterprise tier; harder debugging |
 
 ## Context
 
@@ -22,19 +22,25 @@ security want proof, not a promise, that it cannot.
 
 ## Options
 
+> **TL;DR:** only PrivateLink without NAT removes the road to the internet.
+
 | Option | For | Against |
 |---|---|---|
-| Serverless | No VPC to run; fast start | Compute runs in Databricks' account: none of our network controls apply |
+| Serverless | No VPC to run; fast start | Compute runs in Databricks' account, outside our VPC: only the serverless egress policy applies, no flow logs of ours |
 | Classic + NAT | Cheaper, simple | A route to the whole internet remains |
 | **Classic + PrivateLink, no NAT** | No public egress at all; flow logs record every attempt | Endpoint cost; every port must be opened on both ends |
 
 ## Decision
+
+> **TL;DR:** classic job clusters, five endpoints, nothing downloaded at run time.
 
 Classic job clusters in a customer-managed VPC (2 AZ), interface endpoints for the Databricks
 workspace and relay, STS and Kinesis, a free S3 gateway endpoint; no internet gateway, no NAT.
 Libraries come from the Databricks runtime or our own wheel: nothing is downloaded at run time.
 
 ## Consequences
+
+> **TL;DR:** provable containment; every port and library must be planned.
 
 | Good | Bad |
 |---|---|
@@ -43,6 +49,8 @@ Libraries come from the Databricks runtime or our own wheel: nothing is download
 | The same pattern extends to Bedrock (one more endpoint, [ADR-006](ADR-006-agent-platform.md)) | Endpoint cost runs even when idle |
 
 ## Revisit when
+
+> **TL;DR:** private serverless, or cost over guarantee.
 
 Serverless gains customer-controlled private networking that meets the same proof standard, or the
 endpoint cost matters more than the egress guarantee.

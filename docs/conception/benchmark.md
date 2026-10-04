@@ -13,7 +13,7 @@ Detail: [`cmdb.yml`](../../cmdb.yml) → `conception.benchmark`.
 | Options | Databricks on AWS · AWS-native · Snowflake + dbt + Airflow · Microsoft Fabric · Google BigQuery + Vertex AI · SAP-native |
 | Winner for this case | **Databricks on AWS** (87/100), then AWS-native (75) and Google (74) |
 | Why | One catalog for tables, files and models; ML and GenAI on the same governed data; open formats; runs in our own private network |
-| Honest caveat | Scores are our judgement against stated criteria, from public documentation as of 2026-10; prices change and are not compared line by line |
+| Honest caveat | Scores are our judgement against stated criteria, from public documentation as of 2026-10; prices change and are not compared line by line. Databricks was the sponsor's starting requirement (D-004); the benchmark tests it |
 
 ## What we compare
 
@@ -61,11 +61,15 @@ Detail: [`cmdb.yml`](../../cmdb.yml) → `conception.benchmark`.
 | Fit with our constraints (5) | 5 | 5 | 3 | 1 | 1 | 1 |
 | **Total / 100** | **87** | **75** | **72** | **70** | **74** | **60** |
 
+**Sensitivity:** the ranking is not an artefact of the weights. With equal weights Databricks still
+leads (raw sum 39 vs 34 for AWS-native and Google); without the "fit with our constraints" criterion,
+which favours what we already run, it is 86 vs 74.
+
 Short reasons:
 
 | Option | Strongest point | Weakest point for us |
 |---|---|---|
-| A Databricks | Unity Catalog governs tables, volumes and models with lineage; Spark, MLflow, jobs in one place | Two vendors (AWS + Databricks); serverless runs outside our VPC |
+| A Databricks | Unity Catalog governs tables, volumes and models with lineage; Spark, MLflow, jobs in one place | Two vendors (AWS + Databricks); serverless runs outside our VPC; private networking is harder to debug |
 | B AWS-native | Everything inside our account and network | Many services to glue together: catalog, Spark, warehouse, ML and orchestration are separate products |
 | C Snowflake | Simplest SQL warehouse, strong governance | Private connectivity needs a higher edition; heavy ML usually leaves the platform |
 | D Fabric | All-in-one SaaS, Power BI native | We are on AWS; capacity priced even when idle |
