@@ -102,5 +102,6 @@ Short reasons:
 | Ingestion | File landing + Auto Loader | iPaaS, Fivetran, Lakeflow Connect, Kafka | [ADR-004](adr/ADR-004-ingestion-integration.md) |
 | Orchestration and deploy | Databricks Jobs + Asset Bundles; Terraform | Airflow, Step Functions, Lakeflow pipelines | [ADR-005](adr/ADR-005-orchestration-deploy.md) |
 | ML | scikit-learn + MLflow, UC model registry | SageMaker, Vertex AI | [ADR-002](adr/ADR-002-data-platform.md) |
-| GenAI agent | Job in our VPC + Bedrock over PrivateLink | Bedrock Agents, Databricks Agent Framework, Genie | [ADR-006](adr/ADR-006-agent-platform.md) |
+| GenAI agent | Deep Agents (LangGraph) on AgentCore Runtime, Claude on Bedrock (EU) | Strands Agents, AgentCore Harness, Databricks Agent Framework, Bedrock Agents | [ADR-006](adr/ADR-006-agent-platform.md) |
+| Agent tools and channels | MCP tools behind AgentCore Gateway | iPaaS, direct API calls, Agent Router (Envoy) | [ADR-006](adr/ADR-006-agent-platform.md) |
 | BI | Power BI on Databricks SQL (not built) | Databricks AI/BI, SAP Analytics Cloud | — |

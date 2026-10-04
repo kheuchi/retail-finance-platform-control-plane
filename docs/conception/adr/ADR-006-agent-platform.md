@@ -1,87 +1,108 @@
-# ADR-006 · AI agent platform: a job in our VPC, Bedrock (EU) over PrivateLink, human approval
+# ADR-006 · AI agent platform: Deep Agents in a container, on AgentCore, tools over MCP
 
-**Contents:** [TL;DR](#tldr) · [Context](#context) · [Requirements](#requirements) · [Options](#options) · [Decision](#decision) · [Consequences](#consequences) · [Revisit when](#revisit-when)
+**Contents:** [TL;DR](#tldr) · [Context](#context) · [Requirements](#requirements) · [Options](#options) · [Decision](#decision) · [Portability](#portability) · [Consequences](#consequences) · [Revisit when](#revisit-when)
 
-Accepted · 2026-10-04 · cmdb: D-029 · To build: [story 7.1](../../stories/7.1-month-end-agent.md) · Docs: [business case](../business-case.md#ml-or-agent), [HLD](../../architecture/hld.md)
+Accepted · 2026-10-04 (revised the same day: framework and runtime) · cmdb: D-029 · To build: [story 7.1](../../stories/7.1-month-end-agent.md) · Docs: [business case](../business-case.md#ml-or-agent), [HLD](../../architecture/hld.md)
 
 ## TL;DR
 
 | | |
 |---|---|
-| Decision | The agent is a Python job on our classic cluster, run as **its own identity** `finance-month-end-agent`. It calls Claude on Amazon Bedrock (Converse API, EU-only inference profile) over a Bedrock PrivateLink endpoint. AWS access comes from a Unity Catalog service credential. Its tools are fixed, read-only queries on certified Gold, with no employee-level data. Drafts wait for a controller's approval |
-| Rejected | Bedrock Agents / AgentCore, Databricks Agent Framework on Model Serving, Genie, an agent framework from PyPI |
-| Main reason | Agent, data and model calls stay on paths we already control and prove; read-only is enforced by grants, not by code |
-| Main cost | We write the tool loop (~150 lines) and the guardrails ourselves |
+| Decision | A **model-driven** multi-agent built with **Deep Agents** (LangChain, on the LangGraph runtime), shipped as a container, running on **Amazon Bedrock AgentCore Runtime attached to our VPC**. Tools and channels are **MCP** tools behind **AgentCore Gateway**; AgentCore **Identity** holds channel credentials, **Policy** decides who may call what. Model: Claude on Bedrock, EU inference profile |
+| Principle | Free the reasoning, constrain the permissions: the LLM plans, delegates and chooses tools; what it *may* do is enforced outside the model (Unity Catalog grants, IAM, gateway policy, approval check) |
+| Rejected | AgentCore Harness (preview, AWS-only API), a hand-written loop (first version of this ADR), Bedrock Agents (classic), Databricks Agent Framework on serverless, an AI gateway (Envoy / Agent Router) today |
+| Main reason | Most adopted open framework, portable code and tool protocol, and a runtime that keeps the agent inside our network |
+| Main cost | More moving parts (container, registry, gateway, ~6 more endpoints); Deep Agents is young and moves fast |
 
 ## Context
 
-> **TL;DR:** the agent reads finance data and writes for the CFO: private, EU-only, read-only, supervised.
+> **TL;DR:** a real agent that plans and acts, for finance data, on a platform that may not stay on one cloud.
 
-The agent drafts the month-end commentary from certified Gold, store-level model results and
-reconciliation exceptions ([business case](../business-case.md#use-cases)). Clusters have no internet
-and no PyPI ([ADR-003](ADR-003-compute-network.md)). Bedrock in Frankfurt lists EU-only inference
-profiles for current Claude models (`aws bedrock list-inference-profiles`, 2026-10-04):
-`eu.anthropic.claude-sonnet-5`, `eu.anthropic.claude-haiku-4-5-20251001-v1:0`, `eu.anthropic.claude-opus-5-5`.
+The agent drafts the close commentary, triages store-level alerts and reconciliation exceptions, and
+distributes approved items to Teams, ServiceNow and the CFO pack ([business case](../business-case.md)).
+An LLM-driven agent decides its own steps; a fixed graph or a capped loop would cap its usefulness and
+need rebuilding as needs grow. The company may run agents on another cloud later.
+
+Adoption on 2026-10-04 (GitHub stars / PyPI downloads per month): LangChain 147k / 170M, LangGraph
+42.7k / 44M, Deep Agents 30k / 5.6M (since July 2025), Strands Agents 8.7k / 37M (downloads include
+AWS's own automated pulls).
 
 ## Requirements
 
-> **TL;DR:** twelve rules the design must meet; each becomes a test or a grant.
+> **TL;DR:** the old guardrails stay; they move out of the agent's code into the platform.
 
-| # | Requirement | Met by |
+| # | Requirement | Enforced by (outside the LLM) |
 |---|---|---|
-| 1 | No public internet path for data or prompts | Bedrock runtime interface endpoint; flow logs |
-| 2 | Model processing in EU regions only | EU inference profile; IAM allows only EU ARNs |
-| 3 | Read-only on finance data, enforced by identity | Own service principal: SELECT on named Gold tables, write on `ops.agent_drafts` and `ops.agent_runs` only |
-| 4 | No employee-level data in the commentary (R-12) | Tools never return cashier IDs; cashier alerts stay with internal audit; at most a count is cited |
-| 5 | Every figure traceable to a Gold row | Tools compute every figure (variances, percentages); the model may only quote them; a check rejects any number not returned by a tool |
-| 6 | Free text from data cannot steer the agent (prompt injection) | Tools return structured fields; journal descriptions are excluded; the system prompt treats tool output as data |
-| 7 | Human approval before anything leaves finance | Approvals in `ops.agent_approvals`, writable only by the controllers group; the agent cannot set them |
-| 8 | Runs from certified Gold only | Same check as the ML job ([6.1](../../stories/6.1-scheduled-pipeline.md)) |
-| 9 | Bounded cost and behaviour | Max 8 tool calls, max output tokens, run timeout; tokens and cost stored per run |
-| 10 | Auditable | Prompt, tool calls, draft, model ID, tokens in `ops.agent_runs`; engineers and internal audit read; 365 days |
-| 11 | Least-privilege model access | IAM role: `bedrock:InvokeModel` on the chosen profile and its EU foundation models only; endpoint policy limited to that role |
-| 12 | Deployed and scheduled like every other job | Bundle job, deployer/run-as split ([ADR-005](ADR-005-orchestration-deploy.md)) |
+| 1 | No internet path from the agent | AgentCore Runtime in our private subnets; PrivateLink endpoints for Bedrock, AgentCore, ECR, logs |
+| 2 | Model processing in EU regions | EU inference profile; IAM allows only EU ARNs |
+| 3 | Read-only on finance data | Agent service principal `finance-month-end-agent`: EXECUTE on governed Unity Catalog functions over five Gold tables; no table writes except its own ops tables |
+| 4 | No employee-level data (R-12) | The functions never return cashier IDs; cashier cases stay with internal audit |
+| 5 | Every figure traceable | Functions compute every figure; a check rejects drafts with numbers no tool returned |
+| 6 | Prompt injection from data | Functions return structured fields, no free text (journal descriptions excluded) |
+| 7 | Nothing leaves before a person approves | Send tools (Gateway targets) check `ops.agent_approvals` themselves and refuse unapproved items; only `finance-controllers` can approve |
+| 8 | Channel credentials never in the agent | AgentCore Identity (OAuth to Microsoft Graph, ServiceNow) |
+| 9 | Who may call which tool | AgentCore Policy per agent; Unity Catalog grants per function |
+| 10 | Bounded cost | Session timeout, token budget per run, recursion limit; tokens and cost logged |
+| 11 | Auditable | AgentCore Observability (OpenTelemetry traces); drafts and tool calls in `ops.agent_runs`, 365 days |
+| 12 | Portable | Open framework, container, MCP tools, model behind an abstraction ([portability](#portability)) |
 
 ## Options
 
-> **TL;DR:** only the in-VPC job meets requirements 1, 3 and 12 without a new data path.
+> **TL;DR:** Deep Agents on AgentCore is the only option that is LLM-driven, portable and private at once.
 
-| Option | Private (1) | Read-only by identity (3) | Same deploy (12) | Verdict |
+| Option | LLM-driven | Portable | Private (in our VPC) | Verdict |
 |---|---|---|---|---|
-| **Job in our VPC + Bedrock Converse over PrivateLink** | Yes (one more endpoint) | Yes (own service principal) | Yes (bundle) | **Chosen** |
-| Bedrock Agents / AgentCore | AgentCore Runtime can attach to a VPC, but tools need a new SQL path into Databricks | Depends on the tool code and its credentials | No: a separate stack | Rejected: new data path, second deploy model |
-| Databricks Agent Framework on Model Serving | Serverless, outside our VPC (only the egress policy applies) | Yes (Unity Catalog) | Partly | Rejected: runs where our network proof does not reach |
-| Genie (AI/BI) | Serverless | Yes | — | Rejected: question answering for analysts, not drafting with approval |
-| LangGraph / an agent SDK in the job | Yes | Yes | Needs vendored PyPI wheels | Not now: one agent, five tools need no framework |
+| **Deep Agents (LangGraph) container on AgentCore Runtime** | Yes: plans, to-do list, sub-agents, tool choice | Yes: same container on Kubernetes or another cloud | Yes: VPC-attached runtime | **Chosen** |
+| Strands Agents on AgentCore Runtime | Yes (model-driven by design) | Yes (open source, multi-provider) | Yes | Good alternative; smaller community, centre of gravity on AWS |
+| AgentCore Harness (AWS runs the loop) | Yes | No: the agent is an AWS API call | Partly | Rejected: public preview since April 2026, lock-in |
+| Hand-written Converse loop (first version of this ADR) | Partly (capped tools and calls) | Yes | Yes | Rejected: not a real agent; we would rebuild it |
+| Bedrock Agents (classic) | Yes | No | Partly | Rejected: AWS-only configuration, less control |
+| Databricks Agent Framework on Model Serving | Yes | Partly | No: serverless | Rejected: outside our network proof |
+| AI gateway (Envoy AI Gateway, now Agent Router) | — | Helps multi-cloud | Needs Kubernetes | Not now: one model provider; the option for multi-cloud ([revisit](#revisit-when)) |
 
 ## Decision
 
-> **TL;DR:** six pieces, two repos.
+> **TL;DR:** one supervisor, three specialists, tools over MCP, approvals enforced by the send tools.
 
 | Piece | Choice |
 |---|---|
-| Identity | Service principal `finance-month-end-agent` (infra): SELECT on `gold.daily_revenue`, `gold.budget_variance`, `gold.margin_alerts`, `gold.revenue_forecast`, `gold.recon_exceptions`; MODIFY on `ops.agent_drafts`, `ops.agent_runs`; ACCESS on the service credential; nothing else |
-| Runtime | Job `month_end_agent` on the `finance-jobs` policy, run as that identity, after certified Gold |
-| Model | Claude via `bedrock-runtime` Converse with tool use (non-streaming); EU profile chosen at build time from the list above |
-| Network | Bedrock runtime interface endpoint in the endpoint subnets, private DNS, 443 from the workspace SG, endpoint policy limited to the role |
-| AWS access | Unity Catalog service credential → IAM role. Policy: `bedrock:InvokeModel` on `arn:aws:bedrock:eu-central-1:<account>:inference-profile/<eu profile>` and on `arn:aws:bedrock:eu-*::foundation-model/<model id>` (an EU profile may route to any EU region). Trust: Unity Catalog with external ID, as in [2.4](../../stories/2.4-unity-catalog-on-our-s3.md). Policy simulator before apply |
-| One-time setup | Anthropic first-use form and model subscription, done once by the human admin (may need `aws-marketplace` permissions on first call) |
-| Output | `ops.agent_drafts` (status `pending_review` or `rejected_by_check`), `ops.agent_runs` (audit), `ops.agent_approvals` (controllers only) |
+| Agents | Supervisor (`create_deep_agent`) that plans the close and delegates to sub-agents: **commentary writer**, **alert triage** (store margin, reconciliation exceptions), **distributor** (prepares channel messages, sends approved items) |
+| Data tools | Unity Catalog SQL functions in `finance.agent` (read-only, governed, with lineage) over certified Gold, exposed as MCP tools (Databricks managed MCP server for UC functions; fallback: our own MCP server in the container querying a SQL warehouse in our VPC) |
+| Channel tools | AgentCore Gateway targets (Lambda outside our VPC): `post_to_teams`, `open_servicenow_case`, `send_email`, `publish_commentary` (writes the approved text to `gold.close_commentary` for Power BI). Each refuses items not approved |
+| Model | Claude on Bedrock via LangChain's Bedrock chat model, EU inference profile (e.g. `eu.anthropic.claude-sonnet-5`); swappable by configuration |
+| Runtime | AgentCore Runtime in Frankfurt, attached to our private subnets; image built in CI (pinned versions), stored in ECR |
+| Identities | Databricks: service principal `finance-month-end-agent`. AWS: AgentCore execution role (Bedrock EU ARNs, Gateway, logs). Channels: AgentCore Identity |
+| Network | New endpoints: Bedrock runtime, AgentCore (data plane, gateway), ECR (api, dkr), CloudWatch Logs; existing: STS, S3 gateway, Databricks workspace (for the MCP server) |
+| Human approval | Drafts and outgoing items in `ops.agent_drafts`; a controller approves in `ops.agent_approvals`; the next run's distributor sends only approved items |
+| In this project | Teams and ServiceNow are the target; a stand-in channel (Slack or email) sits behind the same Gateway tool if no Microsoft 365 tenant is available |
+
+## Portability
+
+> **TL;DR:** four layers, each replaceable without rewriting the others.
+
+| Layer | Today (AWS) | On another cloud |
+|---|---|---|
+| Agent code | Deep Agents container | Same container |
+| Runtime | AgentCore Runtime | Kubernetes (EKS, AKS, GKE), Azure Container Apps, Cloud Run, LangGraph Platform |
+| Tools and channels | MCP servers behind AgentCore Gateway | Same MCP servers behind another MCP gateway (e.g. Agent Router) |
+| Model | Claude on Bedrock (EU) | Claude on Vertex AI or Microsoft Foundry, or another model, by configuration |
+| Observability | AgentCore Observability (OpenTelemetry) | Any OpenTelemetry backend |
 
 ## Consequences
 
-> **TL;DR:** consistent with the platform; more of our own code to test.
+> **TL;DR:** a real, portable agent; more infrastructure and a young framework.
 
 | Good | Bad |
 |---|---|
-| Same network, identity and deploy story as the rest | Tool loop, figure check and prompt are ours to test |
-| Read-only and no-employee-data enforced by grants | A fourth service principal to manage and audit |
-| Auditable per run | Bedrock endpoint ~USD 0.024/hour in 2 AZ (~17/month): built for the demo window, destroyed at teardown |
-| Processing in EU regions on the AWS network | Not only Frankfurt: the EU profile may route to another EU region |
+| The LLM plans and delegates; no capped loop to rebuild later | Behaviour is less predictable: evaluation and traces become essential |
+| Guardrails enforced by grants, IAM, policy and the send tools, not by prompts | More infrastructure: registry, gateway, runtime, ~6 endpoints (~USD 3.5/day in 2 AZ) |
+| The only data that leaves our network is an approved message, through one audited gateway | Deep Agents' API changes quickly: versions pinned, upgrades reviewed |
+| Moves to another cloud by changing the runtime and the gateway | AgentCore itself is AWS-specific (accepted: it is the replaceable layer) |
 
 ## Revisit when
 
-> **TL;DR:** more agents, or private serverless.
+> **TL;DR:** several model providers, several clouds, or a stable managed harness.
 
-Several agents share tools and memory (then a framework or AgentCore), or Databricks serverless
-offers private networking that meets [ADR-003](ADR-003-compute-network.md).
+Models from several providers or clouds (then an AI gateway such as Agent Router, on Kubernetes);
+AgentCore Harness reaches general availability with an export path; or the agent count grows enough
+to need agent-to-agent (A2A) across teams.

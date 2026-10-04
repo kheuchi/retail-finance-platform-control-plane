@@ -93,8 +93,8 @@ phases:
 # ──────────── architecture ────────────
 conception:
   docs: 'docs/conception/ (day 0 - business case, stakeholders, benchmark, adr/)'
-  business_case: 'month-end close for a DE/CH grocery retailer; sources SAP S/4HANA, store POS, planning tool, ECB, HR; files in, iPaaS out; outputs to controller (commentary), internal audit (fraud), GL lead (exceptions), FP&A (forecast)'
-  diagram: {file: conception/business-workflow, covers: 'sources -> integration in -> S3 landing -> lakehouse -> ML -> agent (Bedrock) -> review -> iPaaS -> Teams, CFO pack, ServiceNow, Power BI; built vs simulated'}
+  business_case: 'month-end close for a DE/CH grocery retailer; sources SAP S/4HANA, store POS, planning tool, ECB, HR; files in, tool gateway out; outputs to controller (commentary), internal audit (fraud), GL lead (exceptions), FP&A (forecast)'
+  diagram: {file: conception/business-workflow, covers: 'sources -> integration in -> S3 landing -> lakehouse -> ML -> agent (Bedrock) -> review -> AgentCore Gateway (MCP tools) -> Teams, CFO pack, ServiceNow; Power BI reads Gold; built vs simulated'}
   stakeholders: 'CFO (sponsor), Head of Accounting (business owner), GL, store controlling, FP&A, internal audit, CISO, DPO + works council, PO, data/ML/platform engineers, enterprise architect, SAP/integration team; RACI in stakeholders.md'
   benchmark: 'Databricks on AWS 87, AWS-native 75, Google 74, Snowflake 72, Fabric 70, SAP-native 60 (weighted, 9 criteria, judgement as of 2026-10)'
   adrs: [ADR-001 cloud, ADR-002 data platform, ADR-003 compute and network, ADR-004 ingestion, ADR-005 orchestration and deploy, ADR-006 agent platform]
@@ -152,7 +152,7 @@ stories:
     - {id: '5.2', title: 'Revenue forecast (next 3 months per store, vs baseline)', epic: 5, type: as-built, status: 'Done', dates: '2026-09-29', file: 5.2-revenue-forecast.md}
     - {id: '6.1', title: 'Scheduled pipeline (orchestrator job, retries, failure email)', epic: 6, type: as-built, status: 'Done', dates: '2026-10-01..04', file: 6.1-scheduled-pipeline.md}
     - {id: '6.2', title: 'Drift checks (PSI on model inputs, config drift via bundle plan)', epic: 6, type: as-built, status: 'Done', dates: '2026-10-01..04', file: 6.2-drift-checks.md}
-    - {id: '7.1', title: 'Month-end close agent (Bedrock EU over PrivateLink, own read-only identity, approval)', epic: 7, type: planned, status: 'In progress', dates: '2026-10-04', file: 7.1-month-end-agent.md}
+    - {id: '7.1', title: 'Month-end close agents (Deep Agents on AgentCore, MCP tools, gateway, approval)', epic: 7, type: planned, status: 'In progress', dates: '2026-10-04', file: 7.1-month-end-agent.md}
     - {id: 'X.1', title: 'Documentation system', epic: cross-cutting, type: as-built, status: 'Done (living)', dates: '2026-09-14..26', file: 'README.md#how-the-docs-work'}
 
 # ──────────── decisions ────────────
@@ -323,16 +323,16 @@ decisions:
     reason: 'Long prose docs were hard to read; full versions stay in Git history'
     story: 'X.1'
   - id: D-029
-    decision: 'AI agent = a job in our VPC with its own service principal (SELECT on named Gold tables, writes only its own ops tables), calling Claude on Bedrock (EU inference profile) over PrivateLink; AWS access via a Unity Catalog service credential; no employee-level data; human approval'
+    decision: 'AI agent = model-driven Deep Agents (LangGraph) multi-agent in a container on AgentCore Runtime attached to our VPC; Claude on Bedrock (EU profile); data tools = read-only Unity Catalog functions over MCP; channels = MCP tools behind AgentCore Gateway (Identity holds credentials, Policy, send tools refuse unapproved items); own service principal; no employee-level data'
     status: 'Accepted'
     date: '2026-10-04'
-    reason: 'Only option where agent, data and model calls stay on paths we control; Bedrock Agents, Databricks Model Serving and Genie run outside our network'
+    reason: 'LLM-driven (no capped loop), most adopted open framework, portable container and MCP tools, runtime inside our network; Harness is preview and AWS-only, Strands kept as the alternative'
     adr: docs/conception/adr/ADR-006-agent-platform.md
   - id: D-030
-    decision: 'Sources land as files in S3 (SAP replication, managed file transfer, API pulls) and Auto Loader loads Bronze; the company iPaaS is used only for approved outputs'
+    decision: 'Sources land as files in S3 (SAP replication, managed file transfer, API pulls) and Auto Loader loads Bronze; approved agent outputs leave through the tool gateway, not an iPaaS'
     status: 'Accepted'
     date: '2026-10-04'
-    reason: 'Bulk finance extracts are files; iPaaS is built and priced for app-to-app events'
+    reason: 'Bulk finance extracts are files; outbound, agents need a gateway that holds credentials, applies policy and checks approval'
     adr: docs/conception/adr/ADR-004-ingestion-integration.md
   - id: D-031
     decision: 'Databricks Jobs orchestrate the chain; no Airflow or Step Functions'

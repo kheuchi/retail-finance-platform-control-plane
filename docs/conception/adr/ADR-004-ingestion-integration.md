@@ -1,4 +1,4 @@
-# ADR-004 · Ingestion and integration: files in, iPaaS only on the way out
+# ADR-004 · Ingestion and integration: files in, a tool gateway out
 
 **Contents:** [TL;DR](#tldr) · [Context](#context) · [Options](#options) · [Decision](#decision) · [Consequences](#consequences) · [Revisit when](#revisit-when)
 
@@ -8,9 +8,9 @@ Accepted · 2026-10-04 · cmdb: D-025, D-030 · Docs: [business case](../busines
 
 | | |
 |---|---|
-| Decision | Sources land as files in S3 (SAP replication, managed file transfer, API pulls); Auto Loader loads Bronze. The company iPaaS carries approved outputs to Teams and ServiceNow |
-| Rejected | iPaaS (MuleSoft, Workato) for bulk ingestion; streaming (Kafka) for the close; direct database reads from SAP |
-| Main reason | Bulk finance extracts are files; iPaaS is built for app-to-app events, priced per task |
+| Decision | Sources land as files in S3 (SAP replication, managed file transfer, API pulls); Auto Loader loads Bronze. Approved outputs leave through the agents' tool gateway (AgentCore Gateway, MCP), not an iPaaS |
+| Rejected | iPaaS (MuleSoft, Workato) in either direction; streaming (Kafka) for the close; direct database reads from SAP |
+| Main reason | Bulk finance extracts are files; outbound, agents need a tool gateway that holds credentials and checks every send |
 | In this project | Sources simulated by a generator writing files (synthetic data, D-025); outbound not built |
 
 ## Context
@@ -22,7 +22,7 @@ loaded by ad-hoc queries. Store systems already produce nightly files.
 
 ## Options
 
-> **TL;DR:** files for bulk, iPaaS for events.
+> **TL;DR:** files for bulk in, a tool gateway for agent outputs.
 
 | Option | For | Against |
 |---|---|---|
@@ -31,15 +31,16 @@ loaded by ad-hoc queries. Store systems already produce nightly files.
 | Apache NiFi | Strong for routing files and streams on-premises | Another platform to run; adds little over managed file transfer here |
 | Kafka streaming | Real-time | No real-time need in the close; cost and operations |
 | Managed connectors (Fivetran, Lakeflow Connect, SAP Datasphere, SAP Business Data Cloud) | Less custom code for SAP | Licences: Datasphere replication to S3 needs SAP's outbound integration licence; third-party extraction through SAP's ODP interface is restricted by SAP |
-| **iPaaS outbound** | App-to-app events are what it is for; reuses the company's integrations to Teams and ServiceNow | Not built in this project |
+| iPaaS outbound | App-to-app events are what it is for; reuses existing connectors | A second integration layer next to the agents' gateway; can be exposed as MCP tools behind it if the company has one |
+| **Tool gateway (AgentCore Gateway, MCP)** | One place for agent tools: credentials (Identity), rules (Policy), logs; refuses unapproved sends | AWS-specific gateway (the MCP tools themselves are portable) |
 
 ## Decision
 
-> **TL;DR:** every source lands as files; approved outputs leave through the iPaaS.
+> **TL;DR:** every source lands as files; approved outputs leave through the tool gateway.
 
 Inbound: SAP via CDS extraction views on the universal journal, replicated by SAP Datasphere to S3 (or shared by SAP Business Data Cloud); POS via managed file transfer;
 ECB via a daily API pull; budget and cashier master via monthly exports. Bronze by Auto Loader,
-untyped, with the source file on every row. Outbound: approved items only, through the iPaaS.
+untyped, with the source file on every row. Outbound: approved items only, through the tool gateway ([ADR-006](ADR-006-agent-platform.md)).
 
 ## Consequences
 
@@ -49,7 +50,7 @@ untyped, with the source file on every row. Outbound: approved items only, throu
 |---|---|
 | One ingestion pattern for every source | Schema changes at source arrive as files that may break Silver (caught by quarantine and checks) |
 | Every Gold number traces to a file | Batch latency of a day |
-| iPaaS used where it adds value | Outbound integration remains to be built |
+| One audited exit for agent outputs | Channel tools remain to be built (stage 7) |
 
 ## Revisit when
 

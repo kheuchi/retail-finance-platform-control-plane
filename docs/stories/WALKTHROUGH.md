@@ -34,11 +34,12 @@ one deploys, one runs, and none can do another's job. Every step has a story wit
 > [Business case](../conception/business-case.md) · [stakeholders](../conception/stakeholders.md) · [benchmark](../conception/benchmark.md) · [ADRs](../conception/adr/README.md)
 
 - **Problem:** the month-end close runs on extracts, Excel and samples; frauds surface months late; nobody can trace a number.
-- **Flow:** SAP, store POS, planning tool and ECB land as files in S3 → lakehouse certifies → ML scores → agent drafts → controller approves → iPaaS sends to Teams, ServiceNow, CFO pack.
+- **Flow:** SAP, store POS, planning tool and ECB land as files in S3 → lakehouse certifies → ML scores → agent drafts → controller approves → the agent's tool gateway sends to Teams, ServiceNow, CFO pack; Power BI reads Gold.
 - **Why Databricks:** it scored highest on our criteria (87/100) because one catalog governs tables, files and models with lineage; AWS-native was second (75): everything in our account, but many services to glue.
 
 **Questions you will get**
-- *"Why not MuleSoft or Workato for ingestion?"* They move records between applications, priced per task. Millions of receipt lines are bulk files. We use the iPaaS where it fits: sending approved results to Teams and ServiceNow.
+- *"Why not MuleSoft or Workato?"* Inbound, millions of receipt lines are bulk files: file transfer is cheaper. Outbound, an agent needs a gateway that holds credentials and checks each send; for agents that is now an MCP tool gateway (AgentCore Gateway). An existing iPaaS can sit behind it as MCP tools.
+- *"Why not let the agent call Teams directly?"* Then every agent stores channel secrets and nobody can allow, log or revoke sends in one place. The agent also runs with no internet; only approved messages leave, through the gateway.
 - *"Is fraud detection an AI agent?"* No: that is ML (scores). The agent reads the scores and the reconciliation, explains and drafts for a human. Mixing them up is a red flag.
 - *"Who signs off?"* The Head of Accounting owns rules and tolerances; the data protection officer and works council approve scoring employees; the controller approves each draft ([RACI](../conception/stakeholders.md#raci)).
 
@@ -305,14 +306,25 @@ one deploys, one runs, and none can do another's job. Every step has a story wit
 
 ## 11 · The AI agent (planned)
 
-> **TL;DR:** a job in our VPC that drafts month-end commentary from certified Gold, calls Bedrock over a private endpoint, and a controller approves.
+> **TL;DR:** an LLM-driven supervisor with three sub-agents, in a container on AgentCore inside our VPC; tools over MCP; a person approves before anything is sent.
+> [ADR-006](../conception/adr/ADR-006-agent-platform.md) · [story 7.1](7.1-month-end-agent.md)
+
+**How it works**
+- **Deep Agents** (LangChain, on LangGraph): the model writes its own plan and delegates to sub-agents (commentary writer, alert triage, distributor). No fixed graph, no capped loop.
+- **Data tools** are read-only Unity Catalog functions over certified Gold, exposed as MCP tools; the agent's own service principal can execute them and nothing else.
+- **Channel tools** sit behind **AgentCore Gateway**: Identity holds the Teams and ServiceNow credentials, Policy decides which agent calls which tool, and each send tool refuses items a controller has not approved.
+- **Model:** Claude on Bedrock with an EU-only profile, behind LangChain's model abstraction.
 
 **Why this, not that**
-- Model in Frankfurt via a PrivateLink endpoint: no internet path, data stays in the EU. Read-only on finance data; a human approves anything that would be posted.
-- Not Databricks Model Serving or Genie as the core: the agent is a scheduled batch job, and Bedrock reached privately keeps the same network story.
+- *Free the reasoning, constrain the permissions:* guardrails live in grants, IAM, gateway policy and the send tools, not in prompts or loops.
+- *Portable:* the container runs on Kubernetes elsewhere, the MCP tools stay, the model is configuration. AgentCore Harness was rejected: preview, and the loop would live in an AWS API.
+- *Adoption:* LangGraph 42.7k stars and Deep Agents 30k vs Strands 8.7k (2026-10-04).
 
 **Questions you will get**
-- *"How do you stop the agent inventing numbers?"* It may cite only certified Gold figures; the draft is checked against Gold, and a controller signs off.
+- *"How do you stop it inventing numbers?"* Tools compute every figure; a check rejects any number no tool returned; a controller signs off.
+- *"What stops it sending something wrong to Teams?"* The send tool itself checks the approval table; the agent cannot approve.
+- *"Why not one agent that does everything?"* Blast radius and separation of duties: a supervisor delegates to specialists with their own tools.
+- *"Why no AI gateway like Envoy?"* One model provider today; Agent Router (ex-Envoy AI Gateway) is the answer when models come from several clouds.
 
 ## What I would change in production
 

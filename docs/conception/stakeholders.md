@@ -35,7 +35,7 @@ Detail: [`cmdb.yml`](../../cmdb.yml) → `conception.stakeholders`.
 | Build | **ML engineer / data scientist** | Clean features, honest evaluation | Labels that do not exist |
 | Build | **Platform / DevOps / MLOps engineer** | Everything as code, cheap and secure | Hand-made changes, cost spikes |
 | Build | **Enterprise architect** | Fit with the company's landscape | One more silo |
-| Supply | **SAP and integration team** (SAP basis, iPaaS) | Stable interfaces | Extra load on SAP |
+| Supply | **SAP and integration team** (SAP basis, channel integrations) | Stable interfaces | Extra load on SAP |
 
 ## RACI
 

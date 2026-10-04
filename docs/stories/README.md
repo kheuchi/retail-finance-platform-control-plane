@@ -130,4 +130,4 @@ Findings go into the story (fixed, or accepted with a reason); accepted risks go
 
 | # | Story | One line |
 |---|---|---|
-| 7.1 | [Month-end close agent](7.1-month-end-agent.md) | 🔄 Own read-only identity, Bedrock (EU) over PrivateLink, figure check, controller approval |
+| 7.1 | [Month-end close agent](7.1-month-end-agent.md) | 🔄 Deep Agents on AgentCore in our VPC, MCP tools, gateway sends only approved items |
