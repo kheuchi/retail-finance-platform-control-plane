@@ -2,7 +2,7 @@
 
 **Contents:** [TL;DR](#tldr) · [Stage by stage](#stage-by-stage) · [Top 10 lessons](#top-10-lessons) · [Open items](#open-items)
 
-One page. Each line links to the full story. Updated 2026-10-01. Index: [stories](README.md).
+One page. Each line links to the full story. Updated 2026-10-04. Index: [stories](README.md).
 To explain how it works underneath (decisions, mechanics, likely questions): [WALKTHROUGH](WALKTHROUGH.md).
 
 ## TL;DR
@@ -41,6 +41,8 @@ To explain how it works underneath (decisions, mechanics, likely questions): [WA
 | [4.5](4.5-split-service-principals.md) | Deployer and runner identities | The runner cannot see who else has access | The worker cannot be the auditor: move the check |
 | [5.1](5.1-fraud-detection.md) | Fraud detectors, both frauds #1 | The baseline was slowly absorbing the fraud | Compare with a past that skips recent months |
 | [5.2](5.2-revenue-forecast.md) | Forecast; baseline beats the model | The first backtest was rigged by accident | Count each side's training data before trusting the winner |
+| [6.1](6.1-scheduled-pipeline.md) | One scheduled pipeline with failure email | The runner could be each job's identity but not start the jobs | An orchestrator needs rights on what it orchestrates |
+| [6.2](6.2-drift-checks.md) | PSI input drift; nightly config-drift check | PSI read noise on 40 stores and nothing on mostly-zero features | Calibrate a metric on clean data before trusting its alarms |
 | [Docs](README.md#how-the-docs-work) | Short docs, cmdb, diagrams, stories, AGENTS.md | 1,411 lines nobody would read | One fact, one place: cmdb says what, stories say why |
 
 ## Top 10 lessons
@@ -64,7 +66,7 @@ To explain how it works underneath (decisions, mechanics, likely questions): [WA
 
 | Item | State |
 |---|---|
-| Stage 6: schedule + drift checks | Next (thin) |
+| Alert email delivery (6.1) | Owner to confirm the inbox |
 | Stage 7: AI agent for month-end commentary | Planned: agent as a job in our VPC, managed model over PrivateLink |
 | Databricks secret expires ~2026-10-08 | Move to OIDC or tear down first |
 | Access audit crashes on a schema declared but not yet created | Small infra fix pending |

@@ -117,9 +117,9 @@ Findings go into the story (fixed, or accepted with a reason); accepted risks go
 
 ## Epic 6 · Serve & Monitor
 
-> **TL;DR:** the chain runs as one scheduled job and says when data or configuration drifts. 🔄 Started 2026-10-01.
+> **TL;DR:** the chain runs as one scheduled job and says when data or configuration drifts. ✅ Done 2026-10-01 → 10-04.
 
 | # | Story | One line |
 |---|---|---|
-| 6.1 | [Scheduled pipeline](6.1-scheduled-pipeline.md) | 🔄 Bronze → Silver → Gold → ML as one job, retries, failure email, schedule committed paused |
-| 6.2 | [Drift checks](6.2-drift-checks.md) | 🔄 PSI on model inputs; nightly `bundle plan` catches hand edits |
+| 6.1 | [Scheduled pipeline](6.1-scheduled-pipeline.md) | ✅ One scheduled job, failure email, queueing; the first run found a missing permission |
+| 6.2 | [Drift checks](6.2-drift-checks.md) | ✅ PSI on model inputs (calendar drift found); nightly `bundle plan` caught a hand edit |

@@ -2,7 +2,7 @@
 
 **Contents:** [TL;DR](#tldr) · [Roadmap](#roadmap) · [Where we are](#where-we-are) · [Where we go](#where-we-go) · [Use cases](#use-cases) · [Deadlines and cost](#deadlines-and-cost) · [Open risks](#open-risks) · [Scope rule](#scope-rule)
 
-Updated 2026-09-27. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Architecture: [HLD](docs/architecture/hld.md). How we built it: [stories](docs/stories/README.md). Rules for assistants: [AGENTS.md](AGENTS.md).
+Updated 2026-10-04. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Architecture: [HLD](docs/architecture/hld.md). How we built it: [stories](docs/stories/README.md). Rules for assistants: [AGENTS.md](AGENTS.md).
 
 ## TL;DR
 
@@ -11,8 +11,8 @@ Updated 2026-09-27. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 | Goal | Show how a large retailer's accounting department could run governed finance data, ML and an AI agent on AWS + Databricks, built the enterprise way |
 | The plan in one line | Raw ERP and POS data → governed lakehouse → finance models → an agent that drafts cited commentary for the controller to approve |
 | Agent boundary | May investigate, summarise, recommend. Never posts entries, moves money or approves payments: a human signs off |
-| Where are we? | Stages 1-5 done: governed data, reconciliation 4/4, certified Gold, least-privilege identities, fraud models find both other frauds |
-| What is next? | Stage 6 (schedule + drift, thin) and stage 7 (AI agent for month-end commentary) |
+| Where are we? | Stages 1-6 done: governed data, reconciliation 4/4, certified Gold, least-privilege identities, fraud models, scheduled pipeline with drift checks |
+| What is next? | Day-0 conception pack (business case, stakeholders, benchmark, ADRs), then stage 7 (AI agent); teardown 2026-10-06 |
 | Deadline | Databricks trial ends 2026-10-06, teardown that day |
 | Running cost | ~USD 2/day network + trial credit for Databricks |
 
@@ -31,7 +31,7 @@ Updated 2026-09-27. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 | 3 | Ingest | ✅ Done | 40 stores, 21 months of synthetic data in Bronze: 4.2m rows, zero loss | [3.1-3.3](docs/stories/README.md#epic-3--ingest) |
 | 4 | Transform & Quality | ✅ Done | Gold finance tables reconcile to controlled inputs | [4.1](docs/stories/4.1-silver-tables.md) ✅, [4.2](docs/stories/4.2-gl-pos-reconciliation.md) ✅, [4.3](docs/stories/4.3-gold-finance-tables.md) ✅, [4.4](docs/stories/4.4-quality-and-lineage.md) ✅, [4.5](docs/stories/4.5-split-service-principals.md) ✅ |
 | 5 | ML Models | ✅ Done | Refund fraud, margin leakage and forecast models tracked in MLflow | [5.1](docs/stories/5.1-fraud-detection.md) ✅, [5.2](docs/stories/5.2-revenue-forecast.md) ✅ |
-| 6 | Serve & Monitor | 🔄 In progress | Models score on a schedule, with drift checks | [6.1](docs/stories/6.1-scheduled-pipeline.md), [6.2](docs/stories/6.2-drift-checks.md) |
+| 6 | Serve & Monitor | ✅ Done | Models score on a schedule, with drift checks | [6.1](docs/stories/6.1-scheduled-pipeline.md), [6.2](docs/stories/6.2-drift-checks.md) |
 | 7 | AI Agent | Planned | Cited variance commentary; no action without human approval | |
 
 ## Where we go
