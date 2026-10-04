@@ -1223,6 +1223,7 @@ progress:
       - 'Docs: HLD shows ML and the planned agent where they run (ML in one colour); LLD 5 (ML) added; WALKTHROUGH.md explains each layer for interviews; story X.1 merged into the stories README'
   - date: '2026-10-04'
     summary:
+      - 'Stage 7 built (story 7.1): agent/ stack (endpoints, ECR, AgentCore Gateway + Lambda channel tools, SES), Databricks agent identities and tables, six UC tool functions (owner rights proven; direct Gold grants removed), Deep Agents image in ECR; gateway, figure check and approval guardrails tested live. Bedrock and AgentCore runtime blocked by AWS new-account verification (quotas 0): support case'
       - 'Day 0 conception pack: business case with the real end-to-end workflow, stakeholders and RACI, platform benchmark, ADR-001..006 (agent platform decided: D-029)'
       - 'Stage 6 done (6.1, 6.2): scheduled pipeline proven 2026-10-02 (ML scored the Gold run it certified); config drift proven by a hand edit; PSI drift in ops.model_drift. Unpaused schedule ran twice more and exposed a grant-visibility regression, fixed (data PR #26); schedule paused'
 
