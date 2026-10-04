@@ -33,6 +33,7 @@ data platform, observability & cost, ML).
 |---|---|
 | [STATUS.md](STATUS.md) | Status and roadmap: where we are, where we go |
 | [AGENTS.md](AGENTS.md) | Rules and way of working, for any AI assistant or new contributor |
+| [docs/conception/](docs/conception/business-case.md) | **Day 0**: business case and end-to-end workflow, stakeholders (RACI), platform benchmark, ADRs |
 | [docs/architecture/](docs/architecture/hld.md) | HLD + 5 LLDs, with draw.io sources |
 | [Databricks primer](docs/architecture/databricks-primer.md) | Every Databricks term used here, in plain words |
 | [docs/stories/MEMO.md](docs/stories/MEMO.md) | **One page**: what we built, the tricky parts, the top 10 lessons · deeper: [WALKTHROUGH](docs/stories/WALKTHROUGH.md) |

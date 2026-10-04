@@ -12,7 +12,7 @@ Updated 2026-10-04. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 | The plan in one line | Raw ERP and POS data → governed lakehouse → finance models → an agent that drafts cited commentary for the controller to approve |
 | Agent boundary | May investigate, summarise, recommend. Never posts entries, moves money or approves payments: a human signs off |
 | Where are we? | Stages 1-6 done: governed data, reconciliation 4/4, certified Gold, least-privilege identities, fraud models, scheduled pipeline with drift checks |
-| What is next? | Day-0 conception pack (business case, stakeholders, benchmark, ADRs), then stage 7 (AI agent); teardown 2026-10-06 |
+| What is next? | Stage 7: the AI agent ([ADR-006](docs/conception/adr/ADR-006-agent-platform.md)); teardown 2026-10-06 |
 | Deadline | Databricks trial ends 2026-10-06, teardown that day |
 | Running cost | ~USD 2/day network + trial credit for Databricks |
 
@@ -26,6 +26,7 @@ Updated 2026-10-04. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 
 | # | Stage | Status | Done when | Stories |
 |---|---|---|---|---|
+| 0 | Conception | ✅ Done | Business case and workflow, stakeholders, benchmark, ADRs | [docs/conception/](docs/conception/business-case.md) |
 | 1 | Foundation | ✅ Done | Terraform, CI/CD, audit trail, security alarms, budget in place | [1.1-1.5](docs/stories/README.md#epic-1--foundation) |
 | 2 | Lakehouse | ✅ Done | Private Databricks workspace, no internet, Unity Catalog on our S3 | [2.1-2.5](docs/stories/README.md#epic-2--lakehouse) |
 | 3 | Ingest | ✅ Done | 40 stores, 21 months of synthetic data in Bronze: 4.2m rows, zero loss | [3.1-3.3](docs/stories/README.md#epic-3--ingest) |

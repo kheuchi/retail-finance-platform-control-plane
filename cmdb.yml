@@ -91,6 +91,15 @@ phases:
     status: Planned
 
 # ──────────── architecture ────────────
+conception:
+  docs: 'docs/conception/ (day 0 - business case, stakeholders, benchmark, adr/)'
+  business_case: 'month-end close for a DE/CH grocery retailer; sources SAP S/4HANA, store POS, planning tool, ECB, HR; files in, iPaaS out; outputs to controller (commentary), internal audit (fraud), GL lead (exceptions), FP&A (forecast)'
+  diagram: {file: conception/business-workflow, covers: 'sources -> integration in -> S3 landing -> lakehouse -> ML -> agent (Bedrock) -> review -> iPaaS -> Teams, CFO pack, ServiceNow, Power BI; built vs simulated'}
+  stakeholders: 'CFO (sponsor), Head of Accounting (business owner), GL, store controlling, FP&A, internal audit, CISO, DPO + works council, PO, data/ML/platform engineers, enterprise architect, SAP/integration team; RACI in stakeholders.md'
+  benchmark: 'Databricks on AWS 87, AWS-native 75, Google 74, Snowflake 72, Fabric 70, SAP-native 60 (weighted, 9 criteria, judgement as of 2026-10)'
+  adrs: [ADR-001 cloud, ADR-002 data platform, ADR-003 compute and network, ADR-004 ingestion, ADR-005 orchestration and deploy, ADR-006 agent platform]
+  date: '2026-10-04'
+
 architecture:
   docs: docs/architecture/ (hld.md + lld-*.md, each with .drawio source and exported .png)
   diagrams:
@@ -167,6 +176,7 @@ decisions:
     status: 'Accepted'
     reason: 'User requirement'
     story: '2.1'
+    adr: docs/conception/adr/ADR-002-data-platform.md
   - id: D-005
     decision: 'Keep project context agent-agnostic'
     status: 'Accepted'
@@ -211,6 +221,7 @@ decisions:
     status: 'Accepted'
     reason: 'One region is simpler; the needed Databricks and Bedrock features are available'
     story: '1.1'
+    adr: docs/conception/adr/ADR-001-cloud.md
   - id: D-014
     decision: 'Sign up for the Databricks free trial through AWS Marketplace rather than directly on databricks.com'
     status: 'Superseded by D-014b'
@@ -236,6 +247,7 @@ decisions:
     status: 'Accepted'
     reason: 'Serverless shows none of the network controls this project exists to evidence'
     story: '2.1'
+    adr: docs/conception/adr/ADR-003-compute-network.md
   - id: D-018
     decision: 'Upgrade the AWS account from the Free plan to the Paid plan'
     status: 'Accepted'
@@ -246,11 +258,13 @@ decisions:
     status: 'Accepted'
     reason: 'No public egress path at all. The early estimate (~15 vs ~32/month) predates PrivateLink; actual ~64 vs ~38 (D-021)'
     story: '2.1'
+    adr: docs/conception/adr/ADR-003-compute-network.md
   - id: D-020
     decision: 'Reject Azure and GCP as the Databricks host'
     status: 'Accepted'
     reason: 'Azure trial forces a NAT (hybrid workspace); GCP classic compute runs on deprecated GKE'
     story: '2.1'
+    adr: docs/conception/adr/ADR-001-cloud.md
   - id: D-017
     decision: 'Leave GitHub two-factor authentication disabled for now'
     status: 'Accepted'
@@ -262,12 +276,14 @@ decisions:
     date: '2026-09-24'
     reason: 'PrivateLink needs Enterprise; the only design with literally no public egress (~USD 64 vs ~38/month)'
     story: '2.1'
+    adr: docs/conception/adr/ADR-003-compute-network.md
   - id: D-022
     decision: 'Manage Databricks in a separate Terraform stack (databricks/)'
     status: 'Accepted'
     date: '2026-09-24'
     reason: 'Smaller blast radius, separate credentials and lifecycle; reads bootstrap outputs, never the reverse'
     story: '2.3'
+    adr: docs/conception/adr/ADR-005-orchestration-deploy.md
   - id: D-023
     decision: 'Terraform authenticates to Databricks as a service principal (OAuth M2M), 14-day secret'
     status: 'Accepted'
@@ -280,6 +296,7 @@ decisions:
     date: '2026-09-25'
     reason: 'No public dataset has ledger + budget + cashier refunds; planted anomalies give ground truth; no internet in the VPC'
     story: '3.1'
+    adr: docs/conception/adr/ADR-004-ingestion-integration.md
   - id: D-026
     decision: 'Data code lives in a separate public repo, retail-finance-data-products'
     status: 'Accepted'
@@ -304,6 +321,24 @@ decisions:
     date: '2026-09-25'
     reason: 'Long prose docs were hard to read; full versions stay in Git history'
     story: 'X.1'
+  - id: D-029
+    decision: 'AI agent = a job in our VPC calling Claude on Bedrock (EU inference profile) over PrivateLink, AWS access via a Unity Catalog service credential, read-only SQL tools, human approval'
+    status: 'Accepted'
+    date: '2026-10-04'
+    reason: 'Only option where agent, data and model calls stay on paths we control; Bedrock Agents, Databricks Model Serving and Genie run outside our network'
+    adr: docs/conception/adr/ADR-006-agent-platform.md
+  - id: D-030
+    decision: 'Sources land as files in S3 (SAP replication, managed file transfer, API pulls) and Auto Loader loads Bronze; the company iPaaS is used only for approved outputs'
+    status: 'Accepted'
+    date: '2026-10-04'
+    reason: 'Bulk finance extracts are files; iPaaS is built and priced for app-to-app events'
+    adr: docs/conception/adr/ADR-004-ingestion-integration.md
+  - id: D-031
+    decision: 'Databricks Jobs orchestrate the chain; no Airflow or Step Functions'
+    status: 'Accepted'
+    date: '2026-10-04'
+    reason: 'A daily chain of four Databricks jobs; a cross-system orchestrator adds a service to run and secure for no gain at this size'
+    adr: docs/conception/adr/ADR-005-orchestration-deploy.md
 
 # ──────────── risks ────────────
 risks:
@@ -1187,6 +1222,7 @@ progress:
       - 'Docs: HLD shows ML and the planned agent where they run (ML in one colour); LLD 5 (ML) added; WALKTHROUGH.md explains each layer for interviews; story X.1 merged into the stories README'
   - date: '2026-10-04'
     summary:
+      - 'Day 0 conception pack: business case with the real end-to-end workflow, stakeholders and RACI, platform benchmark, ADR-001..006 (agent platform decided: D-029)'
       - 'Stage 6 done (6.1, 6.2): scheduled pipeline proven 2026-10-02 (ML scored the Gold run it certified); config drift proven by a hand edit; PSI drift in ops.model_drift. Unpaused schedule ran twice more and exposed a grant-visibility regression, fixed (data PR #26); schedule paused'
 
 # ──────────── lessons ────────────

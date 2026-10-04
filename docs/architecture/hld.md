@@ -2,7 +2,7 @@
 
 **Contents:** [TL;DR](#tldr) · [Diagram](#diagram) · [The four zones](#the-four-zones) · [Key flows](#key-flows) · [Design choices](#design-choices) · [Zoom in (LLDs)](#zoom-in-llds) · [Edit the diagram](#edit-the-diagram)
 
-Updated 2026-10-01. Detail: [`cmdb.yml`](../../cmdb.yml) → `architecture`, `decisions`. How it was built: [stories](../stories/README.md).
+Updated 2026-10-04. Why it exists and the end-to-end business workflow: [business case](../conception/business-case.md); decisions: [ADRs](../conception/adr/README.md). Detail: [`cmdb.yml`](../../cmdb.yml) → `architecture`, `decisions`. How it was built: [stories](../stories/README.md).
 
 ## TL;DR
 

@@ -1,6 +1,6 @@
 # Walkthrough: explain the build
 
-**Contents:** [TL;DR](#tldr) · [The 2-minute pitch](#the-2-minute-pitch) · [1 Shape](#1--the-shape) · [2 Foundation](#2--aws-foundation-and-cicd) · [3 Network](#3--private-network) · [4 Workspace and UC](#4--databricks-as-code-and-unity-catalog) · [5 Ingest](#5--data-and-ingest) · [6 Silver](#6--silver-cleaning) · [7 Gold](#7--reconciliation-and-gold) · [8 Quality](#8--quality-gates-and-lineage) · [9 Identities](#9--separation-of-duties) · [10 ML](#10--ml) · [11 Agent](#11--the-ai-agent-planned) · [Production gaps](#what-i-would-change-in-production) · [Numbers](#numbers-to-remember)
+**Contents:** [TL;DR](#tldr) · [The 2-minute pitch](#the-2-minute-pitch) · [0 Why](#0--why-the-business-case) · [1 Shape](#1--the-shape) · [2 Foundation](#2--aws-foundation-and-cicd) · [3 Network](#3--private-network) · [4 Workspace and UC](#4--databricks-as-code-and-unity-catalog) · [5 Ingest](#5--data-and-ingest) · [6 Silver](#6--silver-cleaning) · [7 Gold](#7--reconciliation-and-gold) · [8 Quality](#8--quality-gates-and-lineage) · [9 Identities](#9--separation-of-duties) · [10 ML](#10--ml) · [11 Agent](#11--the-ai-agent-planned) · [Production gaps](#what-i-would-change-in-production) · [Numbers](#numbers-to-remember)
 
 Updated 2026-10-01. For a one-page summary see the [MEMO](MEMO.md); for the full story of each step, follow the links.
 Decisions: [`cmdb.yml`](../../cmdb.yml) → `decisions` (each D-xxx below is one).
@@ -27,6 +27,20 @@ found all four fake revenue journals I had planted, with zero false alarms. Two 
 two planted frauds, ranking them first without seeing the answer. The forecast model lost to a simple
 baseline, so the baseline ships. Three machine identities split the work: one builds the platform,
 one deploys, one runs, and none can do another's job. Every step has a story with what broke and the lesson."
+
+## 0 · Why: the business case
+
+> **TL;DR:** start with the close, not the tools.
+> [Business case](../conception/business-case.md) · [stakeholders](../conception/stakeholders.md) · [benchmark](../conception/benchmark.md) · [ADRs](../conception/adr/README.md)
+
+- **Problem:** the month-end close runs on extracts, Excel and samples; frauds surface months late; nobody can trace a number.
+- **Flow:** SAP, store POS, planning tool and ECB land as files in S3 → lakehouse certifies → ML scores → agent drafts → controller approves → iPaaS sends to Teams, ServiceNow, CFO pack.
+- **Why Databricks:** it scored highest on our criteria (87/100) because one catalog governs tables, files and models with lineage; AWS-native was second (75): everything in our account, but many services to glue.
+
+**Questions you will get**
+- *"Why not MuleSoft or Workato for ingestion?"* They move records between applications, priced per task. Millions of receipt lines are bulk files. We use the iPaaS where it fits: sending approved results to Teams and ServiceNow.
+- *"Is fraud detection an AI agent?"* No: that is ML (scores). The agent reads the scores and the reconciliation, explains and drafts for a human. Mixing them up is a red flag.
+- *"Who signs off?"* The Head of Accounting owns rules and tolerances; the data protection officer and works council approve scoring employees; the controller approves each draft ([RACI](../conception/stakeholders.md#raci)).
 
 ## 1 · The shape
 
