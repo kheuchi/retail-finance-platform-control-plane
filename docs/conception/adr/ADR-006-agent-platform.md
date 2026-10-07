@@ -1,8 +1,8 @@
 # ADR-006 · AI agent platform: Deep Agents in a container, on AgentCore, tools over MCP
 
-**Contents:** [TL;DR](#tldr) · [Context](#context) · [Requirements](#requirements) · [Options](#options) · [Decision](#decision) · [Portability](#portability) · [Consequences](#consequences) · [Revisit when](#revisit-when)
+**Contents:** [TL;DR](#tldr) · [Deviation (2026-10-07)](#deviation-2026-10-07-runs-on-google-agent-runtime-with-gemini) · [Context](#context) · [Requirements](#requirements) · [Options](#options) · [Decision](#decision) · [Portability](#portability) · [Consequences](#consequences) · [Revisit when](#revisit-when)
 
-Accepted · 2026-10-04 (revised the same day: framework and runtime) · cmdb: D-029 · To build: [story 7.1](../../stories/7.1-month-end-agent.md) · Docs: [business case](../business-case.md#ml-or-agent), [HLD](../../architecture/hld.md)
+Accepted · 2026-10-04 (revised the same day: framework and runtime) · **Deviation 2026-10-07** · cmdb: D-029, D-032 · To build: [story 7.1](../../stories/7.1-month-end-agent.md) · Docs: [business case](../business-case.md#ml-or-agent), [HLD](../../architecture/hld.md)
 
 ## TL;DR
 
@@ -13,6 +13,27 @@ Accepted · 2026-10-04 (revised the same day: framework and runtime) · cmdb: D-
 | Rejected | AgentCore Harness (preview, AWS-only API), a hand-written loop (first version of this ADR), Bedrock Agents (classic), Databricks Agent Framework on serverless, an AI gateway (Envoy / Agent Router) today |
 | Main reason | Most adopted open framework, portable code and tool protocol, and a runtime that keeps the agent inside our network |
 | Main cost | More moving parts (container, registry, gateway, ~6 more endpoints); Deep Agents is young and moves fast |
+
+## Deviation (2026-10-07): runs on Google Agent Runtime with Gemini
+
+> **TL;DR:** AWS holds Bedrock and AgentCore Runtime at zero for this new account, so the same agent runs on Google's managed runtime with Gemini; tools, guardrails and approvals are unchanged.
+
+| | Designed (AWS) | Running (deviation) | Why |
+|---|---|---|---|
+| Runtime | AgentCore Runtime in our VPC | **Vertex AI Agent Engine (Agent Runtime)**, europe-west1 | AgentCore quota 0 for the account; Google's managed runtime runs LangGraph agents natively |
+| Model | Claude on Bedrock (EU profile) | **Gemini 3.8 Flash** on Vertex AI's **EU** endpoint | Bedrock "Operation not allowed" (account verification); Claude on Vertex not granted yet; 3.8 Flash is the newest model the project may call in the EU |
+| Finance tools | Managed MCP over PrivateLink | Same functions, managed MCP over the internet (TLS, OAuth M2M) | The runtime is outside the AWS VPC |
+| Channel tools | AgentCore Gateway | **Unchanged** (AgentCore Gateway works) | Google's service-account identity assumes an AWS role by federation (no stored key); the role may only invoke the gateway |
+| Agent secret | AWS Secrets Manager | GCP Secret Manager (EU) | Runtime-local secret store |
+| Guardrails | Grants, figure check, approval check | **Unchanged** | They live in Databricks and the gateway Lambda, not in the runtime |
+
+**What it costs:** the "no internet path" property no longer holds for the agent: model and tool calls cross
+the internet, encrypted. What leaves AWS is store-level figures only (never cashier data), processed in the
+EU; Vertex AI does not train on customer data. VPC Service Controls cannot lock the runtime down, because
+it would also block the calls to Databricks and AWS.
+
+**What it proves:** the portability table below, for real: same agent code and tools, another cloud's
+runtime and model, by configuration. Back to the AWS design once AWS lifts the hold (one variable each).
 
 ## Context
 

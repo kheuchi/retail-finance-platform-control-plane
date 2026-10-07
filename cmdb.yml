@@ -340,6 +340,12 @@ decisions:
     date: '2026-10-04'
     reason: 'A daily chain of four Databricks jobs; a cross-system orchestrator adds a service to run and secure for no gain at this size'
     adr: docs/conception/adr/ADR-005-orchestration-deploy.md
+  - id: D-032
+    decision: 'Deviation from D-029: the month-end agents run on Vertex AI Agent Engine (europe-west1) with Gemini 3.8 Flash on the Vertex EU endpoint; tools (Databricks managed MCP) and channels (AgentCore Gateway, via AWS role assumed with the Google service-account identity) unchanged'
+    status: 'Accepted'
+    date: '2026-10-07'
+    reason: 'AWS new-account hold: Bedrock invocation not allowed and AgentCore agent quota 0; Claude on Vertex not granted. Costs the no-internet property for agent traffic (store-level data, EU processing)'
+    adr: docs/conception/adr/ADR-006-agent-platform.md
 
 # ──────────── risks ────────────
 risks:
