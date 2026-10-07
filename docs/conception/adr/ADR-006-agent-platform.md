@@ -29,7 +29,7 @@ Accepted · 2026-10-04 (revised the same day: framework and runtime) · **Deviat
 
 **What it costs:** the "no internet path" property no longer holds for the agent: model and tool calls cross
 the internet, encrypted. What leaves AWS is store-level figures only (never cashier data), processed in the
-EU; Vertex AI does not train on customer data. VPC Service Controls cannot lock the runtime down, because
+EU; Vertex AI does not train on customer data (that is a no-training commitment, not a no-retention one). Runtime logs and traces use the project's default log buckets, which are global unless set to an EU location: not done here. VPC Service Controls cannot lock the runtime down, because
 it would also block the calls to Databricks and AWS.
 
 **What it proves:** the portability table below, for real: same agent code and tools, another cloud's
