@@ -13,7 +13,7 @@ To explain how it works underneath (decisions, mechanics, likely questions): [WA
 | Proof it works | All 3 planted frauds found: 4/4 fake journals (reconciliation), S017-C03 and S031 ranked #1 by models trained without the answer |
 | How it is run | Everything as code, by pull request; three identities, each unable to do the others' job |
 | What bit us most | Permissions (IAM, grants, visibility), a blocked network port, and our own bugs caught by our own checks |
-| What is left | The AI agent (stage 7, [ADR-006](../conception/adr/ADR-006-agent-platform.md)), teardown 2026-10-06 |
+| What is left | Final review and teardown |
 
 ## Stage by stage
 
@@ -43,7 +43,7 @@ To explain how it works underneath (decisions, mechanics, likely questions): [WA
 | [5.2](5.2-revenue-forecast.md) | Forecast; baseline beats the model | The first backtest was rigged by accident | Count each side's training data before trusting the winner |
 | [6.1](6.1-scheduled-pipeline.md) | One scheduled pipeline with failure email | The runner could be each job's identity but not start the jobs | An orchestrator needs rights on what it orchestrates |
 | [6.2](6.2-drift-checks.md) | PSI input drift; nightly config-drift check | PSI read noise on 40 stores and nothing on mostly-zero features | Calibrate a metric on clean data before trusting its alarms |
-| [7.1](7.1-month-end-agent.md) | Month-end agents on AgentCore, tools over MCP, gateway with figure and approval checks | AWS holds Bedrock and AgentCore at zero for a new account | Check the account's AI quotas on day 0 |
+| [7.1](7.1-month-end-agent.md) | Month-end agents (Deep Agents) draft, check and send the close commentary; a controller approves | AWS held Bedrock and AgentCore at zero: moved to Google Agent Runtime + Gemini by configuration | Check AI quotas on day 0; portability only counts once tested |
 | [Docs](README.md#how-the-docs-work) | Short docs, cmdb, diagrams, stories, AGENTS.md | 1,411 lines nobody would read | One fact, one place: cmdb says what, stories say why |
 
 ## Top 10 lessons

@@ -304,9 +304,9 @@ one deploys, one runs, and none can do another's job. Every step has a story wit
 - *"How do you know the detectors work?"* Both planted frauds ranked #1 in each month they were active, with 0-3 false alarms per month.
 - *"Any ethical issue?"* Employee-level fraud scores are readable by analysts (R-12, accepted for synthetic data). In production: internal audit only, works council involved.
 
-## 11 · The AI agent (planned)
+## 11 · The AI agent
 
-> **TL;DR:** an LLM-driven supervisor with three sub-agents, in a container on AgentCore inside our VPC; tools over MCP; a person approves before anything is sent.
+> **TL;DR:** an LLM-driven supervisor with three sub-agents; tools over MCP; a person approves before anything is sent. Designed for AgentCore + Claude; runs on Google Agent Runtime + Gemini 3.8 Flash (EU) because AWS held the account (D-032).
 > [ADR-006](../conception/adr/ADR-006-agent-platform.md) · [story 7.1](7.1-month-end-agent.md)
 
 **How it works**
@@ -324,6 +324,7 @@ one deploys, one runs, and none can do another's job. Every step has a story wit
 - *"How do you stop it inventing numbers?"* Tools compute every figure; a check rejects any number no tool returned; a controller signs off.
 - *"What stops it sending something wrong to Teams?"* The send tool itself checks the approval table; the agent cannot approve.
 - *"Why not one agent that does everything?"* Blast radius and separation of duties: a supervisor delegates to specialists with their own tools.
+- *"Why is it on Google when everything else is on AWS?"* AWS held Bedrock and AgentCore at zero for a new account. Because the model and the runtime were configuration, the same agent moved to Google's runtime in a day; the guardrails stayed where they were (Databricks grants, the AWS gateway). Google signs in to AWS by federation, so no key crosses clouds.
 - *"Why no AI gateway like Envoy?"* One model provider today; Agent Router (ex-Envoy AI Gateway) is the answer when models come from several clouds.
 
 ## What I would change in production

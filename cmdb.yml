@@ -152,7 +152,7 @@ stories:
     - {id: '5.2', title: 'Revenue forecast (next 3 months per store, vs baseline)', epic: 5, type: as-built, status: 'Done', dates: '2026-09-29', file: 5.2-revenue-forecast.md}
     - {id: '6.1', title: 'Scheduled pipeline (orchestrator job, retries, failure email)', epic: 6, type: as-built, status: 'Done', dates: '2026-10-01..04', file: 6.1-scheduled-pipeline.md}
     - {id: '6.2', title: 'Drift checks (PSI on model inputs, config drift via bundle plan)', epic: 6, type: as-built, status: 'Done', dates: '2026-10-01..04', file: 6.2-drift-checks.md}
-    - {id: '7.1', title: 'Month-end close agents (Deep Agents on AgentCore, MCP tools, gateway, approval)', epic: 7, type: planned, status: 'In progress', dates: '2026-10-04', file: 7.1-month-end-agent.md}
+    - {id: '7.1', title: 'Month-end close agents (Deep Agents on AgentCore, MCP tools, gateway, approval)', epic: 7, type: as-built, status: 'Done (on Google Agent Runtime, D-032)', dates: '2026-10-04..07', file: 7.1-month-end-agent.md}
     - {id: 'X.1', title: 'Documentation system', epic: cross-cutting, type: as-built, status: 'Done (living)', dates: '2026-09-14..26', file: 'README.md#how-the-docs-work'}
 
 # ──────────── decisions ────────────
@@ -1233,8 +1233,15 @@ progress:
       - 'Day 0 conception pack: business case with the real end-to-end workflow, stakeholders and RACI, platform benchmark, ADR-001..006 (agent platform decided: D-029)'
       - 'Stage 6 done (6.1, 6.2): scheduled pipeline proven 2026-10-02 (ML scored the Gold run it certified); config drift proven by a hand edit; PSI drift in ops.model_drift. Unpaused schedule ran twice more and exposed a grant-visibility regression, fixed (data PR #26); schedule paused'
 
+  - date: '2026-10-07'
+    summary:
+      - 'Stage 7 done (story 7.1, D-032): AWS holds Bedrock and AgentCore, so the agents run on Vertex AI Agent Engine (europe-west1) with Gemini 3.8 Flash (EU); gcp/ stack, Google-to-AWS federation for the gateway; August 2026: three checked drafts, controller approved one, agent emailed it and published it to gold.close_commentary'
+
 # ──────────── lessons ────────────
 lessons:
+  - {lesson: 'Check the account''s AI quotas on day 0: a new AWS account had Bedrock and AgentCore held at zero.', story: '7.1'}
+  - {lesson: 'Test the permission model you rely on (UC functions run with owner rights), then remove what it makes redundant.', story: '7.1'}
+  - {lesson: 'A portable agent design pays off only when tested: moving clouds changed configuration and three small fixes, not the agent.', story: '7.1'}
   - {lesson: 'An orchestrator needs rights on the jobs it starts; running as their identity is not enough.', story: '6.1'}
   - {lesson: 'Never leave a temporary state that needs a human to undo it (an unpaused schedule ran three times).', story: '6.1'}
   - {lesson: 'PSI needs enough rows per bin and its own bin for tied minimums, or it reports noise or nothing.', story: '6.2'}

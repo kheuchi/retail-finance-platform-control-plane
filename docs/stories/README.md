@@ -126,8 +126,8 @@ Findings go into the story (fixed, or accepted with a reason); accepted risks go
 
 ## Epic 7 · AI Agent
 
-> **TL;DR:** a cited first draft of the close commentary, read-only, approved by a person. 🔄 Started 2026-10-04 ([ADR-006](../conception/adr/ADR-006-agent-platform.md)).
+> **TL;DR:** a cited first draft of the close commentary, read-only, approved by a person. ✅ Done 2026-10-04 → 10-07 ([ADR-006](../conception/adr/ADR-006-agent-platform.md), D-032).
 
 | # | Story | One line |
 |---|---|---|
-| 7.1 | [Month-end close agent](7.1-month-end-agent.md) | 🔄 Built and tested up to the model; first run waits on AWS account verification |
+| 7.1 | [Month-end close agent](7.1-month-end-agent.md) | ✅ Drafts checked, approved, emailed; runs on Google Agent Runtime + Gemini (D-032) |

@@ -11,8 +11,8 @@ Updated 2026-10-04. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 | Goal | Show how a large retailer's accounting department could run governed finance data, ML and an AI agent on AWS + Databricks, built the enterprise way |
 | The plan in one line | Raw ERP and POS data → governed lakehouse → finance models → an agent that drafts cited commentary for the controller to approve |
 | Agent boundary | May investigate, summarise, recommend. Never posts entries, moves money or approves payments: a human signs off |
-| Where are we? | Stages 1-6 done: governed data, reconciliation 4/4, certified Gold, least-privilege identities, fraud models, scheduled pipeline with drift checks |
-| What is next? | Stage 7: the AI agent ([ADR-006](docs/conception/adr/ADR-006-agent-platform.md)); teardown 2026-10-06 |
+| Where are we? | All 7 stages done (agent on Google Agent Runtime while AWS holds Bedrock, D-032): governed data, reconciliation 4/4, certified Gold, least-privilege identities, fraud models, scheduled pipeline with drift checks |
+| What is next? | Final review, then teardown (AWS, Databricks workspace and subscription, GCP agent) with the owner's go |
 | Deadline | Databricks trial ends 2026-10-06, teardown that day |
 | Running cost | ~USD 2/day network + trial credit for Databricks |
 
@@ -33,7 +33,7 @@ Updated 2026-10-04. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 | 4 | Transform & Quality | ✅ Done | Gold finance tables reconcile to controlled inputs | [4.1](docs/stories/4.1-silver-tables.md) ✅, [4.2](docs/stories/4.2-gl-pos-reconciliation.md) ✅, [4.3](docs/stories/4.3-gold-finance-tables.md) ✅, [4.4](docs/stories/4.4-quality-and-lineage.md) ✅, [4.5](docs/stories/4.5-split-service-principals.md) ✅ |
 | 5 | ML Models | ✅ Done | Refund fraud, margin leakage and forecast models tracked in MLflow | [5.1](docs/stories/5.1-fraud-detection.md) ✅, [5.2](docs/stories/5.2-revenue-forecast.md) ✅ |
 | 6 | Serve & Monitor | ✅ Done | Models score on a schedule, with drift checks | [6.1](docs/stories/6.1-scheduled-pipeline.md), [6.2](docs/stories/6.2-drift-checks.md) |
-| 7 | AI Agent | 🔄 In progress | Cited variance commentary; no action without human approval | [7.1](docs/stories/7.1-month-end-agent.md) |
+| 7 | AI Agent | ✅ Done | Cited variance commentary; no action without human approval | [7.1](docs/stories/7.1-month-end-agent.md) |
 
 ## Where we go
 
