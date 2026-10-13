@@ -13,8 +13,8 @@ Updated 2026-10-04. Why it exists and the end-to-end business workflow: [busines
 | Where is the finance data? | Only in our S3 buckets. Databricks sends commands, not data |
 | How do clusters reach Databricks? | PrivateLink. The VPC has no internet gateway and no NAT |
 | Who changes it? | Only CI/CD, through pull requests. No stored cloud keys |
-| What is live? | Private workspace, Bronze → Silver → Gold, reconciliation, quality gates, fraud models, forecast |
-| What is next? | The AI agent: a job in our VPC with its own read-only identity, Bedrock (EU) over a private endpoint ([ADR-006](../conception/adr/ADR-006-agent-platform.md)) |
+| What is live? | Private workspace, Bronze → Silver → Gold, reconciliation, quality gates, fraud models, forecast, drift checks, month-end agents |
+| Where does the agent run? | Designed for AgentCore + Claude on Bedrock; runs on Google Agent Runtime + Gemini (EU) while AWS holds Bedrock ([ADR-006](../conception/adr/ADR-006-agent-platform.md), D-032) |
 
 ## Diagram
 

@@ -92,9 +92,9 @@ Detail: [`cmdb.yml`](../../cmdb.yml) → `conception`, `decisions`.
 | 3 | **Landing** | S3 in our AWS account, Frankfurt | Built (Unity Catalog volume) |
 | 4 | **Lakehouse** | Databricks: Bronze (as delivered) → Silver (typed, checked, quarantine) → Gold (finance tables), reconciliation, quality gates, certification | Built ([4.1](../stories/4.1-silver-tables.md)-[4.4](../stories/4.4-quality-and-lineage.md)) |
 | 5 | **ML** | Fraud detectors, margin drift, revenue forecast, drift monitoring | Built ([5.1](../stories/5.1-fraud-detection.md), [5.2](../stories/5.2-revenue-forecast.md), [6.2](../stories/6.2-drift-checks.md)) |
-| 6 | **AI agent** | Reads certified Gold, store-level results and exceptions; drafts the close commentary with citations; never sees cashier-level data | Planned (stage 7, [ADR-006](adr/ADR-006-agent-platform.md)) |
+| 6 | **AI agent** | Reads certified Gold, store-level results and exceptions; drafts the close commentary with citations; never sees cashier-level data | Built ([7.1](../stories/7.1-month-end-agent.md); on Google Agent Runtime, D-032) |
 | 7 | **Review** | Controller approves or edits each draft; internal audit owns fraud cases | Simulated: a review status on the draft table |
-| 8 | **Tool gateway** | AgentCore Gateway: each channel is an MCP tool; Identity holds the channel credentials; Policy says which agent may call which tool; the send tools refuse unapproved items | Planned (stage 7) |
+| 8 | **Tool gateway** | AgentCore Gateway: each channel is an MCP tool; Identity holds the channel credentials; Policy says which agent may call which tool; the send tools refuse unapproved items | Built (email via SES; [7.1](../stories/7.1-month-end-agent.md)) |
 | 9 | **Channels** | Teams "Finance close" channel; CFO pack (PowerPoint/PDF); ServiceNow cases for internal audit and the GL team; Power BI reads Gold (forecast, approved commentary) through Databricks SQL | Simulated: a stand-in channel behind the same tool if no Microsoft 365 tenant |
 
 **Why no iPaaS:** on the way in, millions of receipt lines a day are bulk files; file transfer to

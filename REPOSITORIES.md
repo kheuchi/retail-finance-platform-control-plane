@@ -1,18 +1,35 @@
 # Repository Map
 
-**Contents:** [Rules](#rules)
+**Contents:** [TL;DR](#tldr) · [Repositories](#repositories) · [Rules](#rules)
+
+Detail: [`cmdb.yml`](cmdb.yml) → `decisions` (D-011).
+
+## TL;DR
+
+| Question | Answer |
+|---|---|
+| How many repos? | Three: control plane, infra, data |
+| Where are ML and the agent? | In the data repo (D-011, amended 2026-10-04) |
+| Why not five, as first planned? | One team, one deploy identity and one bundle; two extra repos would add CI and permissions with no separate owner to justify them |
+
+## Repositories
+
+> **TL;DR:** docs here, platform in infra, everything that runs on data in the data repo.
 
 | Repository | Does | Status |
 |---|---|---|
 | `retail-finance-platform-control-plane` (this one, public since 2026-09-26) | Context, status and roadmap, architecture, decisions, security docs | Active |
-| `retail-finance-platform-infra` (public) | Terraform for AWS and Databricks, CI/CD | Active |
-| `retail-finance-data-products` (public) | Synthetic data, ingestion, Bronze/Silver/Gold, data quality | Active |
-| `retail-finance-ml-platform` | Features, training, registry, serving | Planned |
-| `retail-finance-agent-platform` | Agent tools, evaluation, UI | Planned |
+| `retail-finance-platform-infra` (public) | Terraform for AWS, Databricks and the GCP agent stack; CI/CD | Active |
+| `retail-finance-data-products` (public) | Synthetic data, Bronze/Silver/Gold, data quality, ML (`jobs/ml.py`), drift checks, agent tools and the agent (`agent/`) | Active |
+
+The planned `retail-finance-ml-platform` and `retail-finance-agent-platform` repos were never
+created. If ML or the agent ever get their own team and release cycle, that is the time to split.
 
 ## Rules
 
-- Dependencies flow one way: control plane → infra → data → ML → agent.
+> **TL;DR:** dependencies flow one way; repos talk through versioned interfaces.
+
+- Dependencies flow one way: control plane → infra → data (jobs, ML, agent).
 - Repos talk through versioned interfaces (Terraform outputs, schemas, APIs),
   never through each other's uncommitted files.
 - This repo holds no deployable code.
