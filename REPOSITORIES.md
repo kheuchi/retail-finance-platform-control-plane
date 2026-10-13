@@ -10,7 +10,8 @@ Detail: [`cmdb.yml`](cmdb.yml) → `decisions` (D-011).
 |---|---|
 | How many repos? | Three: control plane, infra, data |
 | Where are ML and the agent? | In the data repo (D-011, amended 2026-10-04) |
-| Why not five, as first planned? | One team, one deploy identity and one bundle; two extra repos would add CI and permissions with no separate owner to justify them |
+| Who owns which? | Infra repo = platform team (provisions); data repo = finance data & AI product team (deploys jobs, models, agent) ([stakeholders](docs/conception/stakeholders.md#who-provisions-who-deploys)) |
+| Why not five, as first planned? | One product team, one deploy identity and one bundle; two extra repos would add CI and permissions with no separate owner to justify them |
 
 ## Repositories
 

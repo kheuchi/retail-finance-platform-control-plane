@@ -336,7 +336,8 @@ one deploys, one runs, and none can do another's job. Every step has a story wit
 | Single AWS account | AWS Organizations + Control Tower: separate accounts for prod, non-prod, logs, security |
 | Databricks secret (14 days) in GitHub | OIDC federation to Databricks, no secret |
 | Full rebuild each run | Incremental: Auto Loader + MERGE, partitioned or clustered by date |
-| Manual job runs | Scheduled, with freshness checks, alerts and a drift check on deployed jobs (stage 6) |
+| Schedule built but committed paused (cost) | Schedule on, with freshness checks and on-call alerts |
+| Platform team writes Terraform on request (PRs) | Internal developer platform: self-service portal (e.g. Backstage) with golden-path templates for data products and agents |
 | GitHub 2FA off (R-01) | Mandatory 2FA, SSO |
 | Fraud scores readable by analysts (R-12) | Restricted to internal audit |
 | No disaster recovery tested | Cross-region backup of state and data; restore drill |
