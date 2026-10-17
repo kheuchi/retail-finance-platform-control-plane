@@ -1237,6 +1237,13 @@ progress:
     summary:
       - 'Stage 7 done (story 7.1, D-032): AWS holds Bedrock and AgentCore, so the agents run on Vertex AI Agent Engine (europe-west1) with Gemini 3.8 Flash (EU); gcp/ stack, Google-to-AWS federation for the gateway; August 2026: three checked drafts, controller approved one, agent emailed it and published it to gold.close_commentary'
 
+  - date: '2026-10-17'
+    summary:
+      - 'Bill to date (Cost Explorer, GCP billing): AWS gross USD 106.30 (Sep 15.08, Oct 1-17 91.22; 90% VPC endpoints), all covered by credits (USD 73.72 left); Databricks via AWS Marketplace USD 8.40 incl. tax (paid; the USD 400 trial credit before that); GCP EUR 0.63 gross, EUR 0.31 paid. Out of pocket ~USD 8.75'
+      - 'Endpoints switched off (infra #46): all 11 interface endpoints deleted through the gated workflows (USD 6.34/day); nothing else destroyed. Remaining AWS run cost ~USD 1-2/month (secrets, S3, logs). Databricks clusters and the AWS agent path need the endpoints back (set the switches true, apply)'
+      - 'Owner-approved exception to rule 2: the AWS root session was used for read-only billing and inventory calls (named IAM user had no billing access); no change made as root'
+      - 'GCP project mon-rag-perso-2026 moved into the owner organisation (it had none); data repo folders renamed for clarity (data #39)'
+
 # ──────────── lessons ────────────
 lessons:
   - {lesson: 'Check the account''s AI quotas on day 0: a new AWS account had Bedrock and AgentCore held at zero.', story: '7.1'}

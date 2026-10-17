@@ -12,7 +12,7 @@ Updated 2026-10-04. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 | The plan in one line | Raw ERP and POS data → governed lakehouse → finance models → an agent that drafts cited commentary for the controller to approve |
 | Agent boundary | May investigate, summarise, recommend. Never posts entries, moves money or approves payments: a human signs off |
 | Where are we? | All 7 stages done (agent on Google Agent Runtime while AWS holds Bedrock, D-032): governed data, reconciliation 4/4, certified Gold, least-privilege identities, fraud models, scheduled pipeline with drift checks |
-| What is next? | Final review, then teardown (AWS, Databricks workspace and subscription, GCP agent) with the owner's go |
+| What is next? | Final review. Paying parts switched off on 2026-10-17 (VPC endpoints); nothing else destroyed. Full teardown only with the owner's go |
 | Deadline | Databricks trial ends 2026-10-06, teardown that day |
 | Running cost | ~USD 2/day network + trial credit for Databricks |
 
