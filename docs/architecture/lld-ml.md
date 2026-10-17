@@ -4,7 +4,7 @@
 
 Updated 2026-10-01. Back to [HLD](hld.md). Stories: [5.1](../stories/5.1-fraud-detection.md) · [5.2](../stories/5.2-revenue-forecast.md).
 Detail: [data `cmdb.yml`](https://github.com/kheuchi/retail-finance-data-products/blob/main/cmdb.yml) → `ml` · [`cmdb.yml`](../../cmdb.yml) → `risks` (R-12).
-Code: `src/retail_finance_data/jobs/ml.py`, `resources/ml.job.yml`.
+Code: `src/retail_finance_data/ml/train_models.py`, `databricks_jobs/05_train_ml_models.job.yml`.
 
 ## TL;DR
 

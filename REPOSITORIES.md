@@ -21,7 +21,7 @@ Detail: [`cmdb.yml`](cmdb.yml) → `decisions` (D-011).
 |---|---|---|
 | `retail-finance-platform-control-plane` (this one, public since 2026-09-26) | Context, status and roadmap, architecture, decisions, security docs | Active |
 | `retail-finance-platform-infra` (public) | Terraform for AWS, Databricks and the GCP agent stack; CI/CD | Active |
-| `retail-finance-data-products` (public) | Synthetic data, Bronze/Silver/Gold, data quality, ML (`jobs/ml.py`), drift checks, agent tools and the agent (`agent/`) | Active |
+| `retail-finance-data-products` (public) | Synthetic data, Bronze/Silver/Gold, data quality, ML (`ml/`), drift checks, agent tools and the agent (`agents/month_end_close/`) | Active |
 
 The planned `retail-finance-ml-platform` and `retail-finance-agent-platform` repos were never
 created. If ML or the agent ever get their own team and release cycle, that is the time to split.
