@@ -92,12 +92,13 @@ phases:
 
 # ──────────── architecture ────────────
 conception:
-  docs: 'docs/conception/ (day 0 - business case, stakeholders, benchmark, adr/)'
+  docs: 'docs/conception/ (day 0 - business case, stakeholders, benchmark, adr/, reference architecture)'
   business_case: 'month-end close for a DE/CH grocery retailer; sources SAP S/4HANA, store POS, planning tool, ECB, HR; files in, tool gateway out; outputs to controller (commentary), internal audit (fraud), GL lead (exceptions), FP&A (forecast)'
   diagram: {file: conception/business-workflow, covers: 'sources -> integration in -> S3 landing -> lakehouse -> ML -> agent (Bedrock) -> review -> AgentCore Gateway (MCP tools) -> Teams, CFO pack, ServiceNow; Power BI reads Gold; built vs simulated'}
   stakeholders: 'CFO (sponsor), Head of Accounting (business owner), GL, store controlling, FP&A, internal audit, CISO, DPO + works council, finance data & AI product team (PO, data/ML/AI engineers; deploys code), data & AI platform team (provisions infra; a self-service portal in production, PRs here), enterprise architect, SAP/integration team; RACI in stakeholders.md'
   benchmark: 'Databricks on AWS 87, AWS-native 75, Google 74, Snowflake 72, Fabric 70, SAP-native 60 (weighted, 9 criteria, judgement as of 2026-10)'
   adrs: [ADR-001 cloud, ADR-002 data platform, ADR-003 compute and network, ADR-004 ingestion, ADR-005 orchestration and deploy, ADR-006 agent platform]
+  reference_architecture: 'docs/conception/reference-architecture.md (2026-10-28, target picture, not built): decision agent = OLAP + ML inference + live APIs + RAG + LLM, replenishment example; here built: lakehouse, batch ML, LLM with approval; not built: live APIs, RAG, online serving'
   date: '2026-10-04'
 
 architecture:

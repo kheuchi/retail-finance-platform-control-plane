@@ -31,7 +31,7 @@ one deploys, one runs, and none can do another's job. Every step has a story wit
 ## 0 · Why: the business case
 
 > **TL;DR:** start with the close, not the tools.
-> [Business case](../conception/business-case.md) · [stakeholders](../conception/stakeholders.md) · [benchmark](../conception/benchmark.md) · [ADRs](../conception/adr/README.md)
+> [Business case](../conception/business-case.md) · [stakeholders](../conception/stakeholders.md) · [benchmark](../conception/benchmark.md) · [ADRs](../conception/adr/README.md) · [reference architecture](../conception/reference-architecture.md)
 
 - **Problem:** the month-end close runs on extracts, Excel and samples; frauds surface months late; nobody can trace a number.
 - **Flow:** SAP, store POS, planning tool and ECB land as files in S3 → lakehouse certifies → ML scores → agent drafts → controller approves → the agent's tool gateway sends to Teams, ServiceNow, CFO pack; Power BI reads Gold.
