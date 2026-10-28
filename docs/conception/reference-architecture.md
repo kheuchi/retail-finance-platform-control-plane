@@ -3,7 +3,7 @@
 **Contents:** [TL;DR](#tldr) · [When is an agent worth it?](#when-is-an-agent-worth-it) · [The question](#the-question) · [Business case](#business-case) · [Build or buy](#build-or-buy) · [Sources and targets](#sources-and-targets) · [Flow: sources to targets](#flow-sources-to-targets) · [The agent in the middle](#the-agent-in-the-middle) · [Layer by layer](#layer-by-layer) · [One run, end to end](#one-run-end-to-end) · [Design rules](#design-rules) · [What usually goes wrong](#what-usually-goes-wrong) · [Teams](#teams) · [How this project compares](#how-this-project-compares) · [Use cases considered](#use-cases-considered)
 
 Day 0 · Conception · 2026-10-28. Target picture only: nothing in this file is built.
-Previous: [benchmark](benchmark.md). Detail: [`cmdb.yml`](../../cmdb.yml) → `conception.reference_architecture`.
+Previous: [benchmark](benchmark.md). Français : [reference-architecture.fr.md](reference-architecture.fr.md). Detail: [`cmdb.yml`](../../cmdb.yml) → `conception.reference_architecture`.
 
 ## TL;DR
 
