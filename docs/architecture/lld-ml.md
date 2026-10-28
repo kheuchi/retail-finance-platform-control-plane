@@ -1,6 +1,6 @@
 # LLD 5 · ML
 
-**Contents:** [TL;DR](#tldr) · [Diagram](#diagram) · [Inputs and gate](#inputs-and-gate) · [Models](#models) · [Outputs](#outputs) · [Results](#results) · [Limits](#limits)
+**Contents:** [TL;DR](#tldr) · [Diagram](#diagram) · [Inputs and gate](#inputs-and-gate) · [Models](#models) ([in plain words](#the-models-in-plain-words)) · [Outputs](#outputs) · [Results](#results) · [Limits](#limits)
 
 Updated 2026-10-01. Back to [HLD](hld.md). Stories: [5.1](../stories/5.1-fraud-detection.md) · [5.2](../stories/5.2-revenue-forecast.md).
 Detail: [data `cmdb.yml`](https://github.com/kheuchi/retail-finance-data-products/blob/main/cmdb.yml) → `ml` · [`cmdb.yml`](../../cmdb.yml) → `risks` (R-12).
@@ -38,6 +38,21 @@ used only for evaluation.
 | Cashier refunds | Isolation Forest | The other cashiers of the same store, that month |
 | Store margin drift | Isolation Forest | The store's own months 4-12 back, net of what moved for every store |
 | Revenue forecast | Gradient boosting vs seasonal-naive baseline | A backtest on the last 3 complete months; the winner ships |
+
+### The models in plain words
+
+> **TL;DR:** one model finds the odd one out, the other learns from past months; a simple rule is the bar to beat.
+
+| Model | In plain words | Example |
+|---|---|---|
+| **Isolation Forest** (scikit-learn, 300 trees) | Splits the data at random again and again. A normal case hides in the crowd and takes many splits to isolate; an odd one is cut off in a few. Few splits = high score. No labels needed | Cashier S017-C03 gives far more refunds without a receipt than the other cashiers of store S017. The trees cut C03 off in a few splits: ranked #1 in Aug and Sep |
+| Same, on margins | Compares each store with its own past, net of what moved for every store | S031's margin falls while its discounts rise and other stores stay flat: ranked #1 in Jul, Aug and Sep |
+| **Gradient boosting** (scikit-learn `GradientBoostingRegressor`, the same family as XGBoost and LightGBM) | Many small decision trees, each one correcting the errors of the trees before it. Learns from last month, the month before, the same month last year, the month of the year | Illustration: "December was well above November last year, and the last two months ran 3% above last year, so expect the same pattern" |
+| **Seasonal-naive baseline** | No model: "same month last year" | Next March = last March |
+| Who wins | Both are tested on the last 3 months; the lower error (MAPE: average % miss) ships | Baseline missed by 7.5%, boosting by 10.3%: with 21 months of data, the simple rule wins |
+
+Why not XGBoost or deep learning: a few thousand rows, no labels for fraud, and no need for anything
+heavier. With more history and labelled cases, XGBoost or LightGBM would be the next step.
 
 ## Outputs
 

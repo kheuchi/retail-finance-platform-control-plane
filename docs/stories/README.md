@@ -123,6 +123,8 @@ Findings go into the story (fixed, or accepted with a reason); accepted risks go
 |---|---|---|
 | 6.1 | [Scheduled pipeline](6.1-scheduled-pipeline.md) | ✅ One scheduled job, failure email, queueing; the first run found a missing permission |
 | 6.2 | [Drift checks](6.2-drift-checks.md) | ✅ PSI on model inputs (calendar drift found); nightly `bundle plan` caught a hand edit |
+| 6.3 | [Semantic releases](6.3-semantic-releases.md) | 🟡 Every merge to `main` tagged and released; first `v1.0.0`; in review |
+| 6.4 | [Monitoring](6.4-monitoring.md) | ❌ Design only: what we record, what we should alert on, one dashboard |
 
 ## Epic 7 · AI Agent
 

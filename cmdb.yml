@@ -85,10 +85,13 @@ phases:
     stories: ['5.1', '5.2']
   - id: 6
     name: Serve & Monitor
-    status: Next
+    status: Done
+    stories: ['6.1', '6.2', '6.3', '6.4']
+    open: '6.3 releases in review (data PR #47); 6.4 monitoring design only'
   - id: 7
     name: AI Agent
-    status: Planned
+    status: Done
+    stories: ['7.1']
 
 # ──────────── architecture ────────────
 conception:
@@ -107,7 +110,7 @@ architecture:
     - {file: hld, covers: 'GitHub, AWS foundation, Databricks VPC (jobs incl. ML; agent job and Bedrock endpoint planned), data buckets, Databricks control plane (MLflow, UC incl. finance.ml); updated 2026-10-01'}
     - {file: lld-network, covers: 'VPC 10.20.0.0/16, 2 AZ x (workspace /22 + endpoint /24), 4 interface + 1 gateway endpoint, SG rules, cost'}
     - {file: lld-identity-cicd, covers: 'PR -> checks -> gated deploy; OIDC plan/deploy roles; cross-account and UC roles with external IDs; service principal; groups'}
-    - {file: lld-data-platform, covers: 'generate -> landing volume -> Auto Loader -> Bronze (done) -> Silver (next) -> Gold (planned); catalog layout; grants'}
+    - {file: lld-data-platform, covers: 'generate -> landing volume -> Auto Loader -> Bronze -> Silver -> Gold -> consumers (all done); catalog layout; grants; jobs run as finance-pipeline-runner (labels refreshed 2026-10-28)'}
     - {file: lld-observability-cost, covers: 'CloudTrail, audit bucket, metric filters, alarms, SNS; flow logs; budgets, cluster policies, serverless egress; change gates'}
     - {file: lld-ml, covers: 'train_models job on certified Gold: two Isolation Forest detectors, forecast vs baseline, MLflow, finance.ml registry, Gold scores, results, limits'}
   planned: [lld-agent]
@@ -153,6 +156,8 @@ stories:
     - {id: '5.2', title: 'Revenue forecast (next 3 months per store, vs baseline)', epic: 5, type: as-built, status: 'Done', dates: '2026-09-29', file: 5.2-revenue-forecast.md}
     - {id: '6.1', title: 'Scheduled pipeline (orchestrator job, retries, failure email)', epic: 6, type: as-built, status: 'Done', dates: '2026-10-01..04', file: 6.1-scheduled-pipeline.md}
     - {id: '6.2', title: 'Drift checks (PSI on model inputs, config drift via bundle plan)', epic: 6, type: as-built, status: 'Done', dates: '2026-10-01..04', file: 6.2-drift-checks.md}
+    - {id: '6.3', title: 'Semantic releases (tag and release every merge to main)', epic: 6, type: planned, status: 'In review (data PR #47)', dates: '2026-10-28', file: 6.3-semantic-releases.md}
+    - {id: '6.4', title: 'Monitoring of data, models and agent', epic: 6, type: design, status: 'Not built (design only)', dates: '2026-10-28', file: 6.4-monitoring.md}
     - {id: '7.1', title: 'Month-end close agents (Deep Agents on AgentCore, MCP tools, gateway, approval)', epic: 7, type: as-built, status: 'Done (on Google Agent Runtime, D-032)', dates: '2026-10-04..07', file: 7.1-month-end-agent.md}
     - {id: 'X.1', title: 'Documentation system', epic: cross-cutting, type: as-built, status: 'Done (living)', dates: '2026-09-14..26', file: 'README.md#how-the-docs-work'}
 

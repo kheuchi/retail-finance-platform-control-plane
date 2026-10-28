@@ -2,7 +2,7 @@
 
 **Contents:** [TL;DR](#tldr) · [Roadmap](#roadmap) · [Where we are](#where-we-are) · [Where we go](#where-we-go) · [Use cases](#use-cases) · [Deadlines and cost](#deadlines-and-cost) · [Open risks](#open-risks) · [Scope rule](#scope-rule)
 
-Updated 2026-10-04. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Architecture: [HLD](docs/architecture/hld.md). How we built it: [stories](docs/stories/README.md). Rules for assistants: [AGENTS.md](AGENTS.md).
+Updated 2026-10-28 (roadmap, stage 6 follow-ups). Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Architecture: [HLD](docs/architecture/hld.md). How we built it: [stories](docs/stories/README.md). Rules for assistants: [AGENTS.md](AGENTS.md).
 
 ## TL;DR
 
@@ -22,7 +22,7 @@ Updated 2026-10-04. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 
 ## Where we are
 
-> **TL;DR:** 5 of 7 stages done. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`, `stories`
+> **TL;DR:** all 7 build stages done; follow-ups 6.3 (releases, in review) and 6.4 (monitoring, design only) open. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`, `stories`
 
 | # | Stage | Status | Done when | Stories |
 |---|---|---|---|---|
@@ -32,7 +32,7 @@ Updated 2026-10-04. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Arc
 | 3 | Ingest | ✅ Done | 40 stores, 21 months of synthetic data in Bronze: 4.2m rows, zero loss | [3.1-3.3](docs/stories/README.md#epic-3--ingest) |
 | 4 | Transform & Quality | ✅ Done | Gold finance tables reconcile to controlled inputs | [4.1](docs/stories/4.1-silver-tables.md) ✅, [4.2](docs/stories/4.2-gl-pos-reconciliation.md) ✅, [4.3](docs/stories/4.3-gold-finance-tables.md) ✅, [4.4](docs/stories/4.4-quality-and-lineage.md) ✅, [4.5](docs/stories/4.5-split-service-principals.md) ✅ |
 | 5 | ML Models | ✅ Done | Refund fraud, margin leakage and forecast models tracked in MLflow | [5.1](docs/stories/5.1-fraud-detection.md) ✅, [5.2](docs/stories/5.2-revenue-forecast.md) ✅ |
-| 6 | Serve & Monitor | ✅ Done | Models score on a schedule, with drift checks | [6.1](docs/stories/6.1-scheduled-pipeline.md), [6.2](docs/stories/6.2-drift-checks.md) |
+| 6 | Serve & Monitor | ✅ Done | Models score on a schedule, with drift checks | [6.1](docs/stories/6.1-scheduled-pipeline.md), [6.2](docs/stories/6.2-drift-checks.md); [6.3](docs/stories/6.3-semantic-releases.md) 🟡, [6.4](docs/stories/6.4-monitoring.md) design only |
 | 7 | AI Agent | ✅ Done | Cited variance commentary; no action without human approval | [7.1](docs/stories/7.1-month-end-agent.md) |
 
 ## Where we go
