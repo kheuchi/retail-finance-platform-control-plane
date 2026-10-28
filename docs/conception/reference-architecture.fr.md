@@ -71,7 +71,7 @@ agentiques seront abandonnés d'ici 2027, surtout faute de valeur claire et à c
 | Question | Réponse |
 |---|---|
 | Problème | La marge nette en distribution alimentaire est d'environ 1 à 3 % des ventes. Elle fuit par de nombreux petits trous, chacun porté par un système et une équipe différents |
-| Comment c'est traité aujourd'hui | Revues de marge mensuelles sur tableur ; les acheteurs relancent le financement quand ils y pensent ; des cabinets de recovery audit retrouvent l'argent non réclamé **des mois plus tard** et en gardent une part ; les petits montants sont passés en perte |
+| Comment c'est traité aujourd'hui | Déjà largement automatisé : SAP règle remises et financements promo à partir des conditions saisies, les outils de pricing signalent les coûts non répercutés, la BI montre le pont de marge, le ML score les anomalies. Ce qui passe entre les mailles (conditions seulement en PDF, systèmes qui divergent) est trouvé par des analystes, ou par des cabinets de recovery audit **des mois plus tard** contre une part. Voir [avant l'IA](#avant-lia) |
 | Ce que fait l'agent | Surveille les événements, trouve et chiffre chaque fuite, la relie au contrat et au responsable, rédige la réclamation ou la correction, et écrit le commentaire de marge pour la clôture |
 | Qui décide | Chef de catégorie, équipe pricing, contrôleur financier. Rien ne part vers un fournisseur ni dans le grand livre automatiquement |
 | Mesuré par | EUR récupérés dans le mois, réclamations envoyées avant leur échéance, marge expliquée à la clôture (part de l'écart avec une cause nommée), heures d'analyste économisées |
@@ -88,6 +88,24 @@ agentiques seront abandonnés d'ici 2027, surtout faute de valeur claire et à c
 | Démarque et casse | La casse en frais a doublé dans 12 magasins | Non ; transmis aux opérations magasins | Opérations magasins |
 | Fraude | Schéma de remboursements sur deux caisses | En partie ; transmis à la prévention des pertes | Prévention des pertes |
 | Démarques excessives | Soldes de déstockage lancées trop tôt | Non ; leçon pour la prochaine fois | Pricing |
+
+### Avant l'IA
+
+> **TL;DR :** les moteurs font déjà les calculs ; l'IA couvre ce qu'ils n'ont jamais su faire : lire, relier, enquêter, rédiger.
+
+Avant 2022, les grands distributeurs ne faisaient pas cela à la main :
+
+| Exemple | Outil | Déjà automatisé | Encore laissé aux personnes |
+|---|---|---|---|
+| Une remise de 2 % au-delà de 1 M EUR d'achats | Contrats de conditions SAP, Vistex | Provision et règlement, une fois la condition saisie | Un avenant en PDF que personne n'a saisi |
+| Le fournisseur finance 30 % d'une promo | Outil promotions + SAP | Réclamation générée à la fin de la promo | Promo modifiée tard, SAP et le plan divergent |
+| Coût +6 %, prix en rayon inchangé | Outil de pricing, règle d'exception SAP | Une alerte | Pourquoi, qui est responsable, ce que permet le contrat |
+| Marge 0,2 pt sous le plan | Pont de marge BI, prévision ML | Où se trouve l'écart | Pourquoi, et le commentaire de clôture |
+| Ce qui est passé quand même | Cabinet de recovery audit | Trouvé un an plus tard | Payé en part de ce qui est récupéré |
+
+**Ce qu'apporte l'IA :** elle lit contrats et e-mails, relie les faits entre systèmes, vérifie chaque alerte contre SAP
+et le contrat, et rédige la réclamation et le commentaire. **Elle ne remplace pas** les moteurs, la BI ni les modèles
+ML : elle les appelle comme tools. La valeur, c'est l'écart qu'ils laissent, trouvé dans le mois plutôt qu'un an après.
 
 ## Build ou buy
 

@@ -69,7 +69,7 @@ needed**; it also expects over 40% of agentic projects to be cancelled by 2027, 
 | Question | Answer |
 |---|---|
 | Problem | Net margin in grocery is about 1–3% of sales. Margin leaks through many small holes, each owned by a different system and team |
-| How it is handled today | Monthly margin reviews in spreadsheets; buyers chase funding when they remember; recovery-audit firms find unclaimed money **months later** and keep a share; small items are written off |
+| How it is handled today | Mostly automated already: SAP settles rebates and promotion funding from terms keyed in, pricing tools flag costs not passed on, BI shows the margin bridge, ML scores anomalies. What slips through (terms only in PDFs, systems that disagree) is found by analysts, or by recovery-audit firms **months later** for a share. See [before AI](#before-ai) |
 | What the agent does | Watches the events, finds and sizes each leak, links it to the contract and the owner, drafts the claim or the fix, and writes the margin commentary for the close |
 | Who decides | Category manager, pricing team, financial controller. Nothing goes to a supplier or the ledger automatically |
 | Measured by | EUR recovered within the month, claims sent before their deadline, margin explained in the close (share of the gap with a named cause), analyst hours saved |
@@ -86,6 +86,24 @@ needed**; it also expects over 40% of agentic projects to be cancelled by 2027, 
 | Shrink and waste | Fresh waste doubled in 12 stores | No; send to store operations | Store operations |
 | Fraud | Refund pattern at two tills | Partly; send to loss prevention | Loss prevention |
 | Excess markdowns | Clearance discounts started too early | No; learn for next time | Pricing |
+
+### Before AI
+
+> **TL;DR:** the engines already do the arithmetic; AI covers what they never could: read, link, investigate, write.
+
+Before 2022, big retailers were not doing this by hand:
+
+| Example | Tool | Already automated | Still left to people |
+|---|---|---|---|
+| A rebate of 2% above EUR 1M purchases | SAP condition contracts, Vistex | Accrual and settlement, once the term is keyed in | A side letter in a PDF that nobody keyed in |
+| Supplier funds 30% of a promotion | Trade promotion tool + SAP | Claim generated when the promotion ends | Promotion changed late, so SAP and the plan disagree |
+| Cost up 6%, shelf price unchanged | Pricing tool, SAP exception rule | An alert | Why, who owns it, what the contract allows |
+| Margin 0.2 pt below plan | BI margin bridge, ML forecast | Where the gap is | Why it happened, and the commentary for the close |
+| What slipped through anyway | Recovery-audit firm | Found a year later | Paid as a share of what is recovered |
+
+**What AI adds:** it reads contracts and emails, links facts across systems, checks each alert against SAP and the
+contract, and drafts the claim and the commentary. **It doesn't replace** the engines, the BI or the ML models: it
+calls them as tools. The value is the gap they leave, found inside the month rather than a year later.
 
 ## Build or buy
 
