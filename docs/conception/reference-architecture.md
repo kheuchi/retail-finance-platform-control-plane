@@ -1,6 +1,6 @@
-# Reference architecture: a fraud investigation agent
+# Reference architecture: a margin recovery agent
 
-**Contents:** [TL;DR](#tldr) · [The questions](#the-questions) · [Business case](#business-case) · [Sources and targets](#sources-and-targets) · [Flow: sources to targets](#flow-sources-to-targets) · [The agent in the middle](#the-agent-in-the-middle) · [Layer by layer](#layer-by-layer) · [One run, end to end](#one-run-end-to-end) · [Design rules](#design-rules) · [What usually goes wrong](#what-usually-goes-wrong) · [Teams](#teams) · [How this project compares](#how-this-project-compares)
+**Contents:** [TL;DR](#tldr) · [When is an agent worth it?](#when-is-an-agent-worth-it) · [The question](#the-question) · [Business case](#business-case) · [Build or buy](#build-or-buy) · [Sources and targets](#sources-and-targets) · [Flow: sources to targets](#flow-sources-to-targets) · [The agent in the middle](#the-agent-in-the-middle) · [Layer by layer](#layer-by-layer) · [One run, end to end](#one-run-end-to-end) · [Design rules](#design-rules) · [What usually goes wrong](#what-usually-goes-wrong) · [Teams](#teams) · [How this project compares](#how-this-project-compares) · [Use cases considered](#use-cases-considered)
 
 Day 0 · Conception · 2026-10-28. Target picture only: nothing in this file is built.
 Previous: [benchmark](benchmark.md). Detail: [`cmdb.yml`](../../cmdb.yml) → `conception.reference_architecture`.
@@ -9,58 +9,98 @@ Previous: [benchmark](benchmark.md). Detail: [`cmdb.yml`](../../cmdb.yml) → `c
 
 | Question | Answer |
 |---|---|
-| What is this? | The full enterprise picture of an AI agent that uses **every** tool: lakehouse, event streaming, live APIs, ML (scores + forecast), OLAP, RAG, GraphRAG, an SLM, a human, and an LLM to tie it together |
-| Which use case? | **Refund fraud rings** in the same fictional retailer: "Is this one organised group, how much have we lost, and what do we do now?" |
-| Why not the ERP? | The ERP records each refund. It can't link refunds across stores, cards and loyalty accounts, compare them with a forecast, read the policy, and write a case file |
-| The one idea | The LLM computes **no** numbers and accuses **nobody**. It asks the right systems, links the evidence, explains, and proposes; an investigator decides |
-| Follows from | Our cashier fraud detectors ([story 5.1](../stories/5.1-fraud-detection.md)) and the month-end agent ([story 7.1](../stories/7.1-month-end-agent.md)) |
-| Built here? | Lakehouse, batch fraud scores, a forecast, an LLM agent with human approval: yes. Streaming, live APIs, RAG, GraphRAG, SLM, real-time scoring: no ([comparison](#how-this-project-compares)) |
+| What is this? | The full enterprise picture of an AI agent that needs **every** tool: event streaming, lakehouse + OLAP, live APIs, ML (forecasts + scores), RAG, GraphRAG, an SLM, humans, and an LLM to tie it together |
+| The question | **"Where did we lose margin this month, why, and how much can we still recover before we close the books?"** |
+| Who asks | The financial controller and the category managers of our fictional grocer |
+| Why an agent | Margin leaks through six systems and hundreds of contracts; each leak needs a different path; no fixed rule or single product sees them all |
+| Why build | Margin is the core of a grocer's economics; the data and contracts are ours; the platform is reused by every next use case. **Build the platform, buy the parts** |
+| The one idea | The LLM computes **no** numbers and sends **nothing** on its own. It finds, sizes (with tools), explains and drafts; people approve |
+| Follows from | Our store margin detector ([story 5.1](../stories/5.1-fraud-detection.md)) and the month-end agent that writes margin commentary ([story 7.1](../stories/7.1-month-end-agent.md)) |
 
-## The questions
+## When is an agent worth it?
 
-> **TL;DR:** one main question for the investigator, broken into sub-questions; each one is answered by a different tool.
+> **TL;DR:** six tests; if one fails, something simpler wins.
 
-**Main question (loss prevention investigator):**
+| # | Test | If it fails, use |
+|---|---|---|
+| 1 | No fixed rule can decide; it takes judgement | Rules in the ERP or an engine |
+| 2 | Evidence is spread across several systems, including text | A SQL query or a BI dashboard |
+| 3 | The steps change from case to case | A fixed workflow with one LLM step |
+| 4 | Moderate volume (tens to hundreds of cases a day), each worth real money or time | An engine for volume; nothing for low value |
+| 5 | A person can check the result, and mistakes can be undone | Keep it human |
+| 6 | It is worth building: differentiating, our data, reusable platform; or no product does it whole | Buy |
 
-> **"Are these suspicious refunds across our stores the work of one organised group, how much have we lost, and what should we do now?"**
+Gartner's line, as reported: automation for routine workflows, assistants for retrieval, **agents when decisions are
+needed**; it also expects over 40% of agentic projects to be cancelled by 2027, mostly for unclear value and cost.
+
+| Test | Margin recovery |
+|---|---|
+| 1 · Judgement | ✅ Is this leak real, recoverable, worth a supplier conversation? |
+| 2 · Many systems + text | ✅ SAP, promotions, POS, stock, supplier portal, contracts |
+| 3 · Steps vary | ✅ A pricing error and an unclaimed promotion take different paths |
+| 4 · Volume and value | ✅ Tens of cases a day, thousands of euros each |
+| 5 · Checkable, reversible | ✅ Every claim, price change and accrual is approved first |
+| 6 · Worth building | ✅ See [build or buy](#build-or-buy) |
+
+## The question
+
+> **TL;DR:** one question for the controller, broken into sub-questions; each answered by a different tool.
+
+> **"Where did we lose margin this month, why, and how much can we still recover before we close the books?"**
 
 | Sub-question | Answered by |
 |---|---|
-| What just happened? | **Event streaming**: refund, payment and loyalty events of the last minutes |
-| Is it abnormal? | **ML**: a real-time anomaly score per refund |
-| How far above normal? | **ML forecast**: expected refunds per store and day; the excess is the suspected loss |
-| How much, since when, where? | **OLAP** on Gold: 90 days of refunds and losses per store, till, card |
-| Who is connected to whom? Have we seen this before? | **GraphRAG**: shared cards, phone numbers, loyalty accounts and tills; similar past cases |
-| What is true right now? | **Live APIs**: card status and chargebacks at the payment provider, linked loyalty accounts, open cases, the till rota |
-| What do the rules allow? | **RAG**: refund policy, investigation playbook, works agreement on staff monitoring |
-| Which alerts deserve a look? | **SLM**: groups thousands of alerts, removes personal data, closes the obvious ones |
-| So what do we do? | **LLM**: links it all, writes the case file, proposes actions |
-| Who decides? | **Human**: the investigator approves; HR and the works agreement govern anything about an employee |
-
-Two other questions the same architecture answers:
-
-| Question | Domain |
-|---|---|
-| "Is this supplier's bank-account change genuine, or is someone trying to divert our payments?" | Supplier payment fraud: the ERP stores the new account; the agent checks it against the graph (shared with an employee? a known fraud account?), the live bank-verification API and the payment policy |
-| "Will we miss this month's revenue forecast, and how much of the gap is fraud, shrinkage or real demand?" | Forecasting: the forecast and the fraud scores together, explained for the CFO before the close |
+| What changed? | **Event streaming**: cost changes, price changes, promotions, goods receipts |
+| Which signals deserve a look? | **SLM**: ranks and groups hundreds of signals a day |
+| Where, and how much? | **OLAP** on Gold: margin by store, category, supplier, day |
+| What should margin have been? | **ML forecast**: expected margin without the leak; purchases to year-end vs rebate tiers |
+| What looks abnormal? | **ML scores**: margin drift, waste, refunds |
+| What is true right now? | **Live APIs**: current SAP cost and price conditions, claims already sent, credit notes received, open disputes |
+| What does the contract say? | **RAG**: the clause, cited ("supplier funds 30% of the promotion discount, claim within 60 days") |
+| What belongs together, and who owns it? | **GraphRAG**: supplier → contract → promotion → products → stores → claims → buyer |
+| How big is each leak, exactly? | **Deterministic tools**: leak = expected − booked |
+| So what do we do? | **LLM**: margin bridge, claim drafts, price-fix list, close commentary |
+| Who decides? | **Humans**: category manager (claims), pricing team (prices), controller (accruals) |
 
 ## Business case
 
-> **TL;DR:** organised refund fraud spreads across stores and channels where no single report sees it; the agent links it in minutes, a person acts.
+> **TL;DR:** in grocery a few tenths of a margin point is the whole profit; it leaks through holes that no single system or team sees.
 
 | Question | Answer |
 |---|---|
-| Problem | Return and refund fraud costs retailers about 1–2% of sales. Organised groups refund across many stores, channels and loyalty accounts, sometimes with the help of a cashier. Each refund looks normal alone |
-| What exists today | POS rules (manager approval over a limit), a weekly loss report, investigators who search by hand across POS, payment, loyalty and case systems |
-| Where the ERP stops | It records refunds; it doesn't link identities across systems, compare with a forecast, read the policy or explain a case |
-| What the agent does | Starts on an alert, gathers evidence from every system, finds the group in the graph, sizes the loss, checks the rules, writes a case file and proposes actions |
-| Who decides | The loss prevention investigator. Nothing about an employee happens without HR and the works agreement |
-| Measured by | Time from first refund to case opened (days → minutes), losses stopped, false alerts per investigator per day, share of case files accepted without rework |
-| Not the goal | Automatic blocking of customers or accusing employees by AI |
+| Problem | Net margin in grocery is about 1–3% of sales. Margin leaks through many small holes, each owned by a different system and team |
+| How it is handled today | Monthly margin reviews in spreadsheets; buyers chase funding when they remember; recovery-audit firms find unclaimed money **months later** and keep a share; small items are written off |
+| What the agent does | Watches the events, finds and sizes each leak, links it to the contract and the owner, drafts the claim or the fix, and writes the margin commentary for the close |
+| Who decides | Category manager, pricing team, financial controller. Nothing goes to a supplier or the ledger automatically |
+| Measured by | EUR recovered within the month, claims sent before their deadline, margin explained in the close (share of the gap with a named cause), analyst hours saved |
+| Not the goal | Negotiating with suppliers or changing prices without a person |
 
-Terms: **loss prevention** = the team that investigates theft and fraud; **chargeback** = a card payment reversed by
-the bank; **works agreement** = the contract with the works council on how staff data may be used (needed in Germany
-for any monitoring, BetrVG §87).
+### The leaks
+
+| Leak | Example | Recoverable? | Owned by |
+|---|---|---|---|
+| Promotion funding not claimed | The promotion ran; the supplier's agreed contribution was never invoiced | Yes, before the claim deadline | Category manager |
+| Cost up, price unchanged | Supplier raised cost on the 3rd; shelf price never updated | Partly, from today on | Pricing |
+| Rebate tier at risk | EUR 80k short of the next tier with two months left | Yes, by shifting purchases | Category manager |
+| Supplier deductions not taken or not defended | A late or short delivery we were entitled to charge; a supplier disputes our deduction and we can't find the proof | Yes, with evidence | Accounts payable |
+| Shrink and waste | Fresh waste doubled in 12 stores | No; send to store operations | Store operations |
+| Fraud | Refund pattern at two tills | Partly; send to loss prevention | Loss prevention |
+| Excess markdowns | Clearance discounts started too early | No; learn for next time | Pricing |
+
+## Build or buy
+
+> **TL;DR:** build the platform and the agent where the question is ours; buy the commodity parts.
+
+| Criterion | Margin recovery |
+|---|---|
+| Differentiating? | Yes: margin is the grocer's economics; knowing why it moved, early, is an advantage |
+| Cross-silo? | Six systems plus contracts; vendors each cover one silo (pricing, rebates, deductions, loss prevention) |
+| Our data? | Contracts, promotions, costs and prices are confidential and specific to us |
+| Platform reuse? | Same lakehouse, gateway, agent runtime and controls as the close agent; the next use case costs little |
+| Control? | EU residency, audit trail, our guardrails, no supplier terms in a vendor's cloud |
+| Cost model? | Recovery-audit firms take a share of what they find; per-seat AI pricing grows with users |
+| **Buy** | Models (LLM, SLM), the streaming service, vector and graph stores, OCR, the agent runtime |
+| **Build** | Gold, graph tables, tools, the agent's logic, evaluation, the guardrails |
 
 ## Sources and targets
 
@@ -70,53 +110,56 @@ for any monitoring, BetrVG §87).
 
 | Source | Gives | How it arrives | Freshness |
 |---|---|---|---|
-| Store POS | Sales, refunds, voids, manager overrides, till ID | Events (`pos-refunds`) | Seconds |
-| E-commerce | Online orders, online returns brought to a store | Events | Seconds |
-| Payment provider (Adyen, Worldline) | Card tokens, authorisations, chargebacks | Events + live API | Seconds |
-| Loyalty / CRM | Accounts, phone numbers, addresses, account changes | CDC events + live API | Minutes |
-| Workforce rota | Who was on which till (restricted personal data) | Live API, investigator only | Live |
-| Case management history | Past cases and their outcomes: the **labels** for ML | Daily batch | Daily |
-| Documents | Refund policy, investigation playbook, works agreement, past case reports | Document + entity pipeline | When a version changes |
+| SAP S/4HANA | Costs, prices, purchase orders, invoices, credit notes, deductions | CDC events; live reads through the API gateway | Seconds |
+| Promotions tool | Promotion plans, dates, agreed supplier funding | Events | Minutes |
+| Store POS | Sales, markdowns, refunds | Events | Seconds |
+| Stock / WMS | Goods receipts, waste, shrink | Events | Minutes |
+| Contracts | Rebate agreements, promotion agreements, side letters (PDF) | Document + entity pipeline | When a version is signed |
+| Claims history | Past claims, disputes and outcomes: the **labels** | Daily batch | Daily |
+| Supplier portal / EDI | Claim status, disputes, confirmations | Live API; EDI messages as events | Minutes |
 
 ### Targets
 
 | Target | Receives | After |
 |---|---|---|
-| **Investigator** | Case file with evidence, loss estimate and proposed actions | The agent |
-| **Case management** (ServiceNow) | A pre-filled case | Investigator approval |
-| **Payment provider / POS** | Refund hold on the card tokens involved (reversible) | Investigator approval |
-| **Store managers** | An alert: pattern, tills, times; no employee names | Investigator approval |
-| **Finance close** | A loss provision for the month (links to our month-end agent) | Investigator approval |
-| **Power BI** | Losses, alerts, cases, false-alert rate | Reads Gold |
-| **Event backbone** (back in) | Decision and reason | Every decision; becomes the next training label |
+| **Category manager** | Claim drafts with clause and evidence; rebate tiers at risk | The agent |
+| **Pricing team** | Price-fix list (cost up, price unchanged) | The agent |
+| **Financial controller** | Accrual proposals; margin bridge and commentary for the close | The agent |
+| **Suppliers** | Claims and deduction notices by EDI or portal | Category manager approval |
+| **SAP** (system of record) | Claim documents, price conditions, accrual postings, through workflows with SAP's own checks | Approval |
+| **Power BI** | Margin bridge, EUR recovered, claims by status | Reads Gold |
+| **Event backbone** (back in) | Approved, rejected, paid, with the reason | Every decision; becomes the next label |
 
 ## Flow: sources to targets
 
 > **TL;DR:** data flows left to right through streaming, lakehouse, ML and knowledge; every tool call passes one gateway.
 
-![Refund fraud: sources to targets](reference-architecture-flow.png)
+![Margin recovery: sources to targets](reference-architecture-flow.png)
 
 | Column | Holds |
 |---|---|
 | 1 · Sources | The seven systems above |
-| 2 · Event streaming | Event backbone, stream processing, the document and entity pipeline, the API gateway for live reads |
-| 3 · Lakehouse | Bronze → Silver (pseudonymised) → Gold, feature tables, graph tables, certified SQL functions |
-| 4 · ML | Real-time anomaly score, refund forecast, graph features, monitoring, serving |
+| 2 · Event streaming | Event backbone, stream processing (the margin-signal rules), document + entity pipeline, API gateway |
+| 3 · Lakehouse | Bronze → Silver → Gold, feature tables, graph tables, certified SQL functions |
+| 4 · ML | Margin forecast, rebate tier forecast, anomaly scores, monitoring, serving |
 | 5 · Knowledge | Vector index (RAG), knowledge graph (GraphRAG) |
 | 6 · Agent | SLM triage, LLM agent, guardrails |
-| 7 · Targets | The investigator first, then the systems that act |
+| 7 · Targets | Three approvers first, then the systems that act |
 
 Source: [reference-architecture-flow.drawio](reference-architecture-flow.drawio).
 
 ## The agent in the middle
 
-> **TL;DR:** one trigger, nine kinds of evidence, one case file, one human decision.
+> **TL;DR:** one trigger, nine kinds of evidence, one margin bridge, three human decisions.
 
 ![The agent in the middle](reference-architecture-agent.png)
 
-The agent plans, then delegates to sub-agents: a **data analyst** (OLAP, ML), a **link investigator** (GraphRAG,
-live APIs), a **policy reader** (RAG) and a **case writer**. Source:
+The agent plans, then delegates to sub-agents: a **margin analyst** (OLAP, ML), a **contract reader** (RAG,
+GraphRAG), an **evidence collector** (live APIs) and a **claim and commentary writer**. Source:
 [reference-architecture-agent.drawio](reference-architecture-agent.drawio).
+
+**When it runs:** on margin-signal events that pass SLM triage; every day of close week; or when the controller asks.
+Never once per sale or per price change: the stream rules and the SLM filter first.
 
 ## Layer by layer
 
@@ -124,185 +167,212 @@ live APIs), a **policy reader** (RAG) and a **case writer**. Source:
 
 ### Event streaming
 
-> **TL;DR:** fraud is fast; the stream sees each refund in seconds, scores it and raises alerts.
+> **TL;DR:** margin moves when a cost, a price or a promotion changes; the stream sees it the same day, not at month-end.
 
 | Component | Practice |
 |---|---|
-| Event backbone | Kafka (Amazon MSK, Confluent); topics `pos-refunds`, `payments`, `chargebacks`, `loyalty-changes`, `fraud-alerts`, `decisions` |
+| Event backbone | Kafka (Amazon MSK, Confluent) or SAP Event Mesh; topics `cost-changes`, `price-changes`, `goods-receipts`, `promotions`, `sales`, `margin-signals`, `decisions` |
+| CDC from SAP | SAP SLT, Datasphere replication or Debezium; condition and invoice changes become events |
 | Schema registry | Versioned schema per topic; breaking changes rejected (the data contract of the stream) |
-| Stream processing | Flink or Spark Structured Streaming: per card, till and account, counts and amounts over the last minutes and hours; calls the real-time score; publishes `fraud-alerts` |
+| Stream processing | Flink or Spark Structured Streaming. Rules: cost up and price unchanged after 2 days; promotion ended and no claim after 7 days; claim deadline in 10 days; publish to `margin-signals` |
 | Into the lakehouse | Streaming ingest into Bronze; streaming tables where freshness matters |
-| Back out | Decisions published to `decisions`: audit, evaluation and the next labels |
+| Back out | Decisions on `decisions`: audit, evaluation, labels |
 
 ### Lakehouse and OLAP
 
-> **TL;DR:** the trusted history, pseudonymised, with the links the graph needs.
+> **TL;DR:** the trusted margin history and the links the graph needs.
 
 | Component | Practice |
 |---|---|
-| Bronze → Silver → Gold | Quality gates; personal identifiers **pseudonymised** in Silver (cashier, card, phone become tokens) |
-| Graph tables | Nodes (card, loyalty account, phone, address, till, store, pseudonymised cashier) and edges (used, refunded at, shares) |
-| Certified SQL functions | The OLAP tools: refunds by store, till, card and day; losses; case outcomes |
-| Governance | Unity Catalog: grants, lineage, column masks; re-identifying a cashier only for the investigator role, logged |
+| Bronze → Silver → Gold | Quality gates; margin by store, category, supplier, day; funding **expected** (from agreements) vs **booked** (from SAP) |
+| Graph tables | Nodes: supplier, contract, clause, promotion, product, store, claim, buyer. Edges: funds, covers, sold at, claimed by, owned by |
+| Certified SQL functions | The OLAP tools the agent may call |
+| Governance | Unity Catalog grants and lineage; supplier terms readable only by finance and buying roles |
 
-### ML: scores and forecast
+### ML: forecasts and scores
 
-> **TL;DR:** a score says "odd", a forecast says "how much more than normal"; both are needed.
+> **TL;DR:** the forecast says what margin should have been; the scores say where it looks wrong.
 
 | Model | Practice |
 |---|---|
-| Real-time anomaly score | Gradient boosting or isolation forest on stream features; online endpoint, milliseconds per refund |
-| Refund forecast | Expected refunds per store and day (seasonality, promotions, holidays); the excess over the forecast interval is the suspected loss |
-| Graph features | Community size, shared identifiers, distance to a known fraud case; fed to the score |
-| Labels | Past case outcomes from case management; the agent's decisions add new ones |
-| Monitoring | Precision at the top alerts, drift, false alerts per investigator |
+| Margin forecast | Expected margin by category and store (mix, promotions, seasonality); the gap to actual is what the agent explains; must beat a naive baseline |
+| Rebate tier forecast | Purchases to year-end per supplier vs each contract tier, with an interval |
+| Anomaly scores | Margin drift, waste, refunds per store (our story 5.1 detector, extended) |
+| Labels | Past claims and outcomes (paid, rejected, why) from claims history and the `decisions` topic |
+| Monitoring | Forecast accuracy, score precision, drift |
 
-### RAG
+### Live APIs
 
-> **TL;DR:** what the rules say, cited, filtered by who is asking.
+> **TL;DR:** before anything goes to a supplier, check SAP and the portal right now.
 
-| Component | Practice |
+| Tool | Returns |
 |---|---|
-| Content | Refund policy, investigation playbook, works agreement, data protection rules |
-| Index | Databricks Vector Search, Bedrock Knowledge Bases or Azure AI Search; chunks with document, section, version |
-| Rights | The index applies the source's access rights at query time |
-| Answers | Cite document, section and version; "no source found" is a valid answer |
+| `get_conditions(supplier, sku)` | Current cost and price in SAP, valid from |
+| `get_claims(supplier, period)` | Claims already sent, their status |
+| `get_credit_notes(supplier, period)` | Money already received |
+| `get_disputes(supplier)` | Open disputes on the supplier portal |
 
-### GraphRAG
-
-> **TL;DR:** RAG finds passages; GraphRAG finds **connections**. Fraud rings are connections.
-
-| Component | Practice |
-|---|---|
-| What it is | Retrieval over a knowledge graph: entities, their links, and LLM-written summaries of each community, instead of only text chunks |
-| Graph | Built from the graph tables (structured links) plus entities that the SLM extracts from past case reports |
-| Store | Neo4j, Amazon Neptune, or graph tables in the lakehouse (GraphFrames) |
-| Query | "Which accounts share a card or phone with these refunds?" → subgraph; "Which past case looks like this?" → community summary with case references |
-| Why not plain RAG | Plain RAG returns similar text; it can't follow "card A → account B → phone C → account D" |
+All behind an API gateway with quotas and caching; every answer carries `as_of`.
 
 ### SLM
 
-> **TL;DR:** a small language model does the high-volume, low-judgement work, cheaply and inside our network.
+> **TL;DR:** a small language model does the volume work cheaply and inside our network.
 
 | Use | Why an SLM |
 |---|---|
-| Triage thousands of alerts a day: group, deduplicate, close the obvious | Volume: an LLM call per alert costs too much |
-| Remove personal data before anything reaches the LLM | Runs in our VPC, so the data doesn't leave |
-| Extract entities from case reports for the graph | A narrow task, fine-tuned once |
-| Examples | Llama 3.2 3B, Phi, Gemma, Mistral Small; served on our own GPU or a private endpoint |
+| Rank and group hundreds of margin signals a day | An LLM call per signal costs too much |
+| Extract rates, tiers, exclusions and deadlines from thousands of contracts | A narrow task, fine-tuned once, reviewed by a person |
+| Keep supplier terms inside the VPC for these steps | Confidential data stays with us |
+| Examples | Llama 3.2 3B, Phi, Gemma, Mistral Small; on our own GPU or a private endpoint |
 
-### LLM agent
+### RAG
 
-> **TL;DR:** plans, calls tools, links evidence, writes; never calculates, never decides.
+> **TL;DR:** the exact clause, cited, readable only by those allowed.
 
 | Component | Practice |
 |---|---|
-| Trigger | A grouped alert from the SLM, or an investigator's question |
-| Orchestrator | Plans and delegates to sub-agents (data analyst, link investigator, policy reader, case writer) |
+| Content | Rebate and promotion agreements, side letters, pricing policy, claim policy |
+| Index | Databricks Vector Search, Bedrock Knowledge Bases or Azure AI Search; chunks with supplier, version, valid from/to |
+| Rights | The source's access rights applied at query time |
+| Answers | Document, section and version cited; "no clause found" means no claim |
+
+### GraphRAG
+
+> **TL;DR:** RAG finds the clause; GraphRAG finds what belongs together and who owns it.
+
+| Component | Practice |
+|---|---|
+| What it is | Retrieval over a knowledge graph: entities, their links, and LLM-written summaries of each group, instead of only text chunks |
+| Graph | Graph tables (structured links) plus entities the SLM extracts from contracts |
+| Store | Neo4j, Amazon Neptune, or graph tables in the lakehouse |
+| Queries | "Which ended promotions of this supplier have no claim, under which agreement, owned by whom?"; "Which other suppliers have the same unclaimed pattern?" |
+| Why not plain RAG | Plain RAG returns similar text; it can't follow promotion → agreement → clause → products → claims |
+
+### LLM agent
+
+> **TL;DR:** plans, calls tools, links evidence, writes; never calculates, never sends.
+
+| Component | Practice |
+|---|---|
+| Triggers | Margin-signal events after SLM triage; close-week daily run; the controller's question |
+| Orchestrator | Plans and delegates to sub-agents (margin analyst, contract reader, evidence collector, writer) |
 | Tools | Via **MCP** (Model Context Protocol) behind one gateway: auth on behalf of the user, policy per tool, every call logged |
-| Guardrails | Figure check (every number from a tool), no employee names in outputs, citations required, prompt-injection filter on documents |
-| Runtime | AgentCore, Vertex AI Agent Engine or Azure AI Foundry, in the data's region |
+| Guardrails | Figure check (every number from a tool), a clause cited for every claim, no claim without evidence, prompt-injection filter on documents |
+| Runtime | AgentCore, Vertex AI Agent Engine or Azure AI Foundry, in the EU |
 
-### Human-in-the-loop
+### Humans
 
-> **TL;DR:** the agent proposes; the investigator decides; employees are protected by process.
+> **TL;DR:** three owners, three kinds of decision.
 
 | Action | Who decides |
 |---|---|
-| Open a case, alert store managers | Investigator |
-| Hold refunds on card tokens (reversible) | Investigator; later possibly automatic below a threshold after months of evidence |
-| Anything about an employee | Investigator + HR, under the works agreement; never automatic (GDPR Art. 22: no decision with significant effect by automation alone) |
-| Loss provision | Financial controller, in the close |
+| Send a claim to a supplier | Category manager |
+| Change a price | Pricing team |
+| Book an accrual; publish the margin commentary | Financial controller |
+| Later, possibly automatic | Claims under a small threshold with a cited clause and a high past acceptance rate, after months of evidence (autonomy level 4) |
 
 ### Cross-cutting
 
-> **TL;DR:** identity, privacy, observability, evaluation, cost.
+> **TL;DR:** identity, confidentiality, observability, evaluation, cost.
 
 | Concern | Practice |
 |---|---|
-| Privacy | DPIA, works agreement, pseudonymisation, purpose limitation, retention limits |
-| Identity | Workload identities, no stored keys; tools run on behalf of the investigator |
+| Confidentiality | Supplier terms restricted to finance and buying; EU residency |
+| Identity | Workload identities, no stored keys; tools run on behalf of the user |
 | Observability | Traces of every step (prompt, tool calls, tokens); stream lag; model drift |
-| Evaluation | Past cases with known outcomes; run on every prompt, model or tool change |
-| Cost | SLM for volume, LLM only for hard cases; token budgets per case |
-| AI governance | EU AI Act classification, model and agent inventory, audit trail |
+| Evaluation | Past months with known claims and outcomes; run on every prompt, model or tool change |
+| Cost | SLM for volume, LLM for real cases; token budgets |
+| Audit | Every claim traceable to events, tables, clause and approver |
 
 ## One run, end to end
 
-> **TL;DR:** an alert at 02:14 becomes a case file at 02:31 and a decision at 08:10.
+> **TL;DR:** close week, day 2: the controller asks; 20 minutes later a margin bridge with EUR 1.2M recoverable.
 
-| # | Time | Who | Does | Gets |
-|---|---|---|---|---|
-| 1 | 02:14 | Stream job | Refunds at stores 214, 219, 231 jump; anomaly scores high | 37 alerts on `fraud-alerts` |
-| 2 | 02:15 | SLM | Groups the 37 alerts into 1 case, removes names, closes 4 duplicates | 1 hard case for the LLM |
-| 3 | 02:16 | OLAP | `refunds_by_card_store(90 days)` | 212 no-receipt refunds, EUR 58,900, 6 weeks |
-| 4 | 02:17 | ML forecast | `expected_refunds(stores, 6 weeks)` | EUR 17,600 expected → excess **EUR 41,300** (computed by a tool) |
-| 5 | 02:18 | GraphRAG | `linked_entities(refund cards)` | 6 loyalty accounts, 3 card tokens, 2 phone numbers; 80% at 2 tills; looks like case 2025-114 |
-| 6 | 02:20 | Live APIs | Payment provider; loyalty | 2 cards already have chargebacks; 4 accounts created in the last 2 months |
-| 7 | 02:21 | RAG | `search_policy("no-receipt refund")` | Refund policy §3: over EUR 50 needs a manager override; works agreement §5: staff findings go to HR |
-| 8 | 02:31 | LLM | Writes the case file; guardrails check every figure and remove names | Proposal: hold 3 card tokens, open a case, alert 3 store managers, provision EUR 41k |
-| 9 | 08:10 | Investigator | Approves; sends the till pattern to HR under the works agreement | Case opened, tokens held, managers alerted; `decisions` event published |
+Monthly sales EUR 950M; margin 0.2 points below forecast.
 
-Without the agent, the weekly loss report would have shown it the following Monday, store by store, without the links.
+| # | Who | Does | Gets |
+|---|---|---|---|
+| 1 | Controller | Asks the question in Teams | A case |
+| 2 | SLM | Pulls this month's 312 margin signals, groups them by supplier | 23 real cases |
+| 3 | OLAP | `margin_by_category_supplier(month)` | Gap concentrated in dairy, drinks, fresh |
+| 4 | ML forecast | `expected_margin(month)` | Gap **EUR 1.9M** vs forecast (computed by a tool) |
+| 5 | GraphRAG | `unclaimed_promotions(month)` | 14 ended promotions, 5 suppliers, no claim; owners named |
+| 6 | RAG | `contract_clause(supplier, promotion)` | Funding rates and claim deadlines, cited |
+| 7 | Live APIs | `get_claims`, `get_credit_notes`, `get_conditions` | No claims sent; 140 SKUs with cost +6% since the 3rd and shelf price unchanged |
+| 8 | ML + tools | Rebate tier forecast; `leak_size` for each case | Promotion funding EUR 610k, cost not passed on EUR 380k, rebate tier at risk EUR 210k; waste EUR 700k not recoverable |
+| 9 | LLM | Margin bridge, 5 claim drafts, price-fix list, commentary; guardrails check every figure and clause | Final analysis |
+| 10 | Humans | Category managers approve 5 claims; pricing fixes 140 prices; controller books accruals | Claims sent, prices fixed, commentary in the close pack; `decisions` events published |
+
+610 + 380 + 210 = EUR 1.2M recoverable; with waste, EUR 1.9M explained. Without the agent, part of the EUR 610k would
+come back next year through a recovery audit, minus its fee, and some claims would pass their deadline.
 
 ## Design rules
 
 > **TL;DR:** ten rules that separate a demo from a production agent.
 
 1. **Numbers come from tools**, never from the model; a figure check enforces it.
-2. **The AI accuses nobody:** it describes patterns; people decide about people.
-3. **Each fact from its owner:** history from Gold, now from the live API, links from the graph, rules from the documents, "normal" from the forecast.
+2. **No clause, no claim:** every claim cites its contract clause and its evidence.
+3. **Each fact from its owner:** history from Gold, now from SAP, terms from the contract, links from the graph, "expected" from the forecast.
 4. **Show freshness and sources:** every figure carries its `as_of` and origin.
 5. **SLM for volume, LLM for judgement.**
-6. **Pseudonymise first;** re-identify only for the investigator, and log it.
-7. **Read-only by default;** every action through the gateway and a human.
-8. **Event-driven:** the agent starts on an alert; nothing polls the POS or SAP.
-9. **Evaluate before release** on past cases with known outcomes.
-10. **Trace everything,** so an auditor or a court can replay why a case was opened.
+6. **Hard rules in code, explanations in RAG:** claim deadlines and rates live in tables once extracted; the PDF is the proof.
+7. **Read-only by default;** every write through the gateway, a workflow and a person.
+8. **Event-driven:** signals start the work; nothing polls SAP.
+9. **Evaluate before release** on past months with known outcomes.
+10. **Trace everything,** so an auditor or a supplier dispute can replay why a claim was sent.
 
 ## What usually goes wrong
 
-> **TL;DR:** most failures are data, privacy and process, not the model.
+> **TL;DR:** most failures are data and process, not the model.
 
 | Failure | Cause | Prevention |
 |---|---|---|
-| Innocent customer flagged | Score alone, no link evidence | Graph + forecast + human before any action |
-| Employee named by the AI | Names in context or output | Pseudonymisation, guardrail, works agreement process |
-| Alert flood | One busy Saturday raises thousands of alerts | SLM grouping, thresholds tuned on the forecast |
-| Wrong loss amount | Model did the arithmetic | Deterministic tool, figure check |
-| Graph out of date | Loyalty changes loaded weekly | CDC events, graph updated from the stream |
-| Prompt injection | A case report contained instructions | Retrieved text treated as data; output guardrails |
-| Labels never improve | Decisions not captured | `decisions` topic, reason required |
+| Wrong claim sent | Clause misread or an old contract version | Clause cited with version; category manager approves |
+| Wrong amount | Model did the arithmetic | Deterministic tool, figure check |
+| Claim sent twice | Didn't check SAP right now | Live API check before every draft |
+| Signal flood | A general price increase raises thousands of signals | Stream rules grouped by supplier; SLM triage |
+| Contract terms leak | Index ignores rights | Access filters at query time; EU residency |
+| Supplier relationship damaged | Too many small claims | Thresholds per supplier, set by category managers |
+| Labels never improve | Outcomes not captured | `decisions` topic; paid / rejected recorded |
 
 ## Teams
 
-> **TL;DR:** the same two-team model as in this project, plus loss prevention and the guardians.
+> **TL;DR:** the same two-team model as in this project, plus the business owners.
 
 | Team | Owns |
 |---|---|
-| Fraud data & AI product team | Gold, graph tables, scores, forecast, tools, agent, evaluation |
+| Finance data & AI product team | Gold, graph tables, forecasts, tools, agent, evaluation |
 | Data & AI platform team | Lakehouse, event backbone, serving, vector and graph stores, SLM hosting, agent runtime, gateway |
-| Loss prevention | Investigations, approvals, feedback, the playbook |
-| DPO, works council, HR | Privacy, the works agreement, anything about employees |
-| Integration team | POS, payment provider, loyalty and case management interfaces |
+| Integration team | SAP CDC, promotions tool, supplier portal and EDI |
+| Buying (category managers) | Claims, supplier relationships, thresholds |
+| Pricing | Price fixes |
+| Finance (controller, accounts payable) | Accruals, commentary, deductions |
 
 ## How this project compares
 
-> **TL;DR:** we built the lakehouse, batch fraud scores, a forecast and a governed agent; not streaming, live APIs, RAG, GraphRAG, the SLM or real-time scoring.
+> **TL;DR:** we built the lakehouse, a margin detector, a forecast and a governed agent that writes margin commentary; not streaming, live APIs, RAG, GraphRAG or the SLM.
 
 | Layer | Here | Status |
 |---|---|---|
-| Lakehouse + OLAP | Bronze/Silver/Gold, quality gates, certification; agent reads certified SQL functions | ✅ Built |
-| ML: fraud scores | Two Isolation Forest detectors: **cashier refunds** and store margin drift, monthly, no labels | 🟡 Batch; no real-time score, no graph features |
-| ML: forecast | Revenue forecast that must beat a baseline | 🟡 Built, but revenue, not refunds |
+| Lakehouse + OLAP | Bronze/Silver/Gold, quality gates, certification; agent reads certified SQL functions incl. `store_margin_alerts` | ✅ Built |
+| ML: scores | Isolation Forest detectors: store margin drift and cashier refunds, monthly | 🟡 Built, batch |
+| ML: forecast | Revenue forecast that must beat a baseline | 🟡 Built, revenue not margin |
 | Event streaming | Daily files with Auto Loader | ❌ Not built |
 | Live APIs | None; the gateway carries actions (drafts, approved emails) | ❌ Not built |
-| RAG | None | ❌ Not built |
-| GraphRAG | None | ❌ Not built |
+| RAG / GraphRAG | None; no contracts in the data | ❌ Not built |
 | SLM | None; one LLM (Gemini) does everything | ❌ Not built |
-| LLM agent | Supervisor + 3 sub-agents, figure check, store-level only (no cashiers) | ✅ Built |
-| Human-in-the-loop | Controller approves each draft | ✅ Built |
-| Privacy | Agent sees no cashier data; DPIA and works agreement described | ✅ Designed and enforced in grants |
+| LLM agent | Supervisor + 3 sub-agents, figure check, margin commentary in the close | ✅ Built |
+| Humans | Controller approves each draft | ✅ Built |
 
 Built detail: [story 5.1](../stories/5.1-fraud-detection.md), [story 7.1](../stories/7.1-month-end-agent.md),
 [ADR-006](adr/ADR-006-agent-platform.md).
+
+## Use cases considered
+
+> **TL;DR:** three candidates were dropped, each for a clear reason.
+
+| Candidate | Why dropped |
+|---|---|
+| Store replenishment ("transfer or order?") | A replenishment engine (SAP F&R, RELEX) already places the orders without an LLM; an agent would only handle exceptions |
+| Refund fraud rings | Fits all the tools, but specialist products (e.g. Appriss Retail) already link cases with graphs and LLMs; a weaker build case |
+| Vendor chargeback disputes | A real problem, but for **suppliers** fighting retailer deductions. For a retailer it is one leak among others (deductions not taken or not defended), now part of this use case |
