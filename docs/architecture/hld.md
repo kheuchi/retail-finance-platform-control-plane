@@ -67,8 +67,9 @@ Updated 2026-10-04. Why it exists and the end-to-end business workflow: [busines
 | [3 · Data platform](lld-data-platform.md) | How do files become trusted finance tables? | [2.4](../stories/2.4-unity-catalog-on-our-s3.md), [3.1](../stories/3.1-synthetic-accounting-data.md), [3.2](../stories/3.2-catalog-and-bundle-deploy.md), [4.x](../stories/README.md#epic-4--transform--quality) |
 | [4 · Observability & cost](lld-observability-cost.md) | What is recorded, what alerts, what limits spend? | [1.4](../stories/1.4-audit-and-alarms.md), [2.5](../stories/2.5-guardrails.md) |
 | [5 · ML](lld-ml.md) | How are frauds found and revenue forecast, from certified Gold? | [5.1](../stories/5.1-fraud-detection.md), [5.2](../stories/5.2-revenue-forecast.md) |
+| [6 · Agent](lld-agent.md) | Who does the agent run as, across Google, Databricks and AWS, and what may it do? | [7.1](../stories/7.1-month-end-agent.md) |
 
-The AI agent LLD (6) follows when stage 7 starts. New to Databricks? Read the [primer](databricks-primer.md) first.
+New to Databricks? Read the [primer](databricks-primer.md) first.
 
 ## Edit the diagram
 

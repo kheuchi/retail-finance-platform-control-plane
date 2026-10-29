@@ -95,13 +95,14 @@ phases:
 
 # ──────────── architecture ────────────
 conception:
-  docs: 'docs/conception/ (day 0 - business case, stakeholders, benchmark, adr/, reference architecture)'
+  docs: 'docs/conception/ (day 0 - business case, stakeholders, benchmark, adr/, reference architecture, evaluation and observability)'
   business_case: 'month-end close for a DE/CH grocery retailer; sources SAP S/4HANA, store POS, planning tool, ECB, HR; files in, tool gateway out; outputs to controller (commentary), internal audit (fraud), GL lead (exceptions), FP&A (forecast)'
   diagram: {file: conception/business-workflow, covers: 'sources -> integration in -> S3 landing -> lakehouse -> ML -> agent (Bedrock) -> review -> AgentCore Gateway (MCP tools) -> Teams, CFO pack, ServiceNow; Power BI reads Gold; built vs simulated'}
   stakeholders: 'CFO (sponsor), Head of Accounting (business owner), GL, store controlling, FP&A, internal audit, CISO, DPO + works council, finance data & AI product team (PO, data/ML/AI engineers; deploys code), data & AI platform team (provisions infra; a self-service portal in production, PRs here), enterprise architect, SAP/integration team; RACI in stakeholders.md'
   benchmark: 'Databricks on AWS 87, AWS-native 75, Google 74, Snowflake 72, Fabric 70, SAP-native 60 (weighted, 9 criteria, judgement as of 2026-10)'
   adrs: [ADR-001 cloud, ADR-002 data platform, ADR-003 compute and network, ADR-004 ingestion, ADR-005 orchestration and deploy, ADR-006 agent platform]
   reference_architecture: 'docs/conception/reference-architecture.md (2026-10-28, target picture, not built): margin recovery agent ("where did we lose margin, why, how much can we still recover before the close?"); leaks: unclaimed promotion funding, cost up price unchanged, rebate tier at risk, supplier deductions, waste, fraud, markdowns; tools: event streaming, lakehouse + OLAP, live APIs, ML forecasts + scores, RAG, GraphRAG, SLM, LLM, 3 human approvers; 6-test agent checklist + build vs buy; diagrams reference-architecture-flow and -agent (drawio + png); dropped: replenishment (engine exists), refund fraud (Appriss), vendor chargebacks (supplier-side)'
+  evaluation_observability: 'docs/conception/evaluation-observability.md (2026-10-29, target picture, not built): test on every PR, evaluate on golden sets at every release (ship only if not worse), observe every run; per layer: data pipes, ML, RAG, GraphRAG, agents; code checks first, LLM judge second, a person checks the judge; diagram evaluation-observability (drawio + png); built today: story 6.4'
   date: '2026-10-04'
 
 architecture:
@@ -113,7 +114,7 @@ architecture:
     - {file: lld-data-platform, covers: 'generate -> landing volume -> Auto Loader -> Bronze -> Silver -> Gold -> consumers (all done); catalog layout; grants; jobs run as finance-pipeline-runner (labels refreshed 2026-10-28)'}
     - {file: lld-observability-cost, covers: 'CloudTrail, audit bucket, metric filters, alarms, SNS; flow logs; budgets, cluster policies, serverless egress; change gates'}
     - {file: lld-ml, covers: 'train_models job on certified Gold: two Isolation Forest detectors, forecast vs baseline, MLflow, finance.ml registry, Gold scores, results, limits'}
-  planned: [lld-agent]
+    - {file: lld-agent, covers: 'agent identities across GitHub (OIDC -> WIF), Google (deployer and runtime SAs, Gemini EU, Secret Manager), Databricks (agent SP EXECUTE on finance.agent functions; notifier SP), AWS (ID token -> role ...-agent-gcp -> AgentCore Gateway -> Lambda -> SES); added 2026-10-29'}
   key_flows:
     - login: browser -> workspace over HTTPS (only internet path)
     - control: cluster -> PrivateLink (443, 6666, 8443-8451) -> Databricks control plane

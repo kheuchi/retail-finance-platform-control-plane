@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="840" viewBox="0 0 1600 840" font-family="Segoe UI, Helvetica, Arial, sans-serif">
 <rect x="0" y="0" width="1600" height="840" rx="0" fill="#ffffff" stroke="none" stroke-width="1.5"/>
 <text x="800.0" y="48" font-size="30" font-weight="bold" fill="#0f172a" text-anchor="middle">Plan &amp; Roadmap: Retail Finance Data, ML and AI Agent Platform</text>
-<text x="800.0" y="78" font-size="15" font-weight="normal" fill="#475569" text-anchor="middle">For the accounting department of a large retailer · AWS eu-central-1 + Databricks + agent on Google · updated 2026-10-28</text>
+<text x="800.0" y="78" font-size="15" font-weight="normal" fill="#475569" text-anchor="middle">For the accounting department of a large retailer · AWS eu-central-1 + Databricks + agent on Google · updated 2026-10-29</text>
 <rect x="22" y="110" width="182" height="330" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
 <rect x="22" y="110" width="182" height="58" rx="10" fill="#2563eb" stroke="none" stroke-width="1.5"/>
 <rect x="22" y="150" width="182" height="18" rx="0" fill="#2563eb" stroke="none" stroke-width="1.5"/>
@@ -165,10 +165,10 @@
 <text x="192" y="639" font-size="14" font-weight="normal" fill="#0f172a" text-anchor="start">6.4 Monitoring: one dashboard and owned alerts for data, models and agent (signals recorded, not alerted)</text>
 <rect x="42" y="665" width="130" height="26" rx="13" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
 <text x="107" y="683" font-size="12.5" font-weight="bold" fill="#475569" text-anchor="middle">Target picture</text>
-<text x="192" y="683" font-size="14" font-weight="normal" fill="#0f172a" text-anchor="start">Reference architecture: margin recovery agent with event streaming, live APIs, RAG, GraphRAG, SLM (not built)</text>
+<text x="192" y="683" font-size="14" font-weight="normal" fill="#0f172a" text-anchor="start">Reference architecture (margin recovery agent) and evaluation &amp; observability design (not built)</text>
 <rect x="42" y="709" width="130" height="26" rx="13" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
 <text x="107" y="727" font-size="12.5" font-weight="bold" fill="#475569" text-anchor="middle">Housekeeping</text>
-<text x="192" y="727" font-size="14" font-weight="normal" fill="#0f172a" text-anchor="start">Dependabot PRs in the data repo; LLD for the agent (identity, Google to AWS federation) still missing</text>
+<text x="192" y="727" font-size="14" font-weight="normal" fill="#0f172a" text-anchor="start">Dependabot PRs and 2 security alerts in the data repo</text>
 <rect x="42" y="753" width="130" height="26" rx="13" fill="#ffffff" stroke="#b91c1c" stroke-width="1.5"/>
 <text x="107" y="771" font-size="12.5" font-weight="bold" fill="#b91c1c" text-anchor="middle">Owner's go</text>
 <text x="192" y="771" font-size="14" font-weight="normal" fill="#0f172a" text-anchor="start">Full teardown of AWS, Databricks and Google resources</text>
