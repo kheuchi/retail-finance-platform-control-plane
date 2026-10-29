@@ -1,8 +1,8 @@
 # High-Level Design
 
-**Contents:** [TL;DR](#tldr) · [Diagram](#diagram) · [The four zones](#the-four-zones) · [Key flows](#key-flows) · [Design choices](#design-choices) · [Zoom in (LLDs)](#zoom-in-llds) · [Edit the diagram](#edit-the-diagram)
+**Contents:** [TL;DR](#tldr) · [Diagram](#diagram) · [The six columns and five bands](#the-six-columns-and-five-bands) · [One run, step by step](#one-run-step-by-step) · [Key flows](#key-flows) · [Design choices](#design-choices) · [Zoom in (LLDs)](#zoom-in-llds) · [Edit the diagram](#edit-the-diagram)
 
-Updated 2026-10-04. Why it exists and the end-to-end business workflow: [business case](../conception/business-case.md); decisions: [ADRs](../conception/adr/README.md). Detail: [`cmdb.yml`](../../cmdb.yml) → `architecture`, `decisions`. How it was built: [stories](../stories/README.md).
+Updated 2026-10-29. Why it exists and the end-to-end business workflow: [business case](../conception/business-case.md); decisions: [ADRs](../conception/adr/README.md). Detail: [`cmdb.yml`](../../cmdb.yml) → `architecture`, `decisions`. How it was built: [stories](../stories/README.md).
 
 ## TL;DR
 
@@ -20,21 +20,38 @@ Updated 2026-10-04. Why it exists and the end-to-end business workflow: [busines
 
 ![High-level design](hld.png)
 
-## The four zones
+## The six columns and five bands
 
-> **TL;DR:** code in GitHub, data and compute in our AWS account, orchestration in Databricks' account.
+> **TL;DR:** read left to right for one run; read the bands for what surrounds every run.
 
-| Zone | Holds | Detail |
+| Column | Holds | Detail |
 |---|---|---|
-| **GitHub** | 3 repos, Actions (PR checks, plan, gated deploy) | [LLD 2](lld-identity-cicd.md) |
-| **AWS foundation** | CI roles, Terraform state, budget, audit trail, alarms | [LLD 4](lld-observability-cost.md) |
-| **AWS Databricks VPC** | Classic clusters running every job (pipeline, quality gates, ML; agent planned), private endpoints, flow logs | [LLD 1](lld-network.md), [LLD 5](lld-ml.md) |
-| **AWS data** | `dbx-root`, `dbx-uc` (finance catalog), the roles that reach them | [LLD 3](lld-data-platform.md) |
-| **Databricks** | Workspace, guardrails, jobs, MLflow, Unity Catalog (incl. `finance.ml` models), serverless (restricted) | [LLD 3](lld-data-platform.md), [LLD 5](lld-ml.md) |
+| **People** | The controller (starts a run), engineers (PRs only) | [stakeholders](../conception/stakeholders.md) |
+| **GitHub** | 3 repos, Actions (CI, gated deploy, drift, release), keyless deploy identities | [LLD 2](lld-identity-cicd.md) |
+| **Google Cloud** | Agent Engine (Deep Agents, scale to zero), Gemini EU, Secret Manager, Cloud Logging | [LLD 6](lld-agent.md) |
+| **Tools and gateways** | Databricks managed MCP (read), AgentCore Gateway → Lambda → SES (send) | [LLD 6](lld-agent.md) |
+| **Databricks in our VPC** | SQL warehouse, pipeline job Bronze → Gold, ML job, MLflow, Unity Catalog on our S3 | [LLD 1](lld-network.md), [LLD 3](lld-data-platform.md), [LLD 5](lld-ml.md) |
+| **Outputs** | Approval, Power BI, CFO pack | [story 7.1](../stories/7.1-month-end-agent.md) |
+
+Bands: identity and access, compute, network, observability, governance and cost ([LLD 4](lld-observability-cost.md), [story 6.4](../stories/6.4-monitoring.md)).
+
+## One run, step by step
+
+> **TL;DR:** the agent reads through functions, drafts, waits for a person, then sends.
+
+| # | Step |
+|---|---|
+| ① | The controller starts a run for a close month |
+| ② | The agent checks Gold is certified, then calls Unity Catalog functions over managed MCP |
+| ③ | A SQL warehouse runs the functions on Gold and returns aggregates only |
+| ④ | Gemini plans, delegates to sub-agents and drafts the commentary |
+| ⑤ | `submit_draft` through AgentCore Gateway; the Lambda checks every figure and stores the draft |
+| ⑥ | The controller approves: one row in `finance.agent.approvals` |
+| ⑦ | `send_approved`: email by SES; commentary published to `gold.close_commentary` for Power BI |
 
 ## Key flows
 
-> **TL;DR:** six arrows matter. Only the login uses the internet.
+> **TL;DR:** the platform's traffic stays private; only the login and the agent's hops cross the internet.
 
 | # | Flow | Path | Protection |
 |---|---|---|---|
@@ -43,7 +60,8 @@ Updated 2026-10-04. Why it exists and the end-to-end business workflow: [busines
 | 3 | Clusters read and write data | Cluster → S3 gateway endpoint → `dbx-uc` | Unity Catalog role, bucket policies |
 | 4 | Infra changes | Actions → OIDC → CI roles | Short-lived tokens, trust pinned to repo + branch |
 | 5 | Job changes | Actions → OAuth → bundle deploy | Deployer identity; jobs run as the runner |
-| 6 | Agent calls a model (planned) | Agent job → Bedrock private endpoint | No internet path; EU region; human approval |
+| 6 | Agent reads data | Agent Engine → Databricks managed MCP (HTTPS) | OAuth M2M; EXECUTE on 6 functions only |
+| 7 | Agent sends | Agent Engine → STS (Google ID token) → AgentCore Gateway → Lambda | Role may only invoke the gateway; approved drafts only |
 
 ## Design choices
 
@@ -74,4 +92,5 @@ New to Databricks? Read the [primer](databricks-primer.md) first.
 ## Edit the diagram
 
 Open the `.drawio` file next to each image in [draw.io](https://www.drawio.com/)
-(desktop or web), edit, then export PNG at scale 1.5 over the old image.
+(desktop or web), edit, then export PNG at scale 1.5 over the old image. The HLD was redrawn on
+2026-10-29 to show one run end to end; the earlier version is in Git history.

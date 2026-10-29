@@ -164,7 +164,9 @@ ML : elle les appelle comme tools. La valeur, c'est l'écart qu'ils laissent, tr
 | 4 · ML | Prévision de marge, prévision des paliers de remise, scores d'anomalie, monitoring, serving |
 | 5 · Knowledge | Vector index (RAG), knowledge graph (GraphRAG) |
 | 6 · Agent | SLM triage, agent LLM, guardrails |
-| 7 · Cibles | Trois valideurs d'abord, puis les systèmes qui agissent |
+| 7 · Cibles | Trois valideurs d'abord, puis les systèmes qui agissent ; le contrôleur sollicite aussi l'agent (Teams) |
+| AI gateway (en bas) | Une seule porte pour chaque appel de tool et de modèle : auth au nom de l'utilisateur, rate limits et coût par équipe, routage et fallback de modèles, journalisation (AgentCore Gateway le permet depuis ses mises à jour d'août–octobre 2026 ; alternatives : Apigee, Databricks AI Gateway, LiteLLM) |
+| Bandeaux | Identity and access · compute and network · observability and evaluation ([evaluation-observability.md](evaluation-observability.md)) · governance and cost |
 
 Source : [reference-architecture-flow.fr.drawio](reference-architecture-flow.fr.drawio).
 

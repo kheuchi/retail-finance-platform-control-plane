@@ -102,13 +102,13 @@ conception:
   benchmark: 'Databricks on AWS 87, AWS-native 75, Google 74, Snowflake 72, Fabric 70, SAP-native 60 (weighted, 9 criteria, judgement as of 2026-10)'
   adrs: [ADR-001 cloud, ADR-002 data platform, ADR-003 compute and network, ADR-004 ingestion, ADR-005 orchestration and deploy, ADR-006 agent platform]
   reference_architecture: 'docs/conception/reference-architecture.md (2026-10-28, target picture, not built): margin recovery agent ("where did we lose margin, why, how much can we still recover before the close?"); leaks: unclaimed promotion funding, cost up price unchanged, rebate tier at risk, supplier deductions, waste, fraud, markdowns; tools: event streaming, lakehouse + OLAP, live APIs, ML forecasts + scores, RAG, GraphRAG, SLM, LLM, 3 human approvers; 6-test agent checklist + build vs buy; diagrams reference-architecture-flow and -agent (drawio + png); dropped: replenishment (engine exists), refund fraud (Appriss), vendor chargebacks (supplier-side)'
-  evaluation_observability: 'docs/conception/evaluation-observability.md (2026-10-29, target picture, not built): test on every PR, evaluate on golden sets at every release (ship only if not worse), observe every run; per layer: data pipes, ML, RAG, GraphRAG, agents; code checks first, LLM judge second, a person checks the judge; diagram evaluation-observability (drawio + png); built today: story 6.4'
+  evaluation_observability: 'docs/conception/evaluation-observability.md (2026-10-29, target picture, not built): test on every PR, evaluate on golden sets at every release (ship only if not worse), observe every run; per layer: data pipes, ML, RAG, GraphRAG, agents; code checks first, LLM judge second, a person checks the judge; diagrams evaluation-observability (hub) and evaluation-matrix (question -> tool -> indicator, 22 checks), drawio + png; one golden case end to end; built today: story 6.4'
   date: '2026-10-04'
 
 architecture:
   docs: docs/architecture/ (hld.md + lld-*.md, each with .drawio source and exported .png)
   diagrams:
-    - {file: hld, covers: 'GitHub, AWS foundation, Databricks VPC (jobs incl. ML; agent job and Bedrock endpoint planned), data buckets, Databricks control plane (MLflow, UC incl. finance.ml); updated 2026-10-01'}
+    - {file: hld, covers: 'as built, redrawn 2026-10-29: one run end to end (controller -> Agent Engine -> managed MCP -> SQL warehouse on Gold -> Gemini -> AgentCore Gateway -> Lambda -> approval -> SES, Power BI); GitHub CI/CD and keyless identities; pipeline and ML jobs; bands for identity, compute, network, observability, governance and cost'}
     - {file: lld-network, covers: 'VPC 10.20.0.0/16, 2 AZ x (workspace /22 + endpoint /24), 4 interface + 1 gateway endpoint, SG rules, cost'}
     - {file: lld-identity-cicd, covers: 'PR -> checks -> gated deploy; OIDC plan/deploy roles; cross-account and UC roles with external IDs; service principal; groups'}
     - {file: lld-data-platform, covers: 'generate -> landing volume -> Auto Loader -> Bronze -> Silver -> Gold -> consumers (all done); catalog layout; grants; jobs run as finance-pipeline-runner (labels refreshed 2026-10-28)'}

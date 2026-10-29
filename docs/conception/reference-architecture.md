@@ -162,7 +162,9 @@ calls them as tools. The value is the gap they leave, found inside the month rat
 | 4 · ML | Margin forecast, rebate tier forecast, anomaly scores, monitoring, serving |
 | 5 · Knowledge | Vector index (RAG), knowledge graph (GraphRAG) |
 | 6 · Agent | SLM triage, LLM agent, guardrails |
-| 7 · Targets | Three approvers first, then the systems that act |
+| 7 · Targets | Three approvers first, then the systems that act; the controller also asks the agent (Teams) |
+| AI gateway (bottom) | One door for every tool and model call: auth on behalf of the user, rate limits and cost per team, model routing and fallback, logging (AgentCore Gateway can do this since its August–October 2026 updates; Apigee, Databricks AI Gateway or LiteLLM are alternatives) |
+| Bands | Identity and access · compute and network · observability and evaluation ([evaluation-observability.md](evaluation-observability.md)) · governance and cost |
 
 Source: [reference-architecture-flow.drawio](reference-architecture-flow.drawio).
 

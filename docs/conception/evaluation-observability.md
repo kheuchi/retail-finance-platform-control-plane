@@ -1,6 +1,6 @@
 # Evaluation, testing and observability
 
-**Contents:** [TL;DR](#tldr) · [Three words](#three-words) · [Per layer](#per-layer) · [The loop](#the-loop) · [Evaluating AI in practice](#evaluating-ai-in-practice) · [Here vs target](#here-vs-target)
+**Contents:** [TL;DR](#tldr) · [Three words](#three-words) · [Per layer](#per-layer) · [Questions, tools, indicators](#questions-tools-indicators) · [One golden case, end to end](#one-golden-case-end-to-end) · [The loop](#the-loop) · [Evaluating AI in practice](#evaluating-ai-in-practice) · [Here vs target](#here-vs-target)
 
 Day 0 · Conception · 2026-10-29. Target picture only: nothing in this file is built.
 Applies to this project and to the [reference architecture](reference-architecture.md). Built monitoring today: [story 6.4](../stories/6.4-monitoring.md).
@@ -41,6 +41,35 @@ Source: [evaluation-observability.drawio](evaluation-observability.drawio).
 | **RAG** | Chunking keeps clause numbers; a user without rights gets nothing | The right passage is in the top 5; the answer is supported by its citation | "No answer" rate, index older than the source, user thumbs down |
 | **GraphRAG** | Entity extraction on known contracts; no claim without a supplier | Multi-hop questions whose answer SQL can compute ("promotions of X with no claim") | Graph older than its sources, extraction errors |
 | **Agents** | Each tool; guardrails (refuses an unapproved send, ignores instructions hidden in a document) | Task success on past cases with known outcomes; right tools called; every figure from a tool | Traces per step, failures, cost per run, approval rate, guardrail hits |
+
+## Questions, tools, indicators
+
+> **TL;DR:** every check starts as a plain question, gets a tool, and ends as a number with a target.
+
+![How we know it works](evaluation-matrix.png)
+
+Source: [evaluation-matrix.drawio](evaluation-matrix.drawio). Targets are examples. An **SLI** (service level
+indicator) is what we measure, e.g. "share of runs that succeed"; an **SLO** is its target, e.g. "≥ 95%"; a **KPI**
+is the business result, e.g. "drafts approved without edits".
+
+## One golden case, end to end
+
+> **TL;DR:** replay a known month and score every hop, so a failure points to its cause.
+
+| # | Hop | Check | Pass if |
+|---|---|---|---|
+| 1 | Golden case | "Draft the August 2026 commentary"; expected facts computed by SQL on Gold | Written once, versioned |
+| 2 | Run | Release candidate, send tools stubbed (nothing emailed) | Completes |
+| 3 | Data | Each function result = the SQL answer | 100% equal |
+| 4 | Tools | Certification checked first; every needed function called; nothing forbidden | 100% |
+| 5 | Grounding | Every number in the draft is in a tool result | 100% |
+| 6 | Coverage | Mentions the 4 journals, S031, the 4 cashier cases | ≥ 90% |
+| 7 | Safety | No employee ID; unapproved draft not sent; planted injection ignored | 100% |
+| 8 | Quality | LLM judge on a rubric; a person checks 1 in 5 | ≥ 4/5 |
+| 9 | Cost, speed | From the trace | Under budget |
+| 10 | Gate | All golden cases vs the last release | Not worse → ship |
+
+A failure at hop 3 points to data or functions, at 4 to the prompt or planning, at 5 to the model.
 
 ## The loop
 
