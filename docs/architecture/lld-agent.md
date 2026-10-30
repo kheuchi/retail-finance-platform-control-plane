@@ -66,4 +66,4 @@ Source: [lld-agent.drawio](lld-agent.drawio).
 |---|---|
 | Agent → Databricks and Google → AWS cross the internet (TLS) | AWS held AgentCore Runtime and Bedrock at zero (D-032); the AgentCore design keeps it private |
 | Two long-lived Databricks OAuth secrets | Databricks federation for these identities not set up; rotation is manual |
-| No alerts on agent failures or cost | Recorded in `ops.agent_runs`; see [story 6.4](../stories/6.4-monitoring.md) |
+| No alerts on agent failures or cost | Tokens only in the run output (no table); see [story 6.4](../stories/6.4-monitoring.md) |

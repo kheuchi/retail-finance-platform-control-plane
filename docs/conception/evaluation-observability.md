@@ -102,4 +102,4 @@ A failure at hop 3 points to data or functions, at 4 to the prompt or planning, 
 | Data pipes | ✅ Tests in CI, quality gates, certification, reconciliation | Freshness and volume alerts |
 | ML models | ✅ Backtest vs baseline, PSI drift | Accuracy tracking when actuals arrive; alerts |
 | RAG / GraphRAG | Not built | Everything above |
-| Agent | 🟡 Tool and guardrail tests, figure check, traces and cost in `ops.agent_runs` | A golden set of past months; release gate on prompt or model changes; alerts |
+| Agent | 🟡 Tool and guardrail tests, figure check, tokens in the run output (no table) | A golden set of past months; release gate on prompt or model changes; alerts |
