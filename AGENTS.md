@@ -59,7 +59,7 @@ Infra and data repos have their own `cmdb.yml` (resources, incidents, pipeline);
 one-line TL;DR, and points to cmdb keys. Short and plain. Each fact lives in one place:
 `cmdb.yml` = what, stories = why and how.
 
-**Diagram rules:** no new draw.io, D2 or Structurizr (no tool to install, no build step).
+**Diagram rules:** no new draw.io, D2 or Structurizr (those three need a local tool). This is about diagram tools only: the docs site may use libraries, a framework or a build.
 
 | Need | Use |
 |---|---|

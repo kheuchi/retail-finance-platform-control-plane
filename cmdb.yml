@@ -60,7 +60,7 @@ rules:
   - Agents read-only; consequential actions need a human
   - Budgets before spend; tear down after the trial
   - 'Docs: short markdown; cmdb.yml is the inventory (facts, one-line reasons); stories hold the explanations'
-  - 'Diagrams (2026-10-30): Mermaid inside markdown for small diagrams; self-contained HTML on GitHub Pages for the full picture and C4 views; no new draw.io, D2 or Structurizr (no local tool or build step); existing drawio frozen, replaced at the next change'
+  - 'Diagrams (2026-10-30): Mermaid inside markdown for small diagrams; self-contained HTML on GitHub Pages for the full picture and C4 views; no new draw.io, D2 or Structurizr (they need a local tool; the site itself may use libraries or a build); existing drawio frozen, replaced at the next change'
 
 # ──────────── phases ────────────
 phases:
