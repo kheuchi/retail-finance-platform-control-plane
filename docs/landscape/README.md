@@ -2,14 +2,14 @@
 
 **Contents:** [TL;DR](#tldr) · [Views](#views)
 
-Updated 2026-10-29. Detail: [`cmdb.yml`](../../cmdb.yml) → `architecture`. Diagrams: [HLD](../architecture/hld.md), [reference architecture](../conception/reference-architecture.md).
+Updated 2026-10-30. Detail: [`cmdb.yml`](../../cmdb.yml) → `architecture`. Diagrams: [HLD](../architecture/hld.md), [reference architecture](../conception/reference-architecture.md).
 
 ## TL;DR
 
 | Question | Answer |
 |---|---|
 | What is it? | One HTML page that shows every part of the platform as tiles, by layer, in the style of a technology landscape |
-| How to open it | Download [platform-landscape.html](platform-landscape.html) and open it in a browser (GitHub shows HTML as source) |
+| How to open it | On the site: [landscape](https://kheuchi.github.io/retail-finance-platform-control-plane/landscape/platform-landscape.html), [C4 views](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/views.html) (GitHub Pages from `main` `/docs`) |
 | What can I do on it? | Switch views, pick a run step to light up the parts it uses, pick a tile for detail |
 
 ## Views

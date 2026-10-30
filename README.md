@@ -35,7 +35,7 @@ data platform, observability & cost, ML, agent).
 | [AGENTS.md](AGENTS.md) | Rules and way of working, for any AI assistant or new contributor |
 | [docs/conception/](docs/conception/business-case.md) | **Day 0**: business case and end-to-end workflow, stakeholders (RACI), platform benchmark, ADRs |
 | [docs/architecture/](docs/architecture/hld.md) | HLD + 6 LLDs, with draw.io sources |
-| [docs/landscape/](docs/landscape/README.md) | One-page interactive landscape: as built, target, evaluation |
+| [Site (GitHub Pages)](https://kheuchi.github.io/retail-finance-platform-control-plane/) | Interactive landscape and C4 architecture views, built from `docs/` |
 | [Databricks primer](docs/architecture/databricks-primer.md) | Every Databricks term used here, in plain words |
 | [docs/stories/MEMO.md](docs/stories/MEMO.md) | **One page**: what we built, the tricky parts, the top 10 lessons · deeper: [WALKTHROUGH](docs/stories/WALKTHROUGH.md) |
 | [docs/stories/](docs/stories/README.md) | How each piece was built and the tricky parts; planned stories for what is next |

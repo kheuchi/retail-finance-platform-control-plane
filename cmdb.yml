@@ -60,6 +60,7 @@ rules:
   - Agents read-only; consequential actions need a human
   - Budgets before spend; tear down after the trial
   - 'Docs: short markdown; cmdb.yml is the inventory (facts, one-line reasons); stories hold the explanations'
+  - 'Diagrams (2026-10-30): Mermaid inside markdown for small diagrams; self-contained HTML on GitHub Pages for the full picture and C4 views; no new draw.io, D2 or Structurizr (no local tool or build step); existing drawio frozen, replaced at the next change'
 
 # ──────────── phases ────────────
 phases:
@@ -123,7 +124,8 @@ architecture:
     - job_change: GitHub Actions -> OAuth finance-data-deployer -> bundle deploy; jobs run as finance-pipeline-runner
     - agent_model (planned): agent job in the VPC -> Bedrock interface endpoint (PrivateLink), eu-central-1
   toolchain:
-    drawio: draw.io desktop, installed 2026-09-26 via 'winget install --id JGraph.Draw --scope user'
+    site: 'GitHub Pages from main /docs (.nojekyll): index.html, landscape/, architecture/views.html; icons in docs/assets/icons.js (Simple Icons 16.32.0, CC0; AWS and Microsoft logos are not in the set, shown as text badges)'
+    drawio: draw.io desktop, installed 2026-09-26 via 'winget install --id JGraph.Draw --scope user' (frozen 2026-10-30, no new diagrams)
     export: DrawIO.exe --export --format png --scale 1.5 --border 20 --output <abs path>.png <abs path>.drawio
     gotchas:
       - Export needs absolute Windows paths; relative paths silently produce nothing

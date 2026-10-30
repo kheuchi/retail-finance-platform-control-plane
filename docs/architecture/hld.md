@@ -18,6 +18,8 @@ Updated 2026-10-29. Why it exists and the end-to-end business workflow: [busines
 
 ## Diagram
 
+Interactive versions: [C4 views (levels 1-3)](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/views.html) and [landscape](https://kheuchi.github.io/retail-finance-platform-control-plane/landscape/platform-landscape.html). The image below is frozen (draw.io, [diagram rules](../../AGENTS.md#how-we-work)).
+
 ![High-level design](hld.png)
 
 ## The six columns and five bands

@@ -1,28 +1,14 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Retail Finance Platform Landscape</title>
-<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Every part of the retail finance data, ML and agent platform as tiles: as built, the target margin recovery agent, and evaluation.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../assets/site.css">
 <style>
-/* Layout: a landscape map. Sticky control bar (views, run steps, inspector), then full-width bands; each band = label + wrapping groups of tiles. */
-:root {
-  --bg: #f3f5f4; --paper: #ffffff; --ink: #14202a; --muted: #5b6b74; --line: #d5dcdc; --focus: #0b6e8a;
-  --people: #a86a00; --agent: #6d3fd1; --gate: #c25a00; --data: #1f5fbf; --ml: #0f7a6c; --know: #b3246b; --base: #4a5866;
-  --ok: #1d7a43; --part: #a87b00; --gap: #b4372f; --rev: #2d6fb5;
-  --tint: 9%;
-  --f-display: "IBM Plex Sans Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
-  --f-body: "IBM Plex Sans", "Segoe UI", Helvetica, Arial, sans-serif;
-  --f-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
-}
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #0f1518; --paper: #172025; --ink: #e6ecee; --muted: #9aabb3; --line: #2b383e; --focus: #5fc3df;
-  --people: #e0a33a; --agent: #a98bf2; --gate: #f08a3c; --data: #6aa3f2; --ml: #4cc1b0; --know: #ec74ad; --base: #9aa9b6;
-  --ok: #4cc37f; --part: #e2b53c; --gap: #f07a70; --rev: #6aa8ee; --tint: 16%; color-scheme: dark } }
-:root[data-theme="dark"] {
-  --bg: #0f1518; --paper: #172025; --ink: #e6ecee; --muted: #9aabb3; --line: #2b383e; --focus: #5fc3df;
-  --people: #e0a33a; --agent: #a98bf2; --gate: #f08a3c; --data: #6aa3f2; --ml: #4cc1b0; --know: #ec74ad; --base: #9aa9b6;
-  --ok: #4cc37f; --part: #e2b53c; --gap: #f07a70; --rev: #6aa8ee; --tint: 16%; color-scheme: dark }
 * { box-sizing: border-box }
 body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 14px; line-height: 1.4 }
 body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper) }
@@ -53,7 +39,9 @@ main .wrap { padding-block: 14px 40px; display: grid; gap: 12px }
 .group h3 { margin: 0 0 6px; font: 600 11px var(--f-display); letter-spacing: .08em; text-transform: uppercase; color: var(--c) }
 .tiles { display: flex; flex-wrap: wrap; gap: 6px }
 .tile { position: relative; text-align: left; width: 168px; min-height: 58px; border: 1px solid color-mix(in srgb, var(--c) 35%, var(--line)); background: color-mix(in srgb, var(--c) var(--tint), var(--paper)); color: var(--ink); border-radius: 5px; padding: 6px 8px 6px 9px; cursor: pointer; font: inherit; transition: opacity .15s, transform .15s }
-.tile .n { display: block; font-weight: 600; font-size: 13px; line-height: 1.2; padding-right: 14px }
+.tile .hd { display: flex; gap: 6px; align-items: flex-start; padding-right: 14px }
+.tile .hd .ico { margin-top: 1px }
+.tile .n { display: block; font-weight: 600; font-size: 13px; line-height: 1.2; }
 .tile .n.mono { font-family: var(--f-mono); font-weight: 500; font-size: 12px; word-break: break-word }
 .tile .c { display: block; color: var(--muted); font-size: 11.5px; margin-top: 2px }
 .tile .s { position: absolute; top: 7px; right: 7px; width: 8px; height: 8px; border-radius: 50% }
@@ -78,8 +66,16 @@ table.ev { width: 100%; border-collapse: collapse; font-size: 13px }
 }
 @media (prefers-reduced-motion: reduce) { .tile { transition: none } }
 </style>
-<style>body{margin:0}[hidden]{display:none!important}</style></head><body>
-
+<script src="../assets/icons.js"></script>
+</head>
+<body>
+<nav class="site" aria-label="Site"><div class="wrap">
+  <span class="brand">Retail Finance Platform</span>
+  <a href="../index.html">Home</a>
+  <a href="platform-landscape.html" aria-current="page">Landscape</a>
+  <a href="../architecture/views.html">Architecture views (C4)</a>
+  <a href="https://github.com/kheuchi/retail-finance-platform-control-plane">Docs on GitHub</a>
+</div></nav>
 <header class="top"><div class="wrap">
   <h1>Retail Finance Platform Landscape</h1>
   <p class="sub" id="sub"></p>
@@ -100,6 +96,8 @@ table.ev { width: 100%; border-collapse: collapse; font-size: 13px }
 <main><div class="wrap" id="board"></div></main>
 
 <script>
+const ICON = {"Controller": "person", "Finance analysts": "person", "Engineers": "person", "Email (Amazon SES)": "ses", "gold.close_commentary": "databricks", "Power BI": "powerbi", "Vertex AI Agent Engine": "googlecloud", "Deep Agents": "langchain", "LangGraph + LangChain": "langgraph", "Gemini 3.8 Flash": "googlegemini", "Databricks managed MCP": "databricks", "AgentCore Gateway": "agentcore", "Lambda channels": "lambda", "Synthetic generator": "python", "Landing volume": "databricks", "Auto Loader": "databricks", "Bronze": "databricks", "Silver": "databricks", "Gold": "databricks", "Quality gates": "databricks", "GL vs POS reconciliation": "sql", "Gold certification": "databricks", "SQL warehouse": "sql", "finance.agent functions": "uc", "Agent tables": "databricks", "Isolation Forest": "scikitlearn", "Gradient boosting": "scikitlearn", "MLflow": "mlflow", "UC registry finance.ml": "mlflow", "PSI drift": "python", "Accuracy tracking": "mlflow", "Jobs + Asset Bundles": "databricks", "Daily orchestrator": "databricks", "Job clusters": "apachespark", "Serverless": "databricks", "Agent Engine": "googlecloud", "AWS Lambda": "lambda", "github-plan / github-deploy": "iam", "cheikh-platform-admin": "iam", "dbx-crossaccount": "iam", "dbx-unity-catalog": "iam", "…-agent-gcp": "iam", "terraform-platform": "databricks", "finance-data-deployer": "databricks", "finance-pipeline-runner": "databricks", "finance-month-end-agent": "databricks", "finance-close-notifier": "databricks", "Workload Identity Federation": "googlecloud", "finance-agent-deployer": "googlecloud", "finance-month-end-agent (SA)": "googlecloud", "GCP Secret Manager": "googlecloud", "AWS Secrets Manager": "aws", "GitHub secrets": "github", "VPC 10.20.0.0/16": "vpc", "PrivateLink": "vpc", "S3 gateway endpoint": "s3", "Security groups": "vpc", "CloudTrail + alarms": "cloudtrail", "VPC flow logs": "vpc", "ops.dq_results": "databricks", "ops.model_drift": "databricks", "Config drift": "githubactions", "ops.agent_runs": "databricks", "Cloud Logging": "googlecloud", "AWS budget": "aws", "Databricks budget alerts": "databricks", "Tracing": "opentelemetry", "3 GitHub repos": "github", "GitHub Actions": "githubactions", "Terraform": "terraform", "Checkov · ruff · pytest": "pytest", "Dependabot": "dependabot", "Semantic release": "githubactions", "Unity Catalog": "uc", "Financial controller": "person", "Category manager": "person", "Pricing team": "person", "Accounts payable": "person", "Microsoft Teams": "teams", "SAP S/4HANA": "sap", "AI gateway": "agentcore", "Agent runtime": "googlecloud", "Orchestrator + sub-agents": "langgraph", "MCP tools": "mcp", "SLM": "meta", "LLM": "claude", "Deterministic tools": "python", "Document + entity pipeline": "python", "Vector index (RAG)": "databricks", "Knowledge graph (GraphRAG)": "neo4j", "Margin forecast": "scikitlearn", "Rebate tier forecast": "scikitlearn", "Anomaly scores": "scikitlearn", "Feature tables": "databricks", "Model serving": "mlflow", "Monitoring": "mlflow", "Bronze → Silver → Gold": "databricks", "Graph tables": "databricks", "Certified SQL functions": "sql", "Event backbone": "apachekafka", "CDC from SAP": "sap", "Schema registry": "apachekafka", "Stream processing": "apacheflink", "decisions topic": "apachekafka", "API gateway": "aws", "get_conditions · get_claims": "sap", "get_credit_notes · get_disputes": "sap", "Promotions tool": "sap", "Company SSO": "sso", "Workload identities": "sso", "Streams": "apachekafka", "Databricks": "databricks", "Private endpoints": "vpc", "OpenTelemetry traces": "opentelemetry", "Golden sets": "mlflow", "Release gates": "githubactions", "Audit trail": "cloudtrail", "SLOs + alerts": "opentelemetry", "Budgets per team": "agentcore"};
+const ic = t => window.iconHTML ? window.iconHTML(ICON[t.n], 16) : "";
 const C = { people: "--people", agent: "--agent", gate: "--gate", data: "--data", ml: "--ml", know: "--know", base: "--base" };
 const T = (n, c, s, st = [], d = "", m = 0) => ({ n, c, s, st, d, m });
 
@@ -290,7 +288,7 @@ function bandHTML(b, bi) {
   return `<section class="band" style="--c:${col}"><h2>${esc(b.h)}<small>${esc(b.sm)}</small></h2><div class="groups">` +
     b.g.map(([gh, tiles]) => `<div class="group"><h3>${esc(gh)}</h3><div class="tiles">` + tiles.map(t => {
       tileIx.push(t); const id = tileIx.length - 1;
-      return `<button class="tile${t.s === "gap" ? " gap" : ""}" data-i="${id}" data-st="${t.st.join(" ")}"><span class="n${t.m ? " mono" : ""}">${esc(t.n)}</span><span class="c">${esc(t.c)}</span>${t.st.length ? `<span class="st">step ${t.st.join(", ")}</span>` : ""}<span class="s s-${t.s}" aria-hidden="true"></span></button>`;
+      return `<button class="tile${t.s === "gap" ? " gap" : ""}" data-i="${id}" data-st="${t.st.join(" ")}"><span class="hd">${ic(t)}<span class="n${t.m ? " mono" : ""}">${esc(t.n)}</span></span><span class="c">${esc(t.c)}</span>${t.st.length ? `<span class="st">step ${t.st.join(", ")}</span>` : ""}<span class="s s-${t.s}" aria-hidden="true"></span></button>`;
     }).join("") + `</div></div>`).join("") + `</div></section>`;
 }
 function evalHTML(v) {
@@ -320,4 +318,6 @@ window.addEventListener("hashchange", fromHash);
 fromHash();
 </script>
 
-</body></html>
+<footer class="site"><div class="wrap">Synthetic data only. Logos: Simple Icons (CC0); AWS and Microsoft products shown as text badges. Logos are trademarks of their owners.</div></footer>
+</body>
+</html>
