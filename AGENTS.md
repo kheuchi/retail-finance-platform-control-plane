@@ -64,7 +64,7 @@ one-line TL;DR, and points to cmdb keys. Short and plain. Each fact lives in one
 | Need | Use |
 |---|---|
 | Small diagram inside a doc (flow, sequence, a few boxes) | Mermaid in the `.md` (GitHub renders it) |
-| Full picture, architecture views (C4 levels 1-3), anything with logos or interaction | Self-contained HTML in `docs/` (site at GitHub Pages), shared icons in `docs/assets/` |
+| Full picture, architecture (HLD, LLDs, flows, protocols), anything with logos or interaction | Self-contained HTML in `docs/` (site at GitHub Pages), shared icons in `docs/assets/` |
 | Existing `.drawio` + `.png` | Frozen; replace at the next change and delete both in the same commit |
 
 ## How to report
