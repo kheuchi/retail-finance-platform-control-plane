@@ -11,7 +11,7 @@ Code: infra `gcp/` (Google side), infra `agent/` (gateway, federation, Lambda); 
 | Question | Answer |
 |---|---|
 | Where does the agent run? | Google Agent Runtime (Vertex AI Agent Engine), europe-west1, with Gemini 3.8 Flash on the EU endpoint |
-| What may it read? | Only what six Unity Catalog functions return, over Databricks managed MCP |
+| What may it read? | Only what seven Unity Catalog functions return (six finance + the certification status), over Databricks managed MCP |
 | What may it send? | Nothing directly: three gateway tools in AWS, and the Lambda behind them sends only approved drafts |
 | How does it prove who it is? | GitHub → Google by OIDC; Google → AWS by an ID token; no cloud keys anywhere |
 | Secrets? | Two Databricks OAuth clients: one in GCP Secret Manager (agent), one in AWS Secrets Manager (notifier) |
