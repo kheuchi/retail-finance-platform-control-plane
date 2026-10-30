@@ -123,8 +123,9 @@ architecture:
     - infra_change: GitHub Actions -> OIDC -> github-plan / github-deploy
     - job_change: GitHub Actions -> OAuth finance-data-deployer -> bundle deploy; jobs run as finance-pipeline-runner
     - agent_model (planned): agent job in the VPC -> Bedrock interface endpoint (PrivateLink), eu-central-1
+  observability_tools: 'picks 2026-10-30 (target, not built): agent + AI gateway = Langfuse self-hosted EU (Google Cloud Trace kept for Agent Engine runtime logs; Arize Phoenix for notebook evals only: Elastic License 2.0, Dynatrace deal pending); models = Lakehouse Monitoring + MLflow; infra = ClickStack (ClickHouse + HyperDX + OTel collector), Grafana LGTM if already in place; OpenTelemetry GenAI conventions everywhere. As built next: Langfuse free tier for the agent, Databricks SQL alerts for drift and quality, no infra stack (budget)'
   toolchain:
-    site: 'GitHub Pages from main /docs (.nojekyll): index.html, landscape/ (as built, target, evaluation tiles), architecture/architecture.html (as built + enterprise target x 10 sections: big picture, workflow, simplified, HLD, LLDs, network and protocols, observability, evaluation, security, cost and decisions); icons in docs/assets/icons.js (Simple Icons 16.32.0, CC0; AWS and Microsoft logos are not in the set, shown as text badges)'
+    site:'GitHub Pages from main /docs (.nojekyll): index.html, landscape/ (as built, target, evaluation tiles), architecture/architecture.html (as built + enterprise target x 10 sections: big picture, workflow, simplified, HLD, LLDs, network and protocols, observability, evaluation, security, cost and decisions); icons in docs/assets/icons.js (Simple Icons 16.32.0, CC0; AWS and Microsoft logos are not in the set, shown as text badges)'
     drawio: draw.io desktop, installed 2026-09-26 via 'winget install --id JGraph.Draw --scope user' (frozen 2026-10-30, no new diagrams)
     export: DrawIO.exe --export --format png --scale 1.5 --border 20 --output <abs path>.png <abs path>.drawio
     gotchas:

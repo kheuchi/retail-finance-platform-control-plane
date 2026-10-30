@@ -55,6 +55,7 @@ svg.wires marker path { fill: var(--muted); stroke: none }
 .bound span { position: absolute; z-index: 3; background: var(--paper); padding: 0 4px; top: 4px; left: 8px; font: 600 11px var(--f-display); letter-spacing: .06em; text-transform: uppercase; color: var(--c); display: flex; gap: 6px; align-items: center }
 .el { position: relative; z-index: 1; border: 1.5px solid var(--c); background: color-mix(in srgb, var(--c) var(--tint), var(--paper)); border-radius: 8px; padding: 8px 10px; min-width: 0; align-self: center }
 .el.focus { border-width: 3px }
+.el.tall { align-self: stretch; display: flex; flex-direction: column; justify-content: center }
 .el.ext { --c: var(--ext); background: var(--paper) }
 .el.person { border-radius: 24px 24px 8px 8px; text-align: center }
 .el.db { border-radius: 8px 8px 18px 18px }
@@ -108,8 +109,8 @@ svg.wires marker path { fill: var(--muted); stroke: none }
 <script>
 /* ---------- helpers ---------- */
 const LY = { person: "--people", people: "--people", agent: "--agent", gate: "--gate", data: "--data", ml: "--ml", know: "--know", base: "--base", google: "--ml", aws: "--gate", dbx: "--data" };
-const E = (id, k, n, d, ic, c, r, cs = 1, ly = "base", x = "") => ({ id, k, n, d, ic, c, r, cs, ly, x });   // x: "focus" | "gap"
-const R = (a, b, w, rt = "h", o = {}) => ({ a, b, w, rt, ...o });                                            // o: {e, f, dash}
+const E = (id, k, n, d, ic, c, r, cs = 1, ly = "base", x = "") => ({ id, k, n, d, ic, c, r, cs, ly, x });   // r: row or "1 / span 3"; x: "focus" | "gap"
+const R = (a, b, w, rt = "h", o = {}) => ({ a, b, w, rt, ...o });                                            // o: {e, f, m, dash, both}
 const P = (id, n, ic, ly = "base") => ({ id, n, ic, ly });
 const M = (a, b, l, p, back = 0) => ({ a, b, l, p, back });
 const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
@@ -120,43 +121,57 @@ const st = s => ({ ok: '<span class="ok">● in place</span>', part: '<span clas
 const A = {};
 
 A.built = { name: "As built", sections: {
-big: { t: "The big picture", d: "What the platform answers, how the work was done before, and what it delivers.", b: [
+big: { t: "The big picture", d: "What the platform answers, what big retailers already automated before AI, and what the agent really adds.", b: [
   { q: "Can the controller get a checked, cited month-end commentary on revenue, margin, fraud and the forecast in minutes instead of days, without the AI ever acting on its own?" },
-  { h: "How it was done before" },
-  { table: ["Step", "Before", "Pain"], rows: [
-    ["Get the numbers", "Exports from the ERP and the tills into spreadsheets", "Days of copy-paste; versions disagree"],
-    ["Check them", "Reconcile the general ledger with sales by hand", "Fake or wrong journals slip through"],
-    ["Find fraud", "Internal audit samples months later", "Losses found late; small cases never"],
-    ["Explain the month", "The controller writes the commentary for the CFO pack", "Two to three days at every close"],
-    ["Tell people", "Emails to store controlling, audit, the GL lead", "Easy to forget one; no trace"]] },
-  { h: "What we try to achieve" },
+  { h: "How it was done before (a large retailer, before 2022)" },
+  { table: ["Step", "Already automated before AI", "Still done by people"], rows: [
+    ["Get the numbers", "Nightly ETL into a data warehouse (SAP BW, Teradata); BI dashboards for revenue and margin vs budget", "Little: this was solved"],
+    ["Reconcile", "Close and reconciliation tools (BlackLine, SAP close cockpit): auto-matching, task lists", "Investigating each exception"],
+    ["Find fraud", "Exception reports at the tills, loss-prevention rules, audit analytics (ACL, IDEA), some ML scoring", "Triaging many false alarms"],
+    ["Forecast", "Statistical and ML forecasts (SAP IBP and similar)", "Explaining the gap to plan"],
+    ["Explain the month", "Nothing", "The controller reads every report and writes the commentary: 2–3 days at each close"],
+    ["Tell people", "Report subscriptions, workflow emails", "Deciding who needs what, chasing replies"]] },
+  { p: "<b>So the honest value is the agent.</b> The lakehouse, the quality gates and the models are table stakes: big retailers had them before 2022, and we rebuilt them because an agent is worthless without trusted data. What did not exist is a reader that goes through all those outputs and writes the explanation, with every figure checked and a person approving." },
+  { h: "What the agent adds (new)" },
+  { cards: [
+    ["Writes the explanation", "Reads revenue vs budget, margin alerts, reconciliation exceptions, the cashier case count and the forecast; drafts the cited commentary in minutes", "--agent"],
+    ["Triages", "Says which alerts and exceptions matter and why; cashier cases as a count, never names", "--agent"],
+    ["Routes, never decides", "One draft per audience; sends only what the controller approved", "--people"]] },
+  { h: "What it stands on (rebuilt, not new)" },
   { cards: [
     ["One trusted set of numbers", "Bronze → Silver → Gold, quality gates, Gold certified per run, every number traced to its file", "--data"],
-    ["Signals, not reports", "Two fraud detectors and a revenue forecast that must beat a simple rule", "--ml"],
-    ["An agent that drafts, never decides", "Every figure from a tool, a figure check outside the model, a person approves every send", "--agent"],
+    ["Signals", "Two fraud detectors and a revenue forecast that must beat a simple rule", "--ml"],
     ["Enterprise controls", "No stored keys, least-privilege identities, private network, budgets, audit trail", "--base"]] },
   { kv: [["Data", "40 stores · 21 months · 4.2m rows (synthetic)"], ["Reconciliation", "4 of 4 fake journals found, 0 false alarms"], ["Fraud", "both planted cases ranked #1"], ["Forecast", "baseline 7.5% vs model 10.3% MAPE: baseline ships"], ["Agent", "August 2026: 3 drafts, all figures checked, 1 approved and sent"], ["Never", "posts entries, moves money, approves payments"]] },
 ]},
-flow: { t: "Business workflow", d: "One month-end close, from the files landing to the approved commentary.", b: [
+flow: { t: "Business workflow", d: "One real example: the August 2026 close, from the controller's question to the approved commentary.", b: [
+  { q: "Controller, close day 1: “Draft the August 2026 close commentary: revenue and margin against budget, what looks wrong, and what we expect next month.”" },
   { dia: { cols: 6, els: [
-    E("ctl", "person", "Controller starts the run", "close day 1", "person", 3, 1, 1, "person"),
-    E("rev", "person", "Controller reviews, approves", "one row per draft", "person", 5, 1, 1, "person"),
-    E("out", "ext", "CFO pack · Power BI · audit", "approved text only", "powerbi", 6, 1),
-    E("ag", "cont", "Agent drafts and triages", "commentary, alerts, exceptions", "googlecloud", 4, 2, 1, "agent", "focus"),
-    E("pipe", "cont", "Nightly pipeline", "Bronze → Silver → Gold", "databricks", 2, 3, 1, "dbx"),
-    E("cert", "cont", "Quality gates", "Gold certified or not", "databricks", 3, 3, 1, "dbx"),
-    E("ml", "cont", "ML scores", "fraud scores, forecast", "scikitlearn", 4, 3, 1, "ml"),
+    E("ctl", "person", "Controller asks", "“Draft the August 2026 commentary”", "person", 2, 1, 1, "person"),
+    E("rev", "person", "Controller approves", "SQL editor, one row per draft", "person", 5, 1, 1, "person"),
+    E("out", "ext", "CFO pack · email · Power BI", "approved text only", "powerbi", 6, 1),
+    E("ag", "cont", "Agent checks, reads, drafts", "certified? → six functions → commentary, triage", "googlecloud", 2, 2, 2, "agent", "focus"),
+    E("snd", "cont", "Send tool (Lambda)", "figure check · sends approved only", "lambda", 5, 2, 1, "agent"),
+    E("pipe", "cont", "Nightly pipeline", "Bronze → Silver → Gold", "databricks", 1, 3, 1, "dbx"),
+    E("cert", "cont", "Quality gates", "Gold certified or not", "databricks", 2, 3, 1, "dbx"),
+    E("ml", "cont", "ML job", "fraud scores, margin alerts, forecast", "scikitlearn", 3, 3, 1, "ml"),
+    E("fn", "cont", "Six SQL functions", "aggregates over Gold + scores", "sql", 4, 3, 1, "dbx"),
     E("src", "ext", "ERP and till files land", "nightly, synthetic", "python", 1, 4)],
     lanes: [["People", 1, "--people"], ["Agent", 2, "--agent"], ["Data and ML platform", 3, "--data"], ["Source systems", 4, "--ext"]],
-    rels: [R("src", "pipe", "daily files", "vh"), R("pipe", "cert", "builds"), R("cert", "ml", "certified"), R("ml", "ag", "Gold + scores", "v"),
-      R("ctl", "ag", "starts", "hv", { f: 0.25 }), R("ag", "rev", "drafts", "vh", { e: 0.75 }), R("rev", "out", "approved")] } },
-  { table: ["Who", "Does", "Gets"], rows: [
-    ["Pipeline (nightly)", "Ingests files, builds Silver and Gold, runs 12 quality checks, certifies the run", "Certified Gold or a failure email"],
-    ["ML job", "Scores cashier refunds and store margins, forecasts revenue", "gold.fraud_scores, gold.margin_alerts, gold.revenue_forecast"],
-    ["Controller", "Starts the run for the close month", "Drafts within minutes"],
-    ["Agent", "Checks Gold is certified, reads six functions, drafts commentary, triages alerts", "Drafts in finance.agent.drafts"],
-    ["Controller", "Reads, edits or approves each draft", "One approval row"],
-    ["Agent + Lambda", "Sends approved drafts only, publishes the text", "Email, gold.close_commentary for Power BI"]] },
+    rels: [R("src", "pipe", "daily files", "v"), R("pipe", "cert", "builds"), R("cert", "ml", "certified Gold"), R("ml", "fn", "scores"),
+      R("fn", "ag", "facts", "v", { f: 0.85 }), R("ctl", "ag", "asks", "v"), R("ag", "snd", "3 drafts"),
+      R("snd", "rev", "review", "v", { e: 0.15, f: 0.15 }), R("rev", "snd", "approved", "v", { e: 0.85, f: 0.85 }), R("snd", "out", "sent", "hv")] } },
+  { h: "The same run, step by step" },
+  { table: ["#", "Who", "Does", "Result in August 2026"], rows: [
+    ["0", "Pipeline, ML job (nightly)", "Ingest, build Gold, run 12 quality checks, certify; score cashiers and stores, forecast", "Gold certified; scores and forecast written to Gold"],
+    ["1", "Controller", "Asks for the August commentary (starts the run)", "One run"],
+    ["2", "Agent (code, not the model)", "Reads the certification status first", "Certified, so it goes on; otherwise it stops"],
+    ["3", "Supervisor", "Plans its to-do list, delegates to three sub-agents", "Writer, triage, distributor"],
+    ["4", "Triage", "Reads margin alerts, reconciliation exceptions, the cashier case count", "Store S031's margin drift ranked first; cashier cases as a count, no names"],
+    ["5", "Writer", "Drafts per audience; every number from a function", "3 drafts: the CFO commentary and two notes"],
+    ["6", "Send tool (Lambda)", "Figure check: any number not in the tool outputs is rejected", "All figures checked; drafts wait for review"],
+    ["7", "Controller", "Approves in the SQL editor (one row in ops.agent_approvals)", "1 approved, 2 left waiting"],
+    ["8", "Agent, next run", "Calls send_approved: approved drafts only", "CFO draft emailed and published to gold.close_commentary for Power BI"]] },
 ]},
 simple: { t: "Ultra-simplified architecture", d: "Five boxes. Everything else is detail.", b: [
   { dia: { cols: 6, els: [
@@ -167,8 +182,9 @@ simple: { t: "Ultra-simplified architecture", d: "Five boxes. Everything else is
     E("ctl", "person", "Controller", "approves", "person", 5, 1, 1, "person"),
     E("out", "ext", "Email · Power BI", "approved only", "powerbi", 6, 1),
     E("gov", "cont", "Around everything", "Unity Catalog grants and lineage · keyless identities · private network · budgets · audit", "uc", 2, 2, 4, "base")],
-    rels: [R("src", "lake", "files"), R("lake", "ml", "Gold"), R("ml", "ag", "scores"), R("ag", "ctl", "drafts"), R("ctl", "out", "approved")] } },
-  { p: "Read it left to right: data becomes trusted tables, models add signals, the agent writes, a person decides. The agent reads Gold through functions only and can send nothing that is not approved." },
+    rels: [R("src", "lake", "files"), R("lake", "ml", "scores", "h", { both: 1 }), R("ml", "ag", "scores"), R("lake", "ag", "Gold figures (functions)", "u", { e: 0.75, f: 0.25 }),
+      R("ag", "ctl", "drafts"), R("ctl", "out", "approved")] } },
+  { p: "Read it left to right: data becomes trusted tables, models add signals, the agent writes, a person decides. The agent reads Gold and the scores through six SQL functions only, and can send nothing that is not approved. Only the agent is new; the rest existed before AI in some form." },
 ]},
 hld: { t: "High-level design", d: "The deployable parts and how they talk, grouped by where they run.", b: [
   { dia: { cols: 6, els: [
@@ -183,17 +199,20 @@ hld: { t: "High-level design", d: "The deployable parts and how they talk, group
     E("sts", "cont", "STS + role", "…-agent-gcp", "iam", 1, 3, 1, "aws"),
     E("gw", "cont", "AgentCore Gateway", "3 MCP tools", "agentcore", 2, 3, 1, "aws"),
     E("lam", "cont", "Lambda channels", "figure + approval checks", "lambda", 3, 3, 1, "aws"),
-    E("tab", "db", "Agent tables", "drafts · approvals", "databricks", 4, 3, 1, "dbx"),
-    E("gold", "db", "Lakehouse", "Bronze → Gold on our S3", "databricks", 5, 3, 1, "dbx"),
+    E("tab", "db", "Agent tables", "drafts · approvals · runs", "databricks", 4, 3, 1, "dbx"),
+    E("gold", "db", "Lakehouse", "Gold + fraud scores, margin alerts, forecast", "databricks", 5, 3, 1, "dbx"),
     E("ml", "cont", "ML job", "detectors, forecast", "scikitlearn", 6, 3, 1, "ml"),
-    E("ses", "cont", "Amazon SES", "email", "ses", 3, 4, 1, "aws"),
+    E("ses", "cont", "Amazon SES", "email to the CFO pack, store controlling, audit", "ses", 3, 4, 1, "aws"),
+    E("apr", "person", "Controller approves", "SQL editor, one row per draft", "person", 4, 4, 1, "person"),
     E("jobs", "cont", "Pipeline jobs", "Spark, Auto Loader", "apachespark", 5, 4, 1, "dbx"),
+    E("obs", "cont", "Around everything", "Run logs in ops tables · Databricks Jobs history · Cloud Logging · CloudTrail → CloudWatch alarms · budgets · Unity Catalog grants and lineage", "opentelemetry", 1, 5, 4, "base"),
     E("src", "ext", "Source files", "synthetic", "python", 5, 5)],
     bounds: [["Google Cloud · europe-west1", ["sec", "agent"], "--ml", "googlecloud"], ["AWS · eu-central-1", ["sts", "gw", "lam", "ses"], "--gate", "aws"],
       ["Databricks workspace · our VPC", ["mcp", "wh", "mlf", "tab", "gold", "ml", "jobs"], "--data", "databricks"]],
     rels: [R("ctl", "agent", "starts", "hv", { f: 0.2 }), R("agent", "gem", "prompts", "v"), R("agent", "sec", "secret"), R("agent", "mcp", "MCP"), R("mcp", "wh", "SQL"),
-      R("pbi", "wh", "reads", "v"), R("wh", "gold", "queries", "v"), R("jobs", "gold", "builds", "v"), R("src", "jobs", "files", "v"), R("gold", "ml", "Gold"),
-      R("ml", "mlf", "logs", "v"), R("agent", "sts", "ID token", "v"), R("sts", "gw", "SigV4"), R("gw", "lam", "invoke"), R("lam", "tab", "SQL"), R("lam", "ses", "approved", "v")] } },
+      R("pbi", "wh", "reads", "v"), R("wh", "gold", "reads Gold + scores", "v"), R("jobs", "gold", "builds", "v"), R("src", "jobs", "files", "v"), R("gold", "ml", "scores", "h", { both: 1 }),
+      R("ml", "mlf", "logs", "v"), R("agent", "sts", "ID token", "v", { f: 0.85 }), R("agent", "tab", "run log", "v", { e: 0.9, f: 0.2 }), R("sts", "gw", "SigV4"), R("gw", "lam", "invoke"), R("lam", "tab", "SQL"),
+      R("lam", "ses", "approved", "v"), R("apr", "tab", "approves", "v")] } },
   { table: ["Part", "Runs on", "Built with", "Why there"], rows: [
     ["Pipeline and ML jobs", "Databricks classic clusters in our VPC", "Spark, Auto Loader, scikit-learn, MLflow", "Data stays in our AWS account"],
     ["Lakehouse", "Delta tables on our S3, Unity Catalog", "Bronze, Silver, Gold, ops, ml, agent schemas", "One place for grants and lineage"],
@@ -224,7 +243,7 @@ lld: { t: "Low-level designs", d: "One component at a time. Pick a component.", 
       ["Trust", "Consumers read Gold only from certified runs; one Gold number traced to its file (ops.lineage_evidence)"],
       ["Who runs it", "Jobs run as finance-pipeline-runner (no GRANT); deployed by finance-data-deployer"]] } ] },
   { n: "ML", b: [
-    { dia: { cols: 5, els: [
+    { dia: { cols: 6, els: [
       E("gold", "db", "Certified Gold", "only if the latest run is certified", "databricks", 1, 2, 1, "dbx"),
       E("cf", "cont", "Cashier features", "vs other cashiers, same store, month", "python", 2, 1, 1, "ml"),
       E("if1", "cont", "Isolation Forest", "300 trees, refunds", "scikitlearn", 3, 1, 1, "ml"),
@@ -235,10 +254,13 @@ lld: { t: "Low-level designs", d: "One component at a time. Pick a component.", 
       E("ff", "cont", "Monthly sales", "lags 1, 2, 12; month; horizon", "python", 2, 3, 1, "ml"),
       E("gb", "cont", "Boosting vs baseline", "backtest last 3 months", "scikitlearn", 3, 3, 1, "ml"),
       E("s3", "db", "gold.revenue_forecast", "the winner ships", "databricks", 4, 3, 1, "dbx"),
-      E("mlf", "cont", "MLflow + finance.ml", "params, metrics, models", "mlflow", 5, 1, 1, "ml"),
-      E("psi", "cont", "PSI drift", "ops.model_drift", "python", 5, 2, 1, "ml")],
+      E("fn", "cont", "SQL functions", "store_margin_alerts · cashier_case_count · revenue_forecast", "sql", 5, 2, 1, "dbx"),
+      E("ag", "ext", "Month-end agent", "via Databricks MCP", "googlecloud", 6, 2),
+      E("psi", "cont", "PSI drift", "ops.model_drift, monthly", "python", 1, 4, 1, "ml"),
+      E("mlf", "cont", "MLflow + finance.ml", "params, metrics, model versions (all three)", "mlflow", 3, 4, 1, "ml")],
       rels: [R("gold", "cf", "", "vh", { e: 0.5 }), R("gold", "mf"), R("gold", "ff", "", "vh", { e: 0.5 }), R("cf", "if1"), R("if1", "s1"), R("mf", "if2"), R("if2", "s2"), R("ff", "gb"), R("gb", "s3"),
-        R("s1", "mlf", "logged"), R("s2", "psi", "inputs")] } },
+        R("s1", "fn", "count only", "hv"), R("s2", "fn"), R("s3", "fn", "", "hv"), R("fn", "ag", "MCP"), R("ff", "psi", "feature drift", "vh"), R("gb", "mlf", "logs", "v")] } },
+    { p: "The agent never reads the score tables directly (a direct read of gold.fraud_scores is refused). It gets store alerts, the forecast and a <i>count</i> of cashier cases through functions, so no employee ID reaches the model." },
     { table: ["Model", "In plain words", "Result"], rows: [
       ["Isolation Forest (refunds)", "Random splits isolate the odd cashier in few cuts; no labels needed", "S017-C03 #1 in Aug and Sep; 3 and 1 false alarms"],
       ["Isolation Forest (margin)", "Each store against its own past, net of what moved for all stores", "S031 #1 in Jul, Aug, Sep"],
@@ -246,20 +268,22 @@ lld: { t: "Low-level designs", d: "One component at a time. Pick a component.", 
       ["Seasonal baseline", "Same month last year", "7.5% MAPE: ships"],
       ["Drift", "PSI per feature, each month vs months 4-12 back", "< 0.1 stable, > 0.2 drift"]] } ] },
   { n: "Agent", b: [
-    { dia: { cols: 3, els: [
-      E("q", "cont", "query(month)", "entry point Vertex calls", "python", 2, 1, 1, "agent"),
-      E("cert", "cont", "Certification check", "stops if Gold not certified", "python", 1, 2, 1, "agent"),
-      E("sup", "cont", "Supervisor", "Deep Agents: plans its own to-do list", "langgraph", 2, 2, 2, "agent", "focus"),
-      E("w", "cont", "Commentary writer", "sub-agent", "langchain", 1, 3, 1, "agent"),
-      E("t", "cont", "Alert triage", "sub-agent", "langchain", 2, 3, 1, "agent"),
-      E("dst", "cont", "Distributor", "sub-agent", "langchain", 3, 3, 1, "agent"),
-      E("mc", "cont", "Model client", "langchain-google-genai", "googlegemini", 1, 4, 1, "agent"),
-      E("tc", "cont", "Data tools client", "langchain-mcp-adapters", "mcp", 2, 4, 1, "agent"),
-      E("gc", "cont", "Channel tools client", "MCP + SigV4", "agentcore", 3, 4, 1, "agent"),
-      E("gem", "ext", "Gemini", "Vertex EU", "googlegemini", 1, 5), E("dm", "ext", "Databricks MCP", "6 functions", "databricks", 2, 5), E("agw", "ext", "AgentCore Gateway", "3 tools", "agentcore", 3, 5)],
-      bounds: [["Month-end agent · Vertex AI Agent Engine", ["q", "cert", "sup", "w", "t", "dst", "mc", "tc", "gc"], "--agent", "googlecloud"]],
-      rels: [R("q", "cert", "1 · check", "hv"), R("q", "sup", "2 · plan", "v"), R("sup", "w", "delegates", "v"), R("sup", "t", "delegates", "v"), R("sup", "dst", "delegates", "v"),
-        R("w", "mc", "drafts", "v"), R("t", "tc", "facts", "v"), R("dst", "gc", "send", "v"), R("mc", "gem", "", "v"), R("tc", "dm", "", "v"), R("gc", "agw", "", "v")] } },
+    { dia: { cols: 4, els: [
+      E("q", "cont", "query(month)", "entry point Vertex calls", "python", 2, 2, 2, "agent"),
+      E("gem", "ext", "Gemini 3.8 Flash", "Vertex AI, EU", "googlegemini", 4, 1),
+      E("cert", "cont", "Certification check", "code, not the model: stops if Gold is not certified", "python", 1, 3, 1, "agent"),
+      E("sup", "cont", "Supervisor", "Deep Agents: plans its own to-do list", "langgraph", 2, 3, 2, "agent", "focus"),
+      E("mc", "cont", "Model client", "langchain-google-genai", "googlegemini", 4, 3, 1, "agent"),
+      E("w", "cont", "Commentary writer", "sub-agent", "langchain", 2, 4, 1, "agent"),
+      E("t", "cont", "Alert triage", "sub-agent", "langchain", 3, 4, 1, "agent"),
+      E("dst", "cont", "Distributor", "sub-agent", "langchain", 4, 4, 1, "agent"),
+      E("tc", "cont", "Data tools client", "langchain-mcp-adapters", "mcp", 1, 5, 3, "agent"),
+      E("gc", "cont", "Channel tools client", "MCP + SigV4", "agentcore", 4, 5, 1, "agent"),
+      E("dm", "ext", "Databricks MCP", "certification status + 5 finance functions", "databricks", 1, 6, 3), E("agw", "ext", "AgentCore Gateway", "submit_draft · list_drafts · send_approved", "agentcore", 4, 6)],
+      bounds: [["Month-end agent · Vertex AI Agent Engine", ["q", "cert", "sup", "mc", "w", "t", "dst", "tc", "gc"], "--agent", "googlecloud"]],
+      rels: [R("q", "cert", "1 · certified?", "hv"), R("q", "sup", "2 · plan", "v"), R("sup", "mc", "every step"), R("mc", "gem", "", "v"),
+        R("sup", "w", "", "v"), R("sup", "t", "", "v"), R("sup", "dst", "delegates", "v", { e: 0.95, f: 0.3 }),
+        R("cert", "tc", "status", "v"), R("w", "tc", "facts", "v"), R("t", "tc", "alerts", "v"), R("dst", "gc", "drafts, sends", "v"), R("tc", "dm", "MCP · OAuth", "v"), R("gc", "agw", "MCP · SigV4", "v")] } },
     { table: ["Element", "Detail"], rows: [
       ["Packaging", "We ship the Python object, requirements-google.txt and the month_end_agent package; Vertex builds and serves the container; min_instances = 0"],
       ["Tools", "Six Unity Catalog functions: revenue vs budget, store margin alerts, reconciliation exceptions (no journal text), forecast, cashier case count, certification status"],
@@ -317,23 +341,28 @@ net: { t: "Network flows and protocols", d: "Every hop of one month-end run, the
     ["Audit", "VPC → audit bucket", "flow logs", "AWS internal", "—"]] },
   { kv: [["VPC", "10.20.0.0/16, 2 AZ, workspace /22 + endpoint /24 per AZ"], ["Egress", "No internet gateway, no NAT"], ["Endpoints", "Workspace API, relay, STS, Kinesis (interface); S3 (gateway)"], ["Cross-cloud", "Agent hops cross the internet with TLS (accepted, D-032)"]] },
 ]},
-obs: { t: "Observability", d: "What we record for data, ML, the agent and the platform, and what nobody is told about yet.", b: [
+obs: { t: "Observability", d: "Signal → where it is recorded → who is told. Dashed boxes are missing today and name the tool we would add.", b: [
   { dia: { cols: 3, els: [
     E("s1", "cont", "Pipeline runs", "", "databricks", 1, 1, 1, "dbx"), E("t1", "db", "Databricks Jobs", "run history", "databricks", 2, 1, 1, "dbx"), E("v1", "ext", "Failure email", "in place", "ses", 3, 1),
-    E("s2", "cont", "Data quality", "", "databricks", 1, 2, 1, "dbx"), E("t2", "db", "ops.dq_results · gold_certification", "", "databricks", 2, 2, 1, "dbx"), E("v2", "ext", "No alert", "a failed gate stops the run", "", 3, 2, 1, "base", "gap"),
-    E("s3", "cont", "ML drift", "", "scikitlearn", 1, 3, 1, "ml"), E("t3", "db", "ops.model_drift · MLflow", "", "mlflow", 2, 3, 1, "ml"), E("v3", "ext", "No alert", "", "", 3, 3, 1, "base", "gap"),
-    E("s4", "cont", "Agent runs", "", "googlecloud", 1, 4, 1, "agent"), E("t4", "db", "ops.agent_runs · Cloud Logging", "tokens, cost, output", "googlecloud", 2, 4, 1, "agent"), E("v4", "ext", "No alert, no tracing", "", "", 3, 4, 1, "base", "gap"),
+    E("s2", "cont", "Data quality", "", "databricks", 1, 2, 1, "dbx"), E("t2", "db", "ops.dq_results · gold_certification", "", "databricks", 2, 2, 1, "dbx"), E("v2", "ext", "Next: Databricks SQL alert", "a failed gate already stops the run", "databricks", 3, 2, 1, "base", "gap"),
+    E("s3", "cont", "ML drift", "", "scikitlearn", 1, 3, 1, "ml"), E("t3", "db", "ops.model_drift · MLflow", "", "mlflow", 2, 3, 1, "ml"), E("v3", "ext", "Next: SQL alert", "PSI > 0.2; accuracy vs actuals", "databricks", 3, 3, 1, "base", "gap"),
+    E("s4", "cont", "Agent runs", "", "googlecloud", 1, 4, 1, "agent"), E("t4", "db", "ops.agent_runs · Cloud Logging", "supervisor tokens, cost, output", "googlecloud", 2, 4, 1, "agent"), E("v4", "ext", "Next: Langfuse", "trace per step, tokens per sub-agent, cost, golden-set runs", "langfuse", 3, 4, 1, "base", "gap"),
     E("s5", "cont", "Security events", "", "cloudtrail", 1, 5, 1, "aws"), E("t5", "db", "CloudTrail → CloudWatch", "metric filters", "cloudwatch", 2, 5, 1, "aws"), E("v5", "ext", "Alarm email", "root, break-glass", "ses", 3, 5),
     E("s6", "cont", "Spend", "", "aws", 1, 6, 1, "base"), E("t6", "db", "AWS + Databricks budgets", "", "aws", 2, 6, 1, "base"), E("v6", "ext", "Budget email", "50/80/100%", "ses", 3, 6)],
     rels: [R("s1", "t1"), R("t1", "v1"), R("s2", "t2"), R("t2", "v2", "", "h", { dash: 1 }), R("s3", "t3"), R("t3", "v3", "", "h", { dash: 1 }), R("s4", "t4"), R("t4", "v4", "", "h", { dash: 1 }), R("s5", "t5"), R("t5", "v5"), R("s6", "t6"), R("t6", "v6")] } },
-  { table: ["Layer", "Signal", "Where", "Alert today", "Should have"], rows: [
-    ["Data", "Freshness, row counts, quality, reconciliation", "ops.dq_results, ops.gold_certification", st("part"), "Freshness and volume alerts (SQL alerts or Lakehouse Monitoring)"],
-    ["ML", "Input drift (PSI), metrics per run", "ops.model_drift, MLflow", st("gap"), "Drift alert; forecast accuracy vs actuals; model age"],
-    ["Agent", "Tokens, cost, output per run; runtime logs", "ops.agent_runs, Cloud Logging", st("gap"), "OpenTelemetry traces per step; failure and cost alerts; approval rate"],
+  { table: ["Layer", "Signal", "Where today", "Alert today", "What we would add (tool)"], rows: [
+    ["Data", "Freshness, row counts, quality, reconciliation", "ops.dq_results, ops.gold_certification", st("part"), "Databricks SQL alerts on freshness and volume; no new tool"],
+    ["ML", "Input drift (PSI), metrics per run", "ops.model_drift, MLflow", st("gap"), "SQL alert on PSI > 0.2; a monthly job that scores the forecast against actuals"],
+    ["Agent", "Supervisor tokens, cost, output per run; runtime logs", "ops.agent_runs, Cloud Logging", st("gap"), "Langfuse (EU cloud, free tier: synthetic data only): one trace per run with every model and tool call, tokens per sub-agent (not counted today), cost, golden-set experiments"],
     ["Pipeline", "Run success, retries", "Databricks Jobs", st("ok"), "—"],
     ["Security", "Root use, break-glass writes", "CloudTrail, CloudWatch", st("ok"), "Alarms on trail tampering and IAM changes"],
     ["Cost", "Spend vs budget", "AWS Budgets, Databricks", st("ok"), "A hard stop, not only an email"]] },
-  { p: "Design for the missing parts: <a href=\"https://github.com/kheuchi/retail-finance-platform-control-plane/blob/main/docs/stories/6.4-monitoring.md\">story 6.4</a>." },
+  { h: "Why these tools here" },
+  { cards: [
+    ["Agent: Langfuse, not only Cloud Trace", "Agent Engine can export traces to Cloud Trace with one flag (enable_tracing), but tokens per sub-agent, cost, prompt versions and golden-set runs need an LLM tool. Langfuse is also the enterprise pick, so one tool to learn.", "--agent"],
+    ["ML and data: SQL alerts", "The signals are already Delta tables; an alert on a query is enough at this size. Lakehouse Monitoring is the next step.", "--ml"],
+    ["Infra: no Grafana or ClickStack", "CloudWatch and CloudTrail already cover a USD 50/month account; running an observability stack would cost more than the platform.", "--base"]] },
+  { p: "Design for the missing parts: <a href=\"https://github.com/kheuchi/retail-finance-platform-control-plane/blob/main/docs/stories/6.4-monitoring.md\">story 6.4</a>. The enterprise tab compares the tools in full." },
 ]},
 eval: { t: "Evaluation", d: "How the models and the agent were proven, and what a proper evaluation would add.", b: [
   { h: "ML: how we proved it" },
@@ -349,8 +378,8 @@ eval: { t: "Evaluation", d: "How the models and the agent were proven, and what 
     ["Never sends unapproved", "Unapproved drafts stayed put; the approved one was emailed and published", st("ok")],
     ["Refuses uncertified Gold", "Code reads the certification status first", st("ok")],
     ["Plans by itself", "To-do list and three delegations in the run output", st("ok")],
-    ["Quality on known cases", "Golden set of past months with expected facts", st("gap")],
-    ["Release gate", "Prompt or model change must not score worse", st("gap")]] },
+    ["Quality on known cases", "Golden set of past months with expected facts, run as a Langfuse experiment", st("gap")],
+    ["Release gate", "GitHub Actions runs the golden set on each agent PR; fails if any score drops", st("gap")]] },
   { h: "One golden case, hop by hop (to build)" },
   { dia: { cols: 5, els: [
     E("g1", "cont", "1 · Golden case", "Aug 2026, expected facts by SQL", "databricks", 1, 1, 1, "base"), E("g2", "cont", "2 · Run in eval mode", "send tools stubbed", "googlecloud", 2, 1, 1, "agent"),
@@ -400,12 +429,14 @@ big: { t: "The big picture", d: "A margin recovery agent for a large grocer. Tar
     ["Cost up 6%, shelf price unchanged", "Pricing tool, SAP rule", "An alert", "Why, who owns it, what the contract allows"],
     ["Margin 0.2 pt below plan", "BI margin bridge, ML forecast", "Where the gap is", "Why, and the commentary for the close"],
     ["What slipped through", "Recovery-audit firm", "Found a year later", "Paid as a share of what is recovered"]] },
+  { p: "<b>Finding <i>where</i> margin leaks was already automated</b>: rules, BI bridges and ML forecasts did it before 2022, and we keep them. What none of them could do is read the contract or side letter, link promotion → contract → claim → owner across six systems, and draft the claim with the clause cited. That is the agent's job, and the only reason to build it." },
   { h: "What we try to achieve" },
   { cards: [
-    ["Find it inside the month", "Events, not month-end reports: the leak is seen the day it starts", "--gate"],
-    ["Read what systems can't", "Contracts, side letters and emails, with the clause cited", "--know"],
-    ["Link across silos", "Promotion → contract → claim → owner, across six systems", "--agent"],
-    ["People decide", "Category managers, pricing and the controller approve every claim, price and accrual", "--people"]] },
+    ["New · Read what systems can't", "Contracts, side letters and emails, with the clause cited", "--know"],
+    ["New · Link across silos", "Promotion → contract → claim → owner, across six systems, per case", "--agent"],
+    ["New · Draft the fix", "Claim, price fix or accrual with the numbers and the clause cited, ready to approve", "--agent"],
+    ["Reused · Find it inside the month", "Events and stream rules, as before AI, just wired to the agent", "--gate"],
+    ["Always · People decide", "Category managers, pricing and the controller approve every claim, price and accrual", "--people"]] },
   { table: ["Leak", "Example", "Recoverable?", "Owner"], rows: [
     ["Promotion funding not claimed", "Agreed contribution never invoiced", "Yes, before the deadline", "Category manager"],
     ["Cost up, price unchanged", "Shelf price not updated", "Partly, from today", "Pricing"],
@@ -417,20 +448,30 @@ big: { t: "The big picture", d: "A margin recovery agent for a large grocer. Tar
     ["3 · Steps vary", "A pricing error and an unclaimed promotion take different paths"], ["4 · Volume and value", "Tens of cases a day, thousands of euros each"],
     ["5 · Checkable, reversible", "Every claim, price and accrual approved first"], ["6 · Worth building", "Margin is the grocer's economics; data and contracts are ours"]] },
 ]},
-flow: { t: "Business workflow", d: "From a signal (or the controller's question) to money recovered, with decisions flowing back as labels.", b: [
+flow: { t: "Business workflow", d: "One example from the controller's question to money recovered; decisions flow back as labels.", b: [
+  { q: "Controller, close day 2, in Teams: “Where did we lose margin this month, why, and how much can we still recover before we close?”" },
   { dia: { cols: 6, els: [
-    E("ask", "person", "Controller asks in Teams", "or close week, daily", "teams", 1, 1, 1, "person"),
+    E("ask", "person", "Controller asks in Teams", "“Where did we lose margin?”", "teams", 1, 1, 1, "person"),
     E("appr", "person", "Approvers decide", "category manager, pricing, controller", "person", 4, 1, 1, "person"),
     E("sap", "ext", "SAP · suppliers", "claims, prices, accruals", "sap", 6, 1),
-    E("tri", "cont", "SLM triage", "keeps the real cases", "meta", 2, 2, 1, "agent"),
+    E("tri", "cont", "SLM triage", "312 signals → 23 real cases", "meta", 2, 2, 1, "agent"),
     E("inv", "cont", "Agent investigates", "where, why, how much, which clause", "claude", 3, 2, 1, "agent", "focus"),
-    E("dr", "cont", "Drafts", "claims, price fixes, accruals, commentary", "python", 4, 2, 1, "agent"),
+    E("dr", "cont", "Drafts", "5 claims, price list, accruals, commentary", "python", 4, 2, 1, "agent"),
     E("act", "cont", "Actions run", "through SAP workflows", "sap", 5, 2, 1, "gate"),
-    E("sig", "cont", "Margin signals", "cost up + price unchanged; promotion ended, no claim", "apacheflink", 1, 3, 1, "gate"),
-    E("lab", "cont", "Decisions → labels", "approved, rejected, paid + reason", "apachekafka", 5, 3, 1, "gate")],
-    lanes: [["People and systems of record", 1, "--people"], ["Agent", 2, "--agent"], ["Events", 3, "--gate"]],
+    E("olap", "cont", "Margin bridge (OLAP)", "by category and supplier", "sql", 2, 3, 1, "data"),
+    E("fc", "cont", "Forecast (ML)", "expected margin → gap EUR 1.9M", "mlflow", 3, 3, 1, "ml"),
+    E("rag", "cont", "RAG + GraphRAG", "clauses cited; promotions without a claim, owners", "neo4j", 4, 3, 1, "know"),
+    E("api", "cont", "Live SAP and portal APIs", "claims and credit notes right now", "sap", 5, 3, 1, "gate"),
+    E("sig", "cont", "Margin signals", "cost up + price unchanged; promotion ended, no claim", "apacheflink", 1, 4, 1, "gate"),
+    E("lab", "cont", "Decisions → labels", "approved, rejected, paid + reason", "apachekafka", 6, 4, 1, "gate")],
+    lanes: [["People and systems of record", 1, "--people"], ["Agent", 2, "--agent"], ["Data, ML and knowledge (tools)", 3, "--data"], ["Events", 4, "--gate"]],
     rels: [R("sig", "tri", "events", "vh"), R("ask", "inv", "question", "hv", { f: 0.3 }), R("tri", "inv", "cases"), R("inv", "dr"), R("dr", "appr", "for approval", "v"),
-      R("appr", "act", "approved", "hv", { f: 0.5 }), R("act", "sap", "", "vh", { e: 0.6 }), R("act", "lab", "outcome", "v")] } },
+      R("olap", "inv", "", "v", { f: 0.15 }), R("fc", "inv", "", "v"), R("rag", "inv", "", "v", { f: 0.7, m: 0.3 }), R("api", "inv", "", "v", { f: 0.9, m: 0.7 }),
+      R("appr", "act", "approved", "hv", { f: 0.5 }), R("act", "sap", "", "vh", { e: 0.8 }), R("act", "lab", "outcome", "hv"), R("lab", "fc", "labels → retrain", "hv", { dash: 1 })] } },
+  { table: ["Two ways in", "Example", "Starts at"], rows: [
+    ["Asked", "“Where did we lose margin this month?”", "The controller in Teams, through the AI gateway"],
+    ["Pushed", "“Cost +6% on 140 SKUs, shelf price unchanged for 2 days”", "A stream rule fires; the SLM keeps it if it is a real case"]] },
+  { h: "The asked example, step by step" },
   { table: ["#", "Who", "Does", "Gets"], rows: [
     ["1", "Controller (close day 2)", "Asks the question in Teams", "A case"], ["2", "SLM", "Groups 312 signals by supplier", "23 real cases"],
     ["3", "OLAP", "Margin by category and supplier", "Gap in dairy, drinks, fresh"], ["4", "ML forecast", "Expected margin", "Gap EUR 1.9M (computed by a tool)"],
@@ -447,11 +488,14 @@ simple: { t: "Ultra-simplified architecture", d: "Five layers and a loop.", b: [
     E("pp", "person", "People approve", "three owners", "person", 5, 1, 1, "person"),
     E("sor", "ext", "SAP · suppliers", "claims, prices, accruals", "sap", 6, 1),
     E("loop", "cont", "Feedback loop", "every decision becomes a label and a new test case", "apachekafka", 2, 2, 4, "gate")],
-    rels: [R("src", "ev"), R("ev", "kn"), R("kn", "ag"), R("ag", "pp", "drafts"), R("pp", "sor", "approved"), R("sor", "loop", "outcomes", "vh", { dash: 1 })] } },
+    rels: [R("src", "ev"), R("ev", "kn"), R("kn", "ag", "clauses, scores"), R("ev", "ag", "signals, OLAP figures", "u", { e: 0.75, f: 0.25 }), R("ag", "pp", "drafts"), R("pp", "sor", "approved"),
+      R("sor", "loop", "outcomes", "vh", { dash: 1 }), R("loop", "ev", "decisions as events", "v", { dash: 1 })] } },
+  { p: "Only the agent box is new. Events, the lakehouse, ML and search existed before AI; the agent links them per case and drafts the fix, and people approve it." },
 ]},
 hld: { t: "High-level design", d: "The target building blocks. Green-dot items in the landscape already exist in this project.", b: [
   { dia: { cols: 6, els: [
     E("ppl", "person", "People in Teams", "controller, category managers, pricing", "teams", 1, 1, 1, "person"),
+    E("llm", "ext", "LLM providers", "Claude, Gemini · EU endpoints · fallback", "claude", 3, 1),
     E("sup", "ext", "Suppliers", "EDI, portal", "", 5, 1), E("sap", "ext", "SAP S/4HANA", "system of record", "sap", 6, 1),
     E("gw", "cont", "AI gateway", "auth on behalf of the user, rate limits, routing, fallback", "agentcore", 1, 2, 1, "agent"),
     E("ag", "cont", "Agent", "orchestrator + 4 sub-agents", "langgraph", 2, 2, 3, "agent", "focus"),
@@ -465,10 +509,12 @@ hld: { t: "High-level design", d: "The target building blocks. Green-dot items i
     E("st", "cont", "Event backbone + stream processing", "Kafka / MSK, Flink, schema registry", "apachekafka", 1, 4, 2, "gate"),
     E("lake", "db", "Lakehouse", "Bronze → Gold, graph tables", "databricks", 3, 4, 1, "data"),
     E("doc", "cont", "Document pipeline", "OCR, chunks, SLM extraction", "python", 4, 4, 1, "know"),
-    E("src", "ext", "Sources", "SAP, POS, WMS, promotions, contracts", "sap", 5, 4, 2)],
-    rels: [R("ppl", "gw", "asks", "v"), R("gw", "ag"), R("ag", "gr"), R("gr", "wf", "drafts"), R("wf", "sap", "", "v"), R("wf", "sup", "claims", "vh", { e: 0.25 }),
+    E("src", "ext", "Sources", "SAP, POS, WMS, promotions, contracts", "sap", 5, 4, 2),
+    E("obs", "cont", "Around everything", "OpenTelemetry: one trace per case → Langfuse (agent, tokens, cost, evals) · ClickStack (infra) · Lakehouse Monitoring + MLflow (models) · Unity Catalog · identity on behalf of the user", "opentelemetry", 1, 5, 6, "base")],
+    rels: [R("ppl", "gw", "asks", "v"), R("gw", "ag", "case + user token"), R("gw", "llm", "LLM calls", "v", { e: 0.9, f: 0.3 }), R("ag", "gr"), R("gr", "wf", "drafts"), R("wf", "sap", "", "v"), R("wf", "sup", "claims", "vh", { e: 0.25 }),
       R("ag", "mls", "", "v"), R("ag", "olap", "", "v"), R("ag", "kn", "", "v"), R("gr", "api", "checks", "v"), R("st", "slm", "signals", "v"), R("slm", "gw", "cases", "v"),
-      R("st", "lake"), R("olap", "lake", "", "v"), R("doc", "kn", "", "v"), R("src", "doc", "PDF"), R("api", "src", "live", "v"), R("src", "st", "CDC events", "u")] } },
+      R("st", "lake"), R("olap", "lake", "", "v"), R("lake", "mls", "features", "v", { e: 0.2, f: 0.7 }), R("lake", "kn", "graph tables", "v", { e: 0.85, f: 0.3 }),
+      R("doc", "kn", "", "v"), R("src", "doc", "PDF"), R("api", "src", "live", "v"), R("src", "st", "CDC events", "u")] } },
   { table: ["Layer", "Practice", "Example products"], rows: [
     ["Event streaming", "CDC from SAP, schema registry, stream rules, decisions back as events", "Kafka / MSK, SAP Event Mesh, Flink, Debezium"],
     ["Lakehouse + OLAP", "Bronze → Gold, graph tables, certified SQL functions as tools", "Databricks, Unity Catalog"],
@@ -492,15 +538,18 @@ lld: { t: "Low-level designs", d: "One component at a time. Pick a component.", 
       E("br", "db", "Bronze", "events and files as they arrive", "databricks", 1, 1, 1, "data"), E("sv", "db", "Silver", "cleaned, conformed", "databricks", 2, 1, 1, "data"),
       E("gd", "db", "Gold", "margin by store, category, supplier; funding expected vs booked", "databricks", 3, 1, 1, "data", "focus"),
       E("fn", "cont", "Certified SQL functions", "the OLAP tools", "sql", 4, 1, 1, "data"), E("ag", "ext", "Agent", "via the AI gateway", "claude", 5, 1),
-      E("gt", "db", "Graph tables", "supplier, contract, promotion, claim, owner", "databricks", 3, 2, 1, "data"), E("uc", "cont", "Unity Catalog", "grants, lineage; supplier terms restricted", "uc", 2, 2, 1, "data")],
-      rels: [R("br", "sv"), R("sv", "gd"), R("gd", "fn"), R("fn", "ag", "tools"), R("gd", "gt", "", "v")] } } ] },
+      E("gt", "db", "Graph tables", "supplier, contract, promotion, claim, owner", "databricks", 3, 2, 1, "data"), E("uc", "cont", "Unity Catalog", "grants, lineage; supplier terms restricted", "uc", 2, 2, 1, "data"),
+      E("kg", "ext", "Knowledge graph", "GraphRAG (see Knowledge)", "neo4j", 4, 2), E("ft", "ext", "Feature tables", "ML (see ML)", "mlflow", 5, 2)],
+      rels: [R("br", "sv"), R("sv", "gd"), R("gd", "fn"), R("fn", "ag", "tools"), R("gd", "gt", "", "v"), R("gt", "kg", "loads"), R("gd", "ft", "features", "v", { e: 0.85, f: 0.5, m: 0.5 })] } } ] },
   { n: "ML", b: [
-    { dia: { cols: 5, els: [
+    { dia: { cols: 6, els: [
       E("gd", "db", "Gold", "", "databricks", 1, 1, 1, "data"), E("ft", "db", "Feature tables", "offline + online", "databricks", 2, 1, 1, "ml"),
-      E("tr", "cont", "Training", "margin forecast, rebate tier, anomalies", "scikitlearn", 3, 1, 1, "ml", "focus"), E("rg", "cont", "Registry", "MLflow, versions", "mlflow", 4, 1, 1, "ml"),
-      E("sv", "cont", "Model serving", "scores on demand", "mlflow", 5, 1, 1, "ml"), E("lb", "cont", "Labels", "from the decisions topic", "apachekafka", 3, 2, 1, "gate"),
-      E("mon", "cont", "Monitoring", "drift, accuracy vs actuals", "mlflow", 5, 2, 1, "ml")],
-      rels: [R("gd", "ft"), R("ft", "tr"), R("tr", "rg"), R("rg", "sv"), R("lb", "tr", "", "v"), R("sv", "mon", "", "v")] } } ] },
+      E("tr", "cont", "Training", "margin forecast, rebate tier, anomalies", "scikitlearn", 3, 1, 1, "ml", "focus"), E("rg", "cont", "Registry", "MLflow, versions, champion", "mlflow", 4, 1, 1, "ml"),
+      E("sv", "cont", "Model serving", "scores on demand; inference table", "mlflow", 5, 1, 1, "ml"), E("ag", "ext", "Agent", "via the AI gateway, as a tool", "claude", 6, 1),
+      E("lb", "cont", "Labels", "from the decisions topic", "apachekafka", 2, 2, 1, "gate"),
+      E("mon", "cont", "Lakehouse Monitoring", "drift on the inference table, accuracy vs actuals", "databricks", 5, 2, 1, "ml"), E("al", "ext", "Alert to the model owner", "drift or accuracy below target", "pagerduty", 6, 2)],
+      rels: [R("gd", "ft"), R("ft", "tr"), R("tr", "rg"), R("rg", "sv", "champion"), R("sv", "ag", "scores"), R("lb", "tr", "", "hv", { f: 0.3 }), R("sv", "mon", "", "v"),
+        R("mon", "tr", "retrain", "hv", { f: 0.7, dash: 1 }), R("mon", "al")] } } ] },
   { n: "Knowledge (RAG, GraphRAG)", b: [
     { dia: { cols: 6, els: [
       E("pdf", "ext", "Contracts (PDF)", "rebates, promotions, side letters", "", 1, 1), E("ocr", "cont", "OCR + chunking", "keeps clause numbers", "python", 2, 1, 1, "know"),
@@ -512,15 +561,19 @@ lld: { t: "Low-level designs", d: "One component at a time. Pick a component.", 
     { table: ["", "RAG", "GraphRAG"], rows: [["Finds", "The clause, cited", "What belongs together and who owns it"], ["Example", "“Supplier funds 30%, claim within 60 days”", "“Ended promotions of supplier X with no claim, owner?”"], ["Fails without", "Rights filter: contracts leak", "Fresh graph: stale links"]] } ] },
   { n: "Agent and AI gateway", b: [
     { dia: { cols: 6, els: [
-      E("u", "person", "User in Teams", "SSO", "teams", 1, 1, 1, "person"), E("gw", "cont", "AI gateway", "OBO auth, rate limits, routing, fallback, logs", "agentcore", 2, 1, 1, "agent"),
-      E("or", "cont", "Orchestrator", "plans, delegates", "langgraph", 3, 1, 3, "agent", "focus"), E("gr", "cont", "Guardrails", "figure check, clause, evidence", "python", 6, 1, 1, "agent"),
-      E("a1", "cont", "Margin analyst", "", "langchain", 2, 2, 1, "agent"), E("a2", "cont", "Contract reader", "", "langchain", 3, 2, 1, "agent"),
-      E("a3", "cont", "Evidence collector", "", "langchain", 4, 2, 1, "agent"), E("a4", "cont", "Writer", "", "langchain", 5, 2, 1, "agent"),
-      E("ap", "cont", "Approval workflow", "three owners", "person", 6, 2, 1, "people"),
-      E("t1", "ext", "OLAP + ML tools", "", "sql", 2, 3), E("t2", "ext", "RAG + GraphRAG", "", "neo4j", 3, 3), E("t3", "ext", "Live APIs", "", "sap", 4, 3), E("t4", "ext", "LLM + leak tools", "", "claude", 5, 3),
-      E("sap", "ext", "SAP + suppliers", "", "sap", 6, 3)],
-      rels: [R("u", "gw"), R("gw", "or"), R("or", "gr", "drafts"), R("gr", "ap", "", "v"), R("ap", "sap", "", "v"), R("or", "a1", "", "v"), R("or", "a2", "", "v"), R("or", "a3", "", "v"), R("or", "a4", "", "v"),
-        R("a1", "t1", "", "v"), R("a2", "t2", "", "v"), R("a3", "t3", "", "v"), R("a4", "t4", "", "v")] } } ] },
+      E("u", "person", "User in Teams", "SSO", "teams", 1, 1, 1, "person"),
+      E("gw", "cont", "AI gateway", "OBO auth, rate limits, routing, fallback, cost per team, logs", "agentcore", 1, 2, 1, "agent"),
+      E("or", "cont", "Orchestrator", "plans, delegates; every model call goes through the gateway", "langgraph", 2, 2, 4, "agent", "focus"), E("gr", "cont", "Guardrails", "figure check, clause, evidence", "python", 6, 2, 1, "agent"),
+      E("llm", "ext", "LLMs", "Claude, Gemini; SLM for volume", "claude", 1, 3),
+      E("a1", "cont", "Margin analyst", "", "langchain", 2, 3, 1, "agent"), E("a2", "cont", "Contract reader", "", "langchain", 3, 3, 1, "agent"),
+      E("a3", "cont", "Evidence collector", "", "langchain", 4, 3, 1, "agent"), E("a4", "cont", "Writer", "", "langchain", 5, 3, 1, "agent"),
+      E("ap", "cont", "Approval workflow", "three owners", "person", 6, 3, 1, "people"),
+      E("t1", "ext", "OLAP + ML tools", "margin bridge, forecast", "sql", 2, 4), E("t2", "ext", "RAG + GraphRAG", "clauses, links", "neo4j", 3, 4), E("t3", "ext", "Live APIs", "claims now", "sap", 4, 4), E("t4", "ext", "Leak + figure tools", "expected − booked", "python", 5, 4),
+      E("sap", "ext", "SAP + suppliers", "", "sap", 6, 4)],
+      rels: [R("u", "gw", "", "v"), R("gw", "or", "case"), R("gw", "llm", "routed", "v"), R("or", "gr", "drafts"), R("gr", "ap", "", "v"), R("ap", "sap", "", "v"),
+        R("or", "a1", "", "v"), R("or", "a2", "", "v"), R("or", "a3", "", "v"), R("or", "a4", "", "v"),
+        R("a1", "t1", "", "v"), R("a2", "t2", "", "v"), R("a3", "t3", "", "v"), R("a4", "t4", "", "v")] } },
+    { p: "Tools are reached through the gateway too (MCP), so one place enforces the user's rights, logs every call and stops a runaway loop." } ] },
   { n: "Identity and approvals", b: [
     { seq: { ps: [P("u", "User", "person", "people"), P("t", "Teams", "teams", "people"), P("i", "Company SSO", "sso", "base"), P("g", "AI gateway", "agentcore", "agent"), P("a", "Agent", "claude", "agent"), P("d", "Databricks", "databricks", "data"), P("w", "SAP workflow", "sap", "gate")], ms: [
       M("u", "t", "asks the question", "SSO session"), M("t", "g", "message + user token", "HTTPS · OAuth"), M("g", "i", "token exchange", "OAuth 2.0 token exchange"),
@@ -541,17 +594,60 @@ net: { t: "Network flows and protocols", d: "One claim end to end, then the netw
     ["Suppliers", "EDI over AS2 or the supplier portal API, through the integration layer"],
     ["Residency", "EU regions only; model endpoints in the EU"]] },
 ]},
-obs: { t: "Observability", d: "One trace per case, plus health signals per layer, with owners and SLOs.", b: [
-  { dia: { cols: 3, els: [
-    E("s1", "cont", "Streams", "lag, dead letters", "apachekafka", 1, 1, 1, "gate"), E("s2", "cont", "Data", "freshness, quality", "databricks", 1, 2, 1, "data"),
-    E("s3", "cont", "Models", "drift, accuracy", "mlflow", 1, 3, 1, "ml"), E("s4", "cont", "Retrieval", "no-answer rate, stale index", "neo4j", 1, 4, 1, "know"),
-    E("s5", "cont", "Agent", "steps, tool calls, tokens, guardrail hits", "claude", 1, 5, 1, "agent"),
-    E("ot", "cont", "OpenTelemetry", "one trace per case; metrics; logs", "opentelemetry", 2, 3, 1, "base", "focus"),
-    E("v1", "cont", "Dashboard", "green or red per layer", "", 3, 2, 1, "base"), E("v2", "cont", "SLO alerts", "each with an owner", "", 3, 3, 1, "base"), E("v3", "cont", "Eval store", "scores per version", "mlflow", 3, 4, 1, "base")],
-    rels: [R("s1", "ot", "", "hv", { f: 0.3 }), R("s2", "ot", "", "hv", { f: 0.4 }), R("s3", "ot"), R("s4", "ot", "", "hv", { f: 0.6 }), R("s5", "ot", "", "hv", { f: 0.7 }), R("ot", "v1", "", "vh", { e: 0.6 }), R("ot", "v2"), R("ot", "v3", "", "vh", { e: 0.6 })] } },
-  { table: ["SLI", "SLO (example)", "Owner"], rows: [
-    ["Signal-to-case latency", "< 15 min", "Platform"], ["Gold freshness", "by 07:00 on 99% of days", "Data engineering"], ["Agent run success", "≥ 95%", "Agent owner"],
-    ["Cost per case", "< EUR 1", "Agent owner"], ["Claims sent before deadline", "≥ 98%", "Category managers"], ["Drafts approved without edits", "≥ 60%", "Business owner"]] },
+obs: { t: "Observability", d: "One trace per case from the Kafka event to the approved claim; one tool per job; every alert has an owner.", b: [
+  { dia: { cols: 4, els: [
+    E("a", "cont", "Agent + AI gateway", "steps, LLM and tool calls, tokens, cost, guardrail hits", "claude", 1, 1, 1, "agent"),
+    E("k", "cont", "Retrieval", "RAG and GraphRAG spans: hits, no-answer, index age", "neo4j", 1, 2, 1, "know"),
+    E("s", "cont", "Streams + services", "Kafka lag, dead letters, API errors", "apachekafka", 1, 3, 1, "gate"),
+    E("i", "cont", "Cloud + infra", "containers, serverless, network, quotas", "aws", 1, 4, 1, "base"),
+    E("m", "cont", "Models + data", "inference tables, quality checks, freshness", "databricks", 1, 5, 1, "ml"),
+    E("ot", "cont", "OpenTelemetry collector", "one trace ID per case · GenAI spans to Langfuse · everything to ClickStack", "opentelemetry", 2, "1 / span 4", 1, "base", "focus"),
+    E("lf", "cont", "Langfuse (self-hosted, EU)", "LLM traces, tokens and cost per team, prompt versions, datasets, LLM judges, human review", "langfuse", 3, "1 / span 2", 1, "agent"),
+    E("cs", "cont", "ClickStack", "ClickHouse + HyperDX: logs, metrics, traces in one SQL store", "clickhouse", 3, "3 / span 2", 1, "base"),
+    E("lm", "cont", "Lakehouse Monitoring + MLflow", "drift, data quality, accuracy vs actuals, model versions", "mlflow", 3, 5, 1, "ml"),
+    E("al", "cont", "Alerts with an owner", "PagerDuty or Teams; one SLO per layer; runbook link", "pagerduty", 4, "1 / span 5", 1, "base")],
+    rels: [R("a", "ot"), R("k", "ot"), R("s", "ot"), R("i", "ot"), R("ot", "lf"), R("ot", "cs"), R("m", "lm", "Delta tables"),
+      R("lf", "cs", "same trace ID", "v", { dash: 1, both: 1 }), R("lf", "al"), R("cs", "al"), R("lm", "al")] } },
+  { h: "The pick per layer" },
+  { table: ["Layer", "Pick", "What it tracks", "Why", "Alternative"], rows: [
+    ["Agent + AI gateway", "Langfuse, self-hosted in the EU", "A trace per case with every LLM call, tool call and retrieval; tokens and cost per model, team and case; prompt versions; datasets and experiments; LLM-judge scores; human review queues", "Open source (MIT core), works with any framework and model behind the gateway, takes OpenTelemetry in; ClickHouse bought it in January 2026, and it already ran on ClickHouse", "MLflow 3 tracing if everything sits on Databricks"],
+    ["Models (ML)", "Lakehouse Monitoring + MLflow", "Input and prediction drift on inference tables, accuracy once actuals arrive, which model version made each score", "Lives where the models and data live; results are tables under Unity Catalog grants", "Evidently (open source); Arize AX (paid)"],
+    ["Data + streams", "Quality checks + Lakehouse Monitoring; Kafka metrics via OpenTelemetry", "Freshness, volume, nulls, schema changes; consumer lag, dead letters", "Same tables as Gold; stream metrics join the infra view", "Monte Carlo (paid) for data observability"],
+    ["Infra + services", "ClickStack (ClickHouse + HyperDX + OTel collector)", "Logs, metrics and traces with case ID, supplier and team on every event", "One columnar SQL store handles high-cardinality fields cheaply and joins with cost; same engine as Langfuse", "Grafana LGTM if the company already runs it"],
+    ["Cloud + cost", "CloudWatch / Cloud Monitoring, Databricks system tables", "Billing, audit, quotas", "Cloud signals stay native; forwarded to ClickStack for one view", "—"],
+    ["Alerting", "PagerDuty or a Teams channel per owner", "SLO breaches, failed runs, cost spikes", "One way to page; every alert names an owner and a runbook", "Opsgenie"]] },
+  { h: "Agent tracing: Google tools, Langfuse or Phoenix?" },
+  { table: ["", "Google (Cloud Trace, Logging, Gen AI evaluation)", "Langfuse", "Arize Phoenix"], rows: [
+    ["LLM and tool calls", "OpenTelemetry spans to Cloud Trace (enable_tracing on Agent Engine); the generative AI view is still partial", "Typed observations: generation, tool, retrieval; agent graph", "OpenInference / OpenTelemetry spans"],
+    ["Tokens and cost", "Tokens on spans; cost only through the billing export, not per run", "Per call, model, user and team", "Per trace"],
+    ["Evaluations", "Gen AI evaluation service (offline)", "Datasets, experiments, LLM judges online and offline, human annotation", "Strong evaluation library, datasets, experiments"],
+    ["License, hosting", "Managed; Google only", "MIT core; self-host or EU cloud", "Elastic License 2.0 (source-available); self-host"],
+    ["Across clouds", "AWS and Databricks parts need exporting", "Any cloud, any model behind the gateway", "Any cloud"],
+    ["Owner news", "—", "Part of ClickHouse since January 2026", "Dynatrace announced it will buy Arize (August 2026, not closed)"],
+    ["Verdict", "Turn on for Agent Engine runtime logs; not the main tool", "Pick: system of record for the agent", "Fine for notebook eval research; not the system of record"]] },
+  { h: "Infra: ClickStack or the Grafana stack?" },
+  { table: ["", "ClickStack", "Grafana LGTM"], rows: [
+    ["Parts", "ClickHouse + HyperDX UI + preconfigured OpenTelemetry collector", "Loki (logs), Tempo (traces), Mimir (metrics), Grafana, Alloy collector"],
+    ["Storage", "One columnar store for logs, metrics and traces", "Three stores, one per signal"],
+    ["Query", "SQL and Lucene-style search", "LogQL, TraceQL, PromQL"],
+    ["High-cardinality fields (case, supplier, team)", "Cheap: columns", "Costly as labels"],
+    ["Maturity", "Younger (HyperDX 2.x)", "Mature; huge dashboard and alert ecosystem; managed options"],
+    ["Verdict", "Pick: same engine as Langfuse; telemetry joins cost and cases in SQL", "The safe choice if the company already runs it; Grafana can also sit on ClickHouse"]] },
+  { h: "SLIs and SLOs" },
+  { table: ["SLI", "SLO (example)", "Measured in", "Owner"], rows: [
+    ["Signal-to-case latency", "< 15 min", "ClickStack (trace)", "Platform"], ["Gold freshness", "by 07:00 on 99% of days", "Lakehouse Monitoring", "Data engineering"],
+    ["Agent run success", "≥ 95%", "Langfuse", "Agent owner"], ["Cost per case", "< EUR 1", "Langfuse + gateway", "Agent owner"],
+    ["Tool error rate", "< 2% of calls", "Langfuse", "Agent owner"], ["Guardrail blocks", "watched, no target: a jump means drift or attack", "Langfuse", "Agent owner"],
+    ["Forecast accuracy", "MAPE below the seasonal baseline", "MLflow", "ML owner"], ["Claims sent before deadline", "≥ 98%", "SAP outcome events", "Category managers"],
+    ["Drafts approved without edits", "≥ 60%", "Decisions topic → Langfuse score", "Business owner"]] },
+  { h: "Also worth having" },
+  { cards: [
+    ["Pick the format, not just the tool", "Emit OpenTelemetry with the GenAI conventions; put model, prompt version, agent release, case ID and team on every span. The backend can then change without touching code.", "--base"],
+    ["Traces are finance data", "Prompts hold supplier terms: same access rules as Gold, EU only, 30–90 days, personal data redacted before export", "--data"],
+    ["Keep failures, sample successes", "100% of errors and guardrail hits, 10% of normal runs: enough to debug, cheap to store", "--base"],
+    ["Business outcome as an eval", "Each approval, rejection and reason becomes a score on its trace: the best online evaluation there is", "--people"],
+    ["Cost per case per team", "Gateway tags + Langfuse cost + Databricks system tables in one FinOps view", "--gate"],
+    ["Kill switch", "Disable send tools at the gateway in one change; roll back to the previous release tag", "--agent"]] },
 ]},
 eval: { t: "Evaluation", d: "Test on every PR, evaluate on every release, observe every run. What goes wrong becomes a new test.", b: [
   { table: ["Layer", "The question", "How we check", "Indicator · target"], rows: [
@@ -565,6 +661,11 @@ eval: { t: "Evaluation", d: "Test on every PR, evaluate on every release, observ
     E("pr", "cont", "Every pull request", "unit, contract and guardrail tests", "githubactions", 1, 1, 1, "base"), E("rel", "cont", "Every release", "golden sets vs last version", "mlflow", 2, 1, 1, "base"),
     E("run", "cont", "Every run", "traces, SLOs", "opentelemetry", 3, 1, 1, "base"), E("fb", "cont", "Feedback", "rejections, incidents → new golden cases", "apachekafka", 4, 1, 1, "gate", "focus")],
     rels: [R("pr", "rel"), R("rel", "run", "ship if not worse"), R("run", "fb"), R("fb", "pr", "new tests", "u", { dash: 1 })] } },
+  { table: ["When", "Runs in", "Checks"], rows: [
+    ["Every pull request", "GitHub Actions: pytest, contract tests, guardrail tests", "Tools return SQL truth; send refused without approval; injection samples ignored"],
+    ["Every release (prompt, model or code)", "Langfuse datasets and experiments (agent, RAG); MLflow evaluate (models)", "Golden sets vs the last release; ship only if no score drops"],
+    ["Every run", "Langfuse online evaluators on a sample; Lakehouse Monitoring", "LLM judge on 5% of cases, grounding on all; drift and freshness"],
+    ["Every decision", "Decisions topic → score on the trace", "Approved, edited or rejected, with the reason"]] },
   { p: "Practice: code checks first, an LLM judge second, a person samples the judge. Small golden sets (50–200 cases per layer) grown from real failures beat thousands of synthetic ones." },
 ]},
 sec: { t: "Security and governance", d: "The agent acts for a person, with that person's rights, and never alone.", b: [
@@ -600,7 +701,7 @@ let state = { arch: "built", sec: "big", lld: 0 };
 const diagrams = [];
 
 function blockHTML(b, key) {
-  if (b.q) return `<p class="q">“${esc(b.q)}”</p>`;
+  if (b.q) return `<p class="q">${b.q.includes("“") ? esc(b.q) : `“${esc(b.q)}”`}</p>`;
   if (b.h) return `<h3 class="bh">${esc(b.h)}</h3>`;
   if (b.p) return `<p class="prose">${b.p}</p>`;
   if (b.cards) return `<div class="cards">${b.cards.map(([t, s, c]) => `<div class="card" style="--c:var(${c})"><b>${esc(t)}</b><span>${esc(s)}</span></div>`).join("")}</div>`;
@@ -631,7 +732,7 @@ function seqHTML(s) {
   return h + `</div></div>`;
 }
 function elHTML(e) {
-  const cls = ["el", e.k === "person" ? "person" : "", e.k === "ext" ? "ext" : "", e.k === "db" ? "db" : "", e.x].join(" ");
+  const cls = ["el", e.k === "person" ? "person" : "", e.k === "ext" ? "ext" : "", e.k === "db" ? "db" : "", typeof e.r === "string" ? "tall" : "", e.x].join(" ");
   const col = e.k === "ext" && e.x !== "gap" ? "" : `--c:var(${LY[e.ly]});`;
   return `<div class="${cls}" data-id="${e.id}" style="${col}grid-column:${e.c} / span ${e.cs};grid-row:${e.r}"><div class="hd">${ic(e.ic, 17)}<span>${esc(e.n)}</span></div>${e.d ? `<div class="d">${esc(e.d)}</div>` : ""}</div>`;
 }
@@ -654,7 +755,7 @@ function box(stg, id) {
   const s = stg.getBoundingClientRect(), r = stg.querySelector(`[data-id="${id}"]`).getBoundingClientRect();
   return { l: r.left - s.left, t: r.top - s.top, r: r.right - s.left, b: r.bottom - s.top, w: r.width, h: r.height, cx: r.left - s.left + r.width / 2, cy: r.top - s.top + r.height / 2 };
 }
-function route(A, B, rt, e, f) {
+function route(A, B, rt, e, f, m = 0.5) {
   const ax = e != null ? A.l + A.w * e : A.cx, bx = f != null ? B.l + B.w * f : B.cx;
   if (rt === "h") {
     const right = B.l > A.r, x1 = right ? A.r : A.l, x2 = right ? B.l : B.r, lo = Math.max(A.t, B.t), hi = Math.min(A.b, B.b);
@@ -664,7 +765,7 @@ function route(A, B, rt, e, f) {
   if (rt === "v") {
     const down = B.t > A.b, y1 = down ? A.b : A.t, y2 = down ? B.t : B.b, lo = Math.max(A.l, B.l), hi = Math.min(A.r, B.r);
     if (e == null && f == null && hi - lo > 14) { const x = (lo + hi) / 2; return [[x, y1], [x, y2]]; }
-    const ym = (y1 + y2) / 2; return [[ax, y1], [ax, ym], [bx, ym], [bx, y2]];
+    const ym = y1 + (y2 - y1) * m; return [[ax, y1], [ax, ym], [bx, ym], [bx, y2]];
   }
   if (rt === "hv") { const right = bx > A.cx, x1 = right ? A.r : A.l, down = B.cy > A.cy; return [[x1, A.cy], [bx, A.cy], [bx, down ? B.t : B.b]]; }
   if (rt === "vh") { const down = B.cy > A.cy, right = B.cx > ax; return [[ax, down ? A.b : A.t], [ax, B.cy], [right ? B.l : B.r, B.cy]]; }
@@ -688,8 +789,8 @@ function draw(stg) {
   });
   let paths = "", labels = "";
   v.rels.forEach(r => {
-    const pts = route(box(stg, r.a), box(stg, r.b), r.rt, r.e, r.f);
-    paths += `<path${r.dash ? ' class="dash"' : ""} d="M${pts.map(p => p.join(" ")).join(" L")}" marker-end="url(#ah)"/>`;
+    const pts = route(box(stg, r.a), box(stg, r.b), r.rt, r.e, r.f, r.m);
+    paths += `<path${r.dash ? ' class="dash"' : ""} d="M${pts.map(p => p.join(" ")).join(" L")}"${r.both ? ' marker-start="url(#ah)"' : ""} marker-end="url(#ah)"/>`;
     if (!r.w) return;
     let best = 0, mx = 0, my = 0;
     for (let i = 1; i < pts.length; i++) { const len = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); if (len > best) { best = len; mx = (pts[i][0] + pts[i - 1][0]) / 2; my = (pts[i][1] + pts[i - 1][1]) / 2; } }
@@ -704,13 +805,12 @@ document.addEventListener("click", e => {
   const a = e.target.closest("[data-arch]"), s = e.target.closest("[data-sec]"), l = e.target.closest("[data-lld]");
   if (a) location.hash = a.dataset.arch + "-" + state.sec;
   if (s) location.hash = state.arch + "-" + s.dataset.sec;
-  if (l) { state.lld = +l.dataset.lld; render(); }
+  if (l) location.hash = state.arch + "-" + state.sec + "-" + l.dataset.lld;
 });
 function fromHash() {
-  const [a, s] = location.hash.slice(1).split("-");
-  const na = A[a] ? a : "built", ns = SECS.some(([k]) => k === s) ? s : "big";
-  if (na !== state.arch || ns !== state.sec) state.lld = 0;
-  state.arch = na; state.sec = ns; render();
+  const [a, s, l] = location.hash.slice(1).split("-");
+  state.arch = A[a] ? a : "built"; state.sec = SECS.some(([k]) => k === s) ? s : "big"; state.lld = +l || 0;
+  render();
 }
 window.addEventListener("hashchange", fromHash);
 let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => diagrams.forEach(([id]) => draw(document.getElementById(id))), 120); });
