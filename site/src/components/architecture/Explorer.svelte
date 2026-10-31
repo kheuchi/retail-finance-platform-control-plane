@@ -38,8 +38,10 @@
   onMount(() => {
     try { mode = localStorage.getItem("rfp-mode") === "expert" ? "expert" : "simple"; } catch { /* default */ }
     fromHash();
+    const onMode = (e: Event) => setMode((e as CustomEvent<"simple" | "expert">).detail);   // sent by the search box
     window.addEventListener("hashchange", fromHash);
-    return () => window.removeEventListener("hashchange", fromHash);
+    window.addEventListener("rfp-mode", onMode);
+    return () => { window.removeEventListener("hashchange", fromHash); window.removeEventListener("rfp-mode", onMode); };
   });
 </script>
 

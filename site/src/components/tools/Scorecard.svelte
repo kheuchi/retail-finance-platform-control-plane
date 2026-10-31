@@ -28,7 +28,8 @@
     stage = s;
     if (!visible.some(c => c.id === catId)) { catId = visible[0].id; tool = 0; }
   }
-  onMount(() => { const h = location.hash.slice(1); if (CATS.some(c => c.id === h)) catId = h; });
+  function fromHash() { const h = location.hash.slice(1); if (CATS.some(c => c.id === h)) { stage = "all"; catId = h; tool = 0; } }
+  onMount(() => { fromHash(); window.addEventListener("hashchange", fromHash); return () => window.removeEventListener("hashchange", fromHash); });
 
   // plot area in percent of the box; scores 1-10 map onto it
   const L = 9, Rr = 97, Tp = 4, B = 90;
