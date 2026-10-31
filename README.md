@@ -12,7 +12,7 @@ anomaly detection, and an AI agent that drafts cited analysis for a human to app
 
 > Detail: [`cmdb.yml`](cmdb.yml) → `architecture`
 
-[![High-level design](docs/architecture/hld.png)](docs/architecture/hld.md)
+[![High-level design](docs/architecture/img/built-hld.png)](docs/architecture/hld.md)
 
 Click the diagram for the HLD; it links to the six LLDs (network, identity & CI/CD,
 data platform, observability & cost, ML, agent).

@@ -28,7 +28,6 @@ const wide = narrow ? "max-width:1100px" : undefined;
   <span class="brand">Retail Finance Platform</span>
   {links.map(([k, label, href]) => <a href={href} aria-current={k === page ? "page" : undefined}>{label}</a>)}
   <a href="https://github.com/kheuchi/retail-finance-platform-control-plane">Docs on GitHub</a>
-  <span class="preview">v2 preview · <a href="/retail-finance-platform-control-plane/">current site</a></span>
 </div></nav>
 {Astro.slots.has("header") && <header class="top"><div class="wrap" style={wide}>
   <slot name="header" />
@@ -37,7 +36,3 @@ const wide = narrow ? "max-width:1100px" : undefined;
 <footer class="site"><div class="wrap" style={wide}>{footer}</div></footer>
 </body>
 </html>
-<style is:global>
-  nav.site .preview { margin-left: auto; font-size: 12px; opacity: .8 }
-  nav.site .preview a { font-size: 12px }
-</style>

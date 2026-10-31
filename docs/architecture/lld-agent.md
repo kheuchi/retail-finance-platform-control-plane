@@ -18,9 +18,9 @@ Code: infra `gcp/` (Google side), infra `agent/` (gateway, federation, Lambda); 
 
 ## Diagram
 
-![LLD 6 · Agent](lld-agent.png)
+[![LLD 6 · Agent](img/built-lld-agent.png)](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-lld-2)
 
-Source: [lld-agent.drawio](lld-agent.drawio).
+Interactive version, where you can tap a box to see what it gets and gives: [Architecture → As built → LLDs → Agent](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-lld-2). The image is a screenshot of that view. Content: `site/src/data/architecture/built.ts`.
 
 ## Identities
 

@@ -1,6 +1,6 @@
 # High-Level Design
 
-**Contents:** [TL;DR](#tldr) · [Diagram](#diagram) · [The six columns and five bands](#the-six-columns-and-five-bands) · [One run, step by step](#one-run-step-by-step) · [Key flows](#key-flows) · [Design choices](#design-choices) · [Zoom in (LLDs)](#zoom-in-llds) · [Edit the diagram](#edit-the-diagram)
+**Contents:** [TL;DR](#tldr) · [Diagram](#diagram) · [The parts, by where they run](#the-parts-by-where-they-run) · [One run, step by step](#one-run-step-by-step) · [Key flows](#key-flows) · [Design choices](#design-choices) · [Zoom in (LLDs)](#zoom-in-llds) · [Change the diagram](#change-the-diagram)
 
 Updated 2026-10-29. Why it exists and the end-to-end business workflow: [business case](../conception/business-case.md); decisions: [ADRs](../conception/adr/README.md). Detail: [`cmdb.yml`](../../cmdb.yml) → `architecture`, `decisions`. How it was built: [stories](../stories/README.md).
 
@@ -18,15 +18,15 @@ Updated 2026-10-29. Why it exists and the end-to-end business workflow: [busines
 
 ## Diagram
 
-Interactive versions: [architecture, as built and target](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html) and [landscape](https://kheuchi.github.io/retail-finance-platform-control-plane/landscape/platform-landscape.html). The image below is frozen (draw.io, [diagram rules](../../AGENTS.md#how-we-work)).
+[![High-level design](img/built-hld.png)](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-hld)
 
-![High-level design](hld.png)
+Interactive version, where you can tap a box to see what it gets and gives: [Architecture → As built → HLD](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-hld). The image is a screenshot of that view. Also on the site: the [landscape](https://kheuchi.github.io/retail-finance-platform-control-plane/landscape/platform-landscape.html).
 
-## The six columns and five bands
+## The parts, by where they run
 
-> **TL;DR:** read left to right for one run; read the bands for what surrounds every run.
+> **TL;DR:** grouped by where they run; the bands are what surrounds every run.
 
-| Column | Holds | Detail |
+| Group | Holds | Detail |
 |---|---|---|
 | **People** | The controller (starts a run), engineers (PRs only) | [stakeholders](../conception/stakeholders.md) |
 | **GitHub** | 3 repos, Actions (CI, gated deploy, drift, release), keyless deploy identities | [LLD 2](lld-identity-cicd.md) |
@@ -91,8 +91,8 @@ Bands: identity and access, compute, network, observability, governance and cost
 
 New to Databricks? Read the [primer](databricks-primer.md) first.
 
-## Edit the diagram
+## Change the diagram
 
-Open the `.drawio` file next to each image in [draw.io](https://www.drawio.com/)
-(desktop or web), edit, then export PNG at scale 1.5 over the old image. The HLD was redrawn on
-2026-10-29 to show one run end to end; the earlier version is in Git history.
+> **TL;DR:** change the data, not the picture.
+
+The diagrams are drawn by the site from `site/src/data/architecture/` (`built.ts`, `target.ts`; plain words in `simple.ts`). Edit there; the build checks every arrow and story link ([story X.2](../stories/X.2-docs-site-v2.md)). Then retake the screenshots in `docs/architecture/img/` with `site/scripts/diagram-shots.py`. The draw.io HLD of 2026-10-29 is in Git history.

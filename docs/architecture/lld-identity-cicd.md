@@ -20,7 +20,9 @@ Detail:
 
 ## Diagram
 
-![Identity and CI/CD LLD](lld-identity-cicd.png)
+[![Identity and CI/CD LLD](img/built-lld-identity-cicd.png)](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-lld-3)
+
+Interactive version, where you can tap a box to see what it gets and gives: [Architecture → As built → LLDs → Identity and CI/CD](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-lld-3). The image is a screenshot of that view. Content: `site/src/data/architecture/built.ts`.
 
 ## Change path
 

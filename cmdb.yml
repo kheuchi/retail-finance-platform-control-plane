@@ -102,12 +102,12 @@ conception:
   stakeholders: 'CFO (sponsor), Head of Accounting (business owner), GL, store controlling, FP&A, internal audit, CISO, DPO + works council, finance data & AI product team (PO, data/ML/AI engineers; deploys code), data & AI platform team (provisions infra; a self-service portal in production, PRs here), enterprise architect, SAP/integration team; RACI in stakeholders.md'
   benchmark: 'Databricks on AWS 87, AWS-native 75, Google 74, Snowflake 72, Fabric 70, SAP-native 60 (weighted, 9 criteria, judgement as of 2026-10)'
   adrs: [ADR-001 cloud, ADR-002 data platform, ADR-003 compute and network, ADR-004 ingestion, ADR-005 orchestration and deploy, ADR-006 agent platform]
-  reference_architecture: 'docs/conception/reference-architecture.md (2026-10-28, target picture, not built): margin recovery agent ("where did we lose margin, why, how much can we still recover before the close?"); leaks: unclaimed promotion funding, cost up price unchanged, rebate tier at risk, supplier deductions, waste, fraud, markdowns; tools: event streaming, lakehouse + OLAP, live APIs, ML forecasts + scores, RAG, GraphRAG, SLM, LLM, 3 human approvers; 6-test agent checklist + build vs buy; diagrams reference-architecture-flow and -agent (drawio + png); dropped: replenishment (engine exists), refund fraud (Appriss), vendor chargebacks (supplier-side)'
+  reference_architecture: 'docs/conception/reference-architecture.md (2026-10-28, target picture, not built): margin recovery agent ("where did we lose margin, why, how much can we still recover before the close?"); leaks: unclaimed promotion funding, cost up price unchanged, rebate tier at risk, supplier deductions, waste, fraud, markdowns; tools: event streaming, lakehouse + OLAP, live APIs, ML forecasts + scores, RAG, GraphRAG, SLM, LLM, 3 human approvers; 6-test agent checklist + build vs buy; diagrams: site screenshots of target HLD and target LLD agent (docs/architecture/img/, linked to the site); the French version keeps its drawio + png; dropped: replenishment (engine exists), refund fraud (Appriss), vendor chargebacks (supplier-side)'
   evaluation_observability: 'docs/conception/evaluation-observability.md (2026-10-29, target picture, not built): test on every PR, evaluate on golden sets at every release (ship only if not worse), observe every run; per layer: data pipes, ML, RAG, GraphRAG, agents; code checks first, LLM judge second, a person checks the judge; diagrams evaluation-observability (hub) and evaluation-matrix (question -> tool -> indicator, 22 checks), drawio + png; one golden case end to end; built today: story 6.4'
   date: '2026-10-04'
 
 architecture:
-  docs: docs/architecture/ (hld.md + lld-*.md, each with .drawio source and exported .png)
+  docs: 'docs/architecture/ (hld.md + lld-*.md). Diagrams: HLD and LLDs data platform, ML, agent, identity and CI/CD are screenshots of the site (docs/architecture/img/, taken by site/scripts/diagram-shots.py, linked to the live view); network and observability-cost LLDs still draw.io (.drawio + .png, frozen, not covered by the site)'
   diagrams:
     - {file: hld, covers: 'as built, redrawn 2026-10-29: one run end to end (controller -> Agent Engine -> managed MCP -> SQL warehouse on Gold -> Gemini -> AgentCore Gateway -> Lambda -> approval -> SES, Power BI); GitHub CI/CD and keyless identities; pipeline and ML jobs; bands for identity, compute, network, observability, governance and cost'}
     - {file: lld-network, covers: 'VPC 10.20.0.0/16, 2 AZ x (workspace /22 + endpoint /24), 4 interface + 1 gateway endpoint, SG rules, cost'}
@@ -125,7 +125,7 @@ architecture:
     - agent_model (planned): agent job in the VPC -> Bedrock interface endpoint (PrivateLink), eu-central-1
   observability_tools: 'picks 2026-10-30 (target, not built): agent + AI gateway = Langfuse self-hosted EU (Google Cloud Trace kept for Agent Engine runtime logs; Arize Phoenix for notebook evals only: Elastic License 2.0, Dynatrace deal pending); models = Lakehouse Monitoring + MLflow; infra = ClickStack (ClickHouse + HyperDX + OTel collector), Grafana LGTM if already in place; OpenTelemetry GenAI conventions everywhere. As built next: Langfuse free tier for the agent, Databricks SQL alerts for drift and quality, no infra stack (budget)'
   toolchain:
-    site: 'GitHub Pages: v1 = main /docs (.nojekyll) served as is; v2 (2026-10-31, story X.2, D-033) = site/ (Astro 7 + Svelte 5, content in site/src/data, checks in validate.ts) built by .github/workflows/site.yml and served under /v2/ until the switch-over. v1: index.html, landscape/ (as built, target, evaluation tiles), landscape/tools.html (tool scorecard 2026-10-30: 16 categories, our pick vs competitors on capability x fit, opinion not benchmark), architecture/architecture.html (as built + enterprise target x 10 sections: big picture, workflow, simplified, HLD, LLDs, network and protocols, observability, evaluation, security, cost and decisions; Simple mode 2026-10-30 for sections 1-4 from architecture-simple.js: story player, tappable boxes, flip cards, before/after switch, figure-check and approval games, quizzes; figures from the August 2026 run); icons in docs/assets/icons.js (Simple Icons 16.32.0, CC0; AWS and Microsoft logos are not in the set, shown as text badges)'
+    site: 'GitHub Pages from site/ (Astro 7 + Svelte 5; story X.2, D-033), built and deployed by .github/workflows/site.yml on every change to site/; content in site/src/data (architecture built/target/simple, tools, landscape), link checks in validate.ts; v1 hand-written HTML in docs/ replaced and deleted 2026-10-31. Pages: index.html, landscape/platform-landscape.html, landscape/tools.html (16 categories, opinion not benchmark), architecture/architecture.html (as built + target x 10 sections, Simple mode for sections 1-4); logos Simple Icons 16.32.0 (CC0), AWS and Microsoft as text badges'
     drawio: draw.io desktop, installed 2026-09-26 via 'winget install --id JGraph.Draw --scope user' (frozen 2026-10-30, no new diagrams)
     export: DrawIO.exe --export --format png --scale 1.5 --border 20 --output <abs path>.png <abs path>.drawio
     gotchas:
@@ -164,7 +164,7 @@ stories:
     - {id: '6.4', title: 'Monitoring of data, models and agent', epic: 6, type: design, status: 'Not built (design only)', dates: '2026-10-28', file: 6.4-monitoring.md}
     - {id: '7.1', title: 'Month-end close agents (Deep Agents on AgentCore, MCP tools, gateway, approval)', epic: 7, type: as-built, status: 'Done (on Google Agent Runtime, D-032)', dates: '2026-10-04..07', file: 7.1-month-end-agent.md}
     - {id: 'X.1', title: 'Documentation system', epic: cross-cutting, type: as-built, status: 'Done (living)', dates: '2026-09-14..26', file: 'README.md#how-the-docs-work'}
-    - {id: 'X.2', title: 'Docs site v2 (Astro + Svelte, same look, content checks)', epic: cross-cutting, type: planned, status: 'Built, in preview at /v2/', dates: '2026-10-31', file: X.2-docs-site-v2.md}
+    - {id: 'X.2', title: 'Docs site v2 (Astro + Svelte, same look, content checks)', epic: cross-cutting, type: as-built, status: 'Done', dates: '2026-10-31', file: X.2-docs-site-v2.md}
 
 # ──────────── decisions ────────────
 decisions:
@@ -359,7 +359,7 @@ decisions:
     adr: docs/conception/adr/ADR-006-agent-platform.md
   - id: D-033
     decision: 'Docs site built with Astro 7 + Svelte 5 islands, content in typed data files, deployed by GitHub Actions; only the visual core (home, landscape, tools, architecture), the Markdown stays on GitHub'
-    status: 'Accepted (v2 in preview at /v2/ until the owner approves)'
+    status: 'Accepted; live since 2026-10-31 (owner approved the preview)'
     date: '2026-10-31'
     reason: 'v1 hand-written pages kept the look but mixed CSS, JS and content in one file; components and data files make changes local, and the build fails on broken content links. Starlight and Docusaurus rejected: they impose their own docs look'
     story: X.2

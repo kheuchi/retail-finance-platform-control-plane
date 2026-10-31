@@ -64,8 +64,8 @@ one-line TL;DR, and points to cmdb keys. Short and plain. Each fact lives in one
 | Need | Use |
 |---|---|
 | Small diagram inside a doc (flow, sequence, a few boxes) | Mermaid in the `.md` (GitHub renders it) |
-| Full picture, architecture (HLD, LLDs, flows, protocols), anything with logos or interaction | Self-contained HTML in `docs/` (site at GitHub Pages), shared icons in `docs/assets/` |
-| Existing `.drawio` + `.png` | Frozen; replace at the next change and delete both in the same commit |
+| Full picture, architecture (HLD, LLDs, flows, protocols), anything with logos or interaction | The site in `site/` (Astro + Svelte, GitHub Pages); content in `site/src/data/`. In the Markdown: a screenshot of the site view (`docs/architecture/img/`) linking to it |
+| Existing `.drawio` + `.png` | Frozen; replace with the site view when it covers the diagram, deleting both in the same commit |
 
 ## How to report
 

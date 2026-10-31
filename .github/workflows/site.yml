@@ -1,11 +1,10 @@
 # Builds the docs site and deploys it to GitHub Pages (story X.2, D-033).
-# During the preview the current site (docs/, served as is) stays at the root and the Astro build goes under /v2/.
 name: site
 
 on:
   push:
     branches: [main]
-    paths: ["docs/**", "site/**", ".github/workflows/site.yml"]
+    paths: ["site/**", ".github/workflows/site.yml"]
   workflow_dispatch:
 
 permissions:
@@ -31,14 +30,9 @@ jobs:
       - name: Type and content checks, build
         working-directory: site
         run: npm run build
-      - name: Assemble the Pages site
-        run: |
-          mkdir _site
-          cp -r docs/. _site/
-          cp -r site/dist _site/v2
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: _site
+          path: site/dist
 
   deploy:
     needs: build

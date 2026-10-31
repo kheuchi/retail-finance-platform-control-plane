@@ -1,8 +1,8 @@
 # Story X.2 · Docs site v2 (Astro + Svelte)
 
-**Contents:** [TL;DR](#tldr) · [Context](#context) · [Acceptance criteria](#acceptance-criteria) · [What we built](#what-we-built) · [Tricky parts](#tricky-parts) · [Proof](#proof) · [Switch-over](#switch-over) · [References](#references)
+**Contents:** [TL;DR](#tldr) · [Context](#context) · [Acceptance criteria](#acceptance-criteria) · [What we built](#what-we-built) · [Tricky parts](#tricky-parts) · [Proof](#proof) · [Switch-over](#switch-over) · [Diagrams in the Markdown](#diagrams-in-the-markdown) · [References](#references)
 
-Cross-cutting · 2026-10-31 · 🟡 Built, in preview at `/v2/`; switch-over waits for the owner's review
+Cross-cutting · 2026-10-31 · ✅ Live (owner approved the preview the same day)
 
 ## TL;DR
 
@@ -32,8 +32,8 @@ rule was meant for diagram tools (D2, Structurizr), not the site (AGENTS.md corr
 | 1 | Same look and behaviour as v1 on all four pages; old URLs and hash links (`#built-flow`, `#gw`) keep working | ✅ |
 | 2 | Content in data files, separate from the components; one component per widget | ✅ |
 | 3 | `astro check` (types) and content-link checks run in every build and fail it on an error | ✅ |
-| 4 | Built and deployed by GitHub Actions; v1 stays live at the same address during the preview | 🟡 workflow ready; needs Pages source = GitHub Actions |
-| 5 | v2 in preview at `/v2/` until the owner approves; then v2 replaces v1 and the v1 HTML is deleted | ⬜ |
+| 4 | Built and deployed by GitHub Actions; v1 stays live at the same address during the preview | ✅ |
+| 5 | v2 in preview at `/v2/` until the owner approves; then v2 replaces v1 and the v1 HTML is deleted | ✅ 2026-10-31 |
 
 ## What we built
 
@@ -46,7 +46,7 @@ rule was meant for diagram tools (D2, Structurizr), not the site (AGENTS.md corr
 | Components | `site/src/components/` | `architecture/` (Explorer, Block, Diagram, Sequence, FlipCards, WhoSwitch, Quiz, Chat, SpotGame, ApproveGame), `tools/Scorecard`, `landscape/Landscape`, `Icon` |
 | Pages | `site/src/pages/` | Same paths as v1 (`build.format: file`) |
 | Styles | `site/src/styles/` | v1 CSS moved unchanged, one file per page |
-| Deploy | `.github/workflows/site.yml` | Builds `site/`, copies `docs/` as is, puts the build under `/v2/`, deploys to Pages |
+| Deploy | `.github/workflows/site.yml` | Builds `site/` and deploys it to Pages on every change to `site/` |
 
 Run locally (WSL): `cd site && npm ci && npm run dev` (Node ≥ 22.23.4).
 
@@ -70,13 +70,25 @@ Run locally (WSL): `cd site && npm ci && npm run dev` (Node ≥ 22.23.4).
 
 ## Switch-over
 
-> **TL;DR:** one setting now, one small commit later.
+> **TL;DR:** done 2026-10-31.
 
 | Step | Who | What |
 |---|---|---|
-| 1 | Owner | Settings → Pages → Source: **GitHub Actions** (once). The current site keeps the same address |
-| 2 | Owner | Compare `…/` (v1) and `…/v2/` (v2) |
-| 3 | Assistant | On approval: drop `/v2` from `base`, deploy v2 at the root, delete the v1 HTML and `docs/assets/icons.js`, remove the preview label |
+| 1 | Owner | Pages source set to **GitHub Actions**; compared v1 and v2; approved |
+| 2 | Assistant | `base` back to the root, v2 deployed there; v1 HTML, `docs/assets/` and `.nojekyll` deleted; preview label removed. Old `/v2/` links stop working (preview only) |
+
+## Diagrams in the Markdown
+
+> **TL;DR:** where the site covers a draw.io diagram, the Markdown shows a screenshot of the site view and links to it.
+
+| draw.io diagram | Now | Why |
+|---|---|---|
+| HLD, LLD data platform, ML, agent, identity and CI/CD | Screenshot of As built → HLD / LLDs 1-4, linked | Same parts; the site version was checked against the code |
+| Reference architecture: flow, agent | Screenshot of Target → HLD / LLD agent and AI gateway, linked | Same building blocks |
+| LLD network, LLD observability and cost, business workflow, evaluation loop and matrix | Kept (frozen draw.io) | The site shows these only partly (network as a sequence, not the VPC layout) |
+| French reference architecture | Kept | The site is English only |
+
+Screenshots: `docs/architecture/img/`, taken from the built site by `site/scripts/diagram-shots.py` (headless Edge, expert mode, light theme).
 
 ## References
 

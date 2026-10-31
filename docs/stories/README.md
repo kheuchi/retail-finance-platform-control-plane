@@ -141,4 +141,4 @@ Findings go into the story (fixed, or accepted with a reason); accepted risks go
 | # | Story | One line |
 |---|---|---|
 | X.1 | [Documentation system](#how-the-docs-work) | ✅ cmdb = what, stories = why; TL;DR tables everywhere |
-| X.2 | [Docs site v2](X.2-docs-site-v2.md) | 🟡 Same look on Astro + Svelte, content in data files, build checks; preview at `/v2/` |
+| X.2 | [Docs site v2](X.2-docs-site-v2.md) | ✅ Same look on Astro + Svelte, content in data files, build checks; diagrams in the docs are site screenshots |

@@ -20,7 +20,9 @@ Detail:
 
 ## Diagram
 
-![Data platform LLD](lld-data-platform.png)
+[![Data platform LLD](img/built-lld-data-platform.png)](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-lld-0)
+
+Interactive version, where you can tap a box to see what it gets and gives: [Architecture → As built → LLDs → Data platform](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-lld-0). The image is a screenshot of that view. Content: `site/src/data/architecture/built.ts`.
 
 ## Bronze, Silver, Gold
 

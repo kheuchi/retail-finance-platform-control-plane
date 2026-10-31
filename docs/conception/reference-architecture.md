@@ -152,7 +152,9 @@ calls them as tools. The value is the gap they leave, found inside the month rat
 
 > **TL;DR:** data flows left to right through streaming, lakehouse, ML and knowledge; every tool call passes one gateway.
 
-![Margin recovery: sources to targets](reference-architecture-flow.png)
+[![Margin recovery: sources to targets](../architecture/img/target-hld.png)](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#target-hld)
+
+Interactive version, where you can tap a box to see what it gets and gives: [Architecture → Enterprise target → HLD](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#target-hld). The image is a screenshot of that view. The columns below are its building blocks from left to right.
 
 | Column | Holds |
 |---|---|
@@ -166,17 +168,16 @@ calls them as tools. The value is the gap they leave, found inside the month rat
 | AI gateway (bottom) | One door for every tool and model call: auth on behalf of the user, rate limits and cost per team, model routing and fallback, logging (AgentCore Gateway can do this since its August–October 2026 updates; Apigee, Databricks AI Gateway or LiteLLM are alternatives) |
 | Bands | Identity and access · compute and network · observability and evaluation ([evaluation-observability.md](evaluation-observability.md)) · governance and cost |
 
-Source: [reference-architecture-flow.drawio](reference-architecture-flow.drawio).
-
 ## The agent in the middle
 
 > **TL;DR:** one trigger, nine kinds of evidence, one margin bridge, three human decisions.
 
-![The agent in the middle](reference-architecture-agent.png)
+[![The agent in the middle](../architecture/img/target-lld-agent.png)](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#target-lld-4)
+
+Interactive version, where you can tap a box to see what it gets and gives: [Architecture → Enterprise target → LLDs → Agent and AI gateway](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#target-lld-4). The image is a screenshot of that view. The trigger and the SLM triage are in the target HLD above.
 
 The agent plans, then delegates to sub-agents: a **margin analyst** (OLAP, ML), a **contract reader** (RAG,
-GraphRAG), an **evidence collector** (live APIs) and a **claim and commentary writer**. Source:
-[reference-architecture-agent.drawio](reference-architecture-agent.drawio).
+GraphRAG), an **evidence collector** (live APIs) and a **claim and commentary writer**.
 
 **When it runs:** on margin-signal events that pass SLM triage; every day of close week; or when the controller asks.
 Never once per sale or per price change: the stream rules and the SLM filter first.
