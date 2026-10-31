@@ -1,0 +1,21 @@
+---
+import Base from "../../layouts/Base.astro";
+import Scorecard from "../../components/tools/Scorecard.svelte";
+import "../../styles/tools.css";
+import { CATS } from "../../data/tools";
+import { validateTools } from "../../data/validate";
+
+validateTools(CATS);
+---
+<Base title="Tool Scorecard" page="tools"
+  description="Every tool category in the retail finance platform: what we picked, why, and how the competitors compare on capability and fit."
+  footer="Synthetic data only. Logos: Simple Icons (CC0); products not in that set appear as text badges; trademarks of their owners.">
+  <Fragment slot="header">
+    <h1>Tool Scorecard</h1>
+    <p class="sub">Every kind of tool the platform needs, the one we picked, and its competitors. Higher means it can do more; further right means it suits this project better (our cloud, our budget, EU rules, how well it plugs into the rest). Click a logo to see why.</p>
+  </Fragment>
+  <main><div class="wrap">
+    <Scorecard client:load {CATS} />
+    <p class="note">Scores are our opinion for this project in October 2026, from 1 to 10: not a benchmark and not a market ranking. Capability = how much the tool can do for this job. Fit = how well it suits us (AWS eu-central-1, Databricks, EU data, a USD 50/month budget, keyless identities). Decisions and reasons are in <a href="https://github.com/kheuchi/retail-finance-platform-control-plane/blob/main/cmdb.yml">cmdb.yml</a> (D-003, D-004, D-029, D-031, D-032) and the <a href="https://github.com/kheuchi/retail-finance-platform-control-plane/tree/main/docs/conception/adr">ADRs</a>.</p>
+  </div></main>
+</Base>

@@ -1,6 +1,6 @@
 # Stories
 
-**Contents:** [TL;DR](#tldr) · [How to read a story](#how-to-read-a-story) · [How the docs work](#how-the-docs-work) · [Review checklist](#review-checklist) · [Epic 1 · Foundation](#epic-1--foundation) · [Epic 2 · Lakehouse](#epic-2--lakehouse) · [Epic 3 · Ingest](#epic-3--ingest) · [Epic 4 · Transform & Quality](#epic-4--transform--quality) · [Epic 5 · ML Models](#epic-5--ml-models) · [Epic 6 · Serve & Monitor](#epic-6--serve--monitor) · [Epic 7 · AI Agent](#epic-7--ai-agent)
+**Contents:** [TL;DR](#tldr) · [How to read a story](#how-to-read-a-story) · [How the docs work](#how-the-docs-work) · [Review checklist](#review-checklist) · [Epic 1 · Foundation](#epic-1--foundation) · [Epic 2 · Lakehouse](#epic-2--lakehouse) · [Epic 3 · Ingest](#epic-3--ingest) · [Epic 4 · Transform & Quality](#epic-4--transform--quality) · [Epic 5 · ML Models](#epic-5--ml-models) · [Epic 6 · Serve & Monitor](#epic-6--serve--monitor) · [Epic 7 · AI Agent](#epic-7--ai-agent) · [Cross-cutting](#cross-cutting)
 
 Updated 2026-10-01. **Short on time? Read the one-page [MEMO](MEMO.md). Need to explain it? Read the [WALKTHROUGH](WALKTHROUGH.md).** Index in [`cmdb.yml`](../../cmdb.yml) → `stories`. Status: [STATUS.md](../../STATUS.md). Architecture: [HLD](../architecture/hld.md).
 
@@ -133,3 +133,12 @@ Findings go into the story (fixed, or accepted with a reason); accepted risks go
 | # | Story | One line |
 |---|---|---|
 | 7.1 | [Month-end close agent](7.1-month-end-agent.md) | ✅ Drafts checked, approved, emailed; runs on Google Agent Runtime + Gemini (D-032) |
+
+## Cross-cutting
+
+> **TL;DR:** how the project explains itself.
+
+| # | Story | One line |
+|---|---|---|
+| X.1 | [Documentation system](#how-the-docs-work) | ✅ cmdb = what, stories = why; TL;DR tables everywhere |
+| X.2 | [Docs site v2](X.2-docs-site-v2.md) | 🟡 Same look on Astro + Svelte, content in data files, build checks; preview at `/v2/` |

@@ -1,0 +1,11 @@
+---
+import Base from "../../layouts/Base.astro";
+import Landscape from "../../components/landscape/Landscape.svelte";
+import "../../styles/landscape.css";
+import { VIEWS, ICON, C } from "../../data/landscape";
+---
+<Base title="Retail Finance Platform Landscape" page="landscape"
+  description="Every part of the retail finance data, ML and agent platform as tiles: as built, the target margin recovery agent, and evaluation."
+  footer="Synthetic data only. Logos: Simple Icons (CC0); AWS and Microsoft products shown as text badges. Logos are trademarks of their owners.">
+  <Landscape client:load {VIEWS} {ICON} {C} />
+</Base>

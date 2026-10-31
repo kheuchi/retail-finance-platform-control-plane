@@ -1,0 +1,56 @@
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 14px; line-height: 1.4 }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper) }
+.wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); max-width: 1680px; margin: 0 auto }
+header.top { padding-block: 22px 10px }
+h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(24px, 3vw, 34px); letter-spacing: -0.01em; margin: 0; text-wrap: balance }
+.sub { color: var(--muted); margin: 4px 0 0; max-width: 90ch }
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); box-shadow: 0 2px 10px rgb(0 0 0 / 0.04) }
+.bar .wrap { padding-block: 10px; display: grid; gap: 8px }
+.row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center }
+.lbl { font: 600 11px var(--f-display); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-right: 4px }
+.tab, .step { font: 500 13px var(--f-body); border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.tab[aria-selected="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink) }
+.step[aria-pressed="true"] { border-color: var(--agent); background: color-mix(in srgb, var(--agent) var(--tint), var(--paper)); box-shadow: inset 0 0 0 1px var(--agent) }
+.step b { font-family: var(--f-mono); font-weight: 500; margin-right: 4px; color: var(--agent) }
+button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px }
+.insp { min-height: 38px; font-size: 13px; color: var(--muted); border-left: 3px solid var(--line); padding: 2px 10px }
+.insp strong { color: var(--ink); font-weight: 600 }
+.insp .k { font-family: var(--f-mono); font-size: 12px }
+.legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--muted) }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: 1px }
+main .wrap { padding-block: 14px 40px; display: grid; gap: 12px }
+.band { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 10px }
+.band > h2 { margin: 0; font: 700 15px var(--f-display); letter-spacing: .01em; color: var(--c); border-right: 3px solid var(--c); padding-right: 10px; display: flex; flex-direction: column; gap: 4px }
+.band > h2 small { font: 400 12px var(--f-body); color: var(--muted); letter-spacing: 0 }
+.groups { display: flex; flex-wrap: wrap; gap: 10px; min-width: 0 }
+.group { flex: 0 1 auto; min-width: 0; border: 1px dashed color-mix(in srgb, var(--c) 45%, var(--line)); border-radius: 6px; padding: 6px 8px 8px }
+.group h3 { margin: 0 0 6px; font: 600 11px var(--f-display); letter-spacing: .08em; text-transform: uppercase; color: var(--c) }
+.tiles { display: flex; flex-wrap: wrap; gap: 6px }
+.tile { position: relative; text-align: left; width: 168px; min-height: 58px; border: 1px solid color-mix(in srgb, var(--c) 35%, var(--line)); background: color-mix(in srgb, var(--c) var(--tint), var(--paper)); color: var(--ink); border-radius: 5px; padding: 6px 8px 6px 9px; cursor: pointer; font: inherit; transition: opacity .15s, transform .15s }
+.tile .hd { display: flex; gap: 6px; align-items: flex-start; padding-right: 14px }
+.tile .hd .ico { margin-top: 1px }
+.tile .n { display: block; font-weight: 600; font-size: 13px; line-height: 1.2; }
+.tile .n.mono { font-family: var(--f-mono); font-weight: 500; font-size: 12px; word-break: break-word }
+.tile .c { display: block; color: var(--muted); font-size: 11.5px; margin-top: 2px }
+.tile .s { position: absolute; top: 7px; right: 7px; width: 8px; height: 8px; border-radius: 50% }
+.tile .st { display: block; font-family: var(--f-mono); font-size: 11px; color: var(--agent); margin-top: 3px }
+.tile.gap { border-style: dashed; background: var(--paper) }
+.tile[aria-current="true"] { box-shadow: 0 0 0 2px var(--focus) }
+body.focusing .tile:not(.on) { opacity: .25 }
+body.focusing .tile.on { box-shadow: 0 0 0 2px var(--agent); transform: translateY(-1px) }
+.s-built { background: var(--ok) } .s-part { background: var(--part) } .s-gap { background: var(--gap) } .s-rev { background: var(--rev) } .s-here { background: var(--ok) } .s-target { background: var(--line); box-shadow: inset 0 0 0 1px var(--muted) }
+table.ev { width: 100%; border-collapse: collapse; font-size: 13px }
+.evwrap { overflow-x: auto; background: var(--paper); border: 1px solid var(--line); border-radius: 8px }
+.ev th { text-align: left; font: 600 11px var(--f-display); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 10px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--paper) }
+.ev td { padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top }
+.ev td.layer { font: 700 14px var(--f-display); color: var(--c); border-left: 3px solid var(--c); white-space: nowrap }
+.ev td.q { font-weight: 600 }
+.ev td.i { font-family: var(--f-mono); font-size: 12px; font-variant-numeric: tabular-nums }
+.ev td.t { color: var(--muted) }
+.note { color: var(--muted); font-size: 12px }
+@media (max-width: 760px) {
+  .band { grid-template-columns: minmax(0, 1fr) } .band > h2 { border-right: 0; border-bottom: 3px solid var(--c); padding: 0 0 6px }
+  .tile { width: calc(50% - 3px) }
+}
+@media (prefers-reduced-motion: reduce) { .tile { transition: none } }

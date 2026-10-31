@@ -22,7 +22,7 @@ Updated 2026-10-28 (roadmap, stage 6 follow-ups). Detail: [`cmdb.yml`](cmdb.yml)
 
 ## Where we are
 
-> **TL;DR:** all 7 build stages done; follow-ups 6.3 (releases, in review) and 6.4 (monitoring, design only) open. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`, `stories`
+> **TL;DR:** all 7 build stages done; follow-ups 6.3 (releases, in review) and 6.4 (monitoring, design only) open; docs site v2 ([X.2](docs/stories/X.2-docs-site-v2.md)) in preview at `/v2/`. Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`, `stories`
 
 | # | Stage | Status | Done when | Stories |
 |---|---|---|---|---|

@@ -1,0 +1,21 @@
+---
+import Base from "../../layouts/Base.astro";
+import Explorer from "../../components/architecture/Explorer.svelte";
+import "../../styles/architecture.css";
+import { built } from "../../data/architecture/built";
+import { target } from "../../data/architecture/target";
+import { KID, KIDBOX } from "../../data/architecture/simple";
+import { validateArchitecture } from "../../data/validate";
+
+const A = { built, target };
+validateArchitecture(A, KID, KIDBOX);   // fails the build on a broken box, arrow or story link
+---
+<Base title="Retail Finance Architecture" page="architecture"
+  description="The retail finance platform as built and the enterprise-grade target: big picture, workflow, simplified view, HLD, LLDs, network and protocols, observability, evaluation, security, cost and decisions."
+  footer="Synthetic data only. As built 2026-10-07, reviewed 2026-10-30; the target is not built. Logos: Simple Icons (CC0); AWS and Microsoft products as text badges; trademarks of their owners.">
+  <Fragment slot="header">
+    <h1>Retail Finance Architecture</h1>
+    <p class="sub">Two architectures side by side: what we actually built, and the enterprise-grade target it points to. Each one goes from the business question down to identities, protocols, monitoring and evaluation.</p>
+  </Fragment>
+  <Explorer client:load {A} {KID} {KIDBOX} />
+</Base>

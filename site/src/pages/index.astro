@@ -1,0 +1,29 @@
+---
+import Base from "../layouts/Base.astro";
+import "../styles/home.css";
+import { iconHTML } from "../lib/icons";
+import { url } from "../lib/url";
+
+const STACK = [["databricks", "Databricks"], ["apachespark", "Spark"], ["mlflow", "MLflow"], ["scikitlearn", "scikit-learn"], ["googlecloud", "Vertex AI"], ["googlegemini", "Gemini"],
+  ["langgraph", "LangGraph"], ["aws", "AWS"], ["agentcore", "AgentCore"], ["terraform", "Terraform"], ["githubactions", "GitHub Actions"], ["python", "Python"]];
+---
+<Base title="Retail Finance Platform" page="home" narrow
+  description="A finance data, ML and AI agent platform for a retailer's accounting team, on AWS, Databricks and Google: landscape and architecture views."
+  footer="Synthetic data only. Logos: Simple Icons (CC0); AWS and Microsoft products shown as text badges; logos are trademarks of their owners.">
+  <h1 slot="header">Retail Finance Platform</h1>
+  <main><div class="wrap">
+    <p class="lead">A finance data, ML and AI agent platform for the accounting team of a large (fictional) grocer, built the enterprise way: governed lakehouse, fraud models and a forecast, and a month-end agent whose drafts a controller approves.</p>
+    <div class="cards">
+      <a class="card" style="--c:var(--agent)" href={url("landscape/platform-landscape.html")}><h2>Landscape</h2><p>Every part as a tile, by layer: as built, the target margin recovery agent, and how each part is evaluated.</p><span class="go">Open the landscape →</span></a>
+      <a class="card" style="--c:var(--data)" href={url("architecture/architecture.html")}><h2>Architecture</h2><p>As built and the enterprise target, each from the business question to HLD, LLDs, network and protocols, observability and evaluation.</p><span class="go">Open the architecture →</span></a>
+      <a class="card" style="--c:var(--base)" href="https://github.com/kheuchi/retail-finance-platform-control-plane"><h2>Docs, decisions, stories</h2><p>Status, ADRs, the inventory (cmdb.yml) and the stories of how each piece was built.</p><span class="go">Open on GitHub →</span></a>
+    </div>
+    <div class="facts">
+      <div><b>Runs on</b>AWS eu-central-1 · Databricks · Google europe-west1</div>
+      <div><b>Data</b>Synthetic: 40 stores, 21 months, 4.2m rows</div>
+      <div><b>Agent rule</b>Read-only; a person approves every send</div>
+      <div><b>Status</b>All 7 stages built; trial resources switched off</div>
+    </div>
+    <div class="stack"><span class="lbl">Built with</span>{STACK.map(([k, n]) => <span><Fragment set:html={iconHTML(k, 16)} />{n}</span>)}</div>
+  </div></main>
+</Base>

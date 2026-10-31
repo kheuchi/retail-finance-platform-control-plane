@@ -125,7 +125,7 @@ architecture:
     - agent_model (planned): agent job in the VPC -> Bedrock interface endpoint (PrivateLink), eu-central-1
   observability_tools: 'picks 2026-10-30 (target, not built): agent + AI gateway = Langfuse self-hosted EU (Google Cloud Trace kept for Agent Engine runtime logs; Arize Phoenix for notebook evals only: Elastic License 2.0, Dynatrace deal pending); models = Lakehouse Monitoring + MLflow; infra = ClickStack (ClickHouse + HyperDX + OTel collector), Grafana LGTM if already in place; OpenTelemetry GenAI conventions everywhere. As built next: Langfuse free tier for the agent, Databricks SQL alerts for drift and quality, no infra stack (budget)'
   toolchain:
-    site: 'GitHub Pages from main /docs (.nojekyll): index.html, landscape/ (as built, target, evaluation tiles), landscape/tools.html (tool scorecard 2026-10-30: 16 categories, our pick vs competitors on capability x fit, opinion not benchmark), architecture/architecture.html (as built + enterprise target x 10 sections: big picture, workflow, simplified, HLD, LLDs, network and protocols, observability, evaluation, security, cost and decisions; Simple mode 2026-10-30 for sections 1-4 from architecture-simple.js: story player, tappable boxes, flip cards, before/after switch, figure-check and approval games, quizzes; figures from the August 2026 run); icons in docs/assets/icons.js (Simple Icons 16.32.0, CC0; AWS and Microsoft logos are not in the set, shown as text badges)'
+    site: 'GitHub Pages: v1 = main /docs (.nojekyll) served as is; v2 (2026-10-31, story X.2, D-033) = site/ (Astro 7 + Svelte 5, content in site/src/data, checks in validate.ts) built by .github/workflows/site.yml and served under /v2/ until the switch-over. v1: index.html, landscape/ (as built, target, evaluation tiles), landscape/tools.html (tool scorecard 2026-10-30: 16 categories, our pick vs competitors on capability x fit, opinion not benchmark), architecture/architecture.html (as built + enterprise target x 10 sections: big picture, workflow, simplified, HLD, LLDs, network and protocols, observability, evaluation, security, cost and decisions; Simple mode 2026-10-30 for sections 1-4 from architecture-simple.js: story player, tappable boxes, flip cards, before/after switch, figure-check and approval games, quizzes; figures from the August 2026 run); icons in docs/assets/icons.js (Simple Icons 16.32.0, CC0; AWS and Microsoft logos are not in the set, shown as text badges)'
     drawio: draw.io desktop, installed 2026-09-26 via 'winget install --id JGraph.Draw --scope user' (frozen 2026-10-30, no new diagrams)
     export: DrawIO.exe --export --format png --scale 1.5 --border 20 --output <abs path>.png <abs path>.drawio
     gotchas:
@@ -164,6 +164,7 @@ stories:
     - {id: '6.4', title: 'Monitoring of data, models and agent', epic: 6, type: design, status: 'Not built (design only)', dates: '2026-10-28', file: 6.4-monitoring.md}
     - {id: '7.1', title: 'Month-end close agents (Deep Agents on AgentCore, MCP tools, gateway, approval)', epic: 7, type: as-built, status: 'Done (on Google Agent Runtime, D-032)', dates: '2026-10-04..07', file: 7.1-month-end-agent.md}
     - {id: 'X.1', title: 'Documentation system', epic: cross-cutting, type: as-built, status: 'Done (living)', dates: '2026-09-14..26', file: 'README.md#how-the-docs-work'}
+    - {id: 'X.2', title: 'Docs site v2 (Astro + Svelte, same look, content checks)', epic: cross-cutting, type: planned, status: 'Built, in preview at /v2/', dates: '2026-10-31', file: X.2-docs-site-v2.md}
 
 # ──────────── decisions ────────────
 decisions:
@@ -356,6 +357,12 @@ decisions:
     date: '2026-10-07'
     reason: 'AWS new-account hold: Bedrock invocation not allowed and AgentCore agent quota 0; Claude on Vertex not granted. Costs the no-internet property for agent traffic (store-level data, EU processing)'
     adr: docs/conception/adr/ADR-006-agent-platform.md
+  - id: D-033
+    decision: 'Docs site built with Astro 7 + Svelte 5 islands, content in typed data files, deployed by GitHub Actions; only the visual core (home, landscape, tools, architecture), the Markdown stays on GitHub'
+    status: 'Accepted (v2 in preview at /v2/ until the owner approves)'
+    date: '2026-10-31'
+    reason: 'v1 hand-written pages kept the look but mixed CSS, JS and content in one file; components and data files make changes local, and the build fails on broken content links. Starlight and Docusaurus rejected: they impose their own docs look'
+    story: X.2
 
 # ──────────── risks ────────────
 risks:
