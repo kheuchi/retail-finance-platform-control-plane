@@ -4,17 +4,19 @@
 
 Updated 2026-10-29. Why it exists and the end-to-end business workflow: [business case](../conception/business-case.md); decisions: [ADRs](../conception/adr/README.md). Detail: [`cmdb.yml`](../../cmdb.yml) → `architecture`, `decisions`. How it was built: [stories](../stories/README.md).
 
+> 🌐 **Interactive version:** [Architecture → As built → HLD](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-hld). Tap any box to see what it is; switch to Simple mode and press Play to follow one month-end with *why each box is there*.
+
 ## TL;DR
 
 | Question | Answer |
 |---|---|
-| What is it? | A finance data, ML and AI agent platform for the accounting team of a large retailer |
-| Where does it run? | AWS eu-central-1 (our account) + Databricks Enterprise (control plane) |
-| Where is the finance data? | Only in our S3 buckets. Databricks sends commands, not data |
-| How do clusters reach Databricks? | PrivateLink. The VPC has no internet gateway and no NAT |
-| Who changes it? | Only CI/CD, through pull requests. No stored cloud keys |
-| What is live? | Private workspace, Bronze → Silver → Gold, reconciliation, quality gates, fraud models, forecast, drift checks, month-end agents |
-| Where does the agent run? | Designed for AgentCore + Claude on Bedrock; runs on Google Agent Runtime + Gemini (EU) while AWS holds Bedrock ([ADR-006](../conception/adr/ADR-006-agent-platform.md), D-032) |
+| 🤔 What is it? | A finance data, ML and AI agent platform for the accounting team of a large retailer |
+| ☁️ Where does it run? | AWS eu-central-1 (our account) + Databricks Enterprise (control plane) |
+| 🔒 Where is the finance data? | Only in our S3 buckets. Databricks sends commands, not data |
+| 🔌 How do clusters reach Databricks? | PrivateLink. The VPC has no internet gateway and no NAT |
+| 👷 Who changes it? | Only CI/CD, through pull requests. No stored cloud keys |
+| ✅ What is live? | Private workspace, Bronze → Silver → Gold, reconciliation, quality gates, fraud models, forecast, drift checks, month-end agents |
+| 🤖 Where does the agent run? | Designed for AgentCore + Claude on Bedrock; runs on Google Agent Runtime + Gemini (EU) while AWS holds Bedrock ([ADR-006](../conception/adr/ADR-006-agent-platform.md), D-032) |
 
 ## Diagram
 

@@ -1,41 +1,55 @@
-# Retail Finance Data, ML and Agentic AI Platform
+# 🛒 Retail Finance Data, ML and Agentic AI Platform
 
-**Contents:** [Architecture](#architecture) · [Where we are](#where-we-are) · [Start here](#start-here)
+**Contents:** [Web app](#-open-the-interactive-web-app) · [TL;DR](#tldr) · [Architecture](#-architecture) · [Where we are](#-where-we-are) · [Start here](#-start-here)
 
-An enterprise-style portfolio project on **AWS + Databricks** for the accounting
-department of a large (fictional) retailer: governed finance data, forecasting,
-anomaly detection, and an AI agent that drafts cited analysis for a human to approve.
+> ## 👉 [Open the interactive web app](https://kheuchi.github.io/retail-finance-platform-control-plane/)
+>
+> The fastest way in: the whole project in pictures you can click, with a **Simple mode** that explains every box in plain words.
+>
+> | 🧭 Go to | What you get |
+> |---|---|
+> | [🏗️ Architecture: as built](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-hld) | What runs today; press Play to follow one month-end, step by step |
+> | [🎯 Architecture: enterprise target](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#target-hld) | What a large grocer would build next |
+> | [🗺️ Platform landscape](https://kheuchi.github.io/retail-finance-platform-control-plane/landscape/platform-landscape.html) | Every capability: built, partly, missing |
+> | [🧰 Tool scorecard](https://kheuchi.github.io/retail-finance-platform-control-plane/landscape/tools.html) | Our pick vs competitors, per category |
 
-![Plan and roadmap](docs/roadmap.svg)
+## TL;DR
 
-## Architecture
+| Question | Answer |
+|---|---|
+| 🤔 What is it? | An enterprise-style portfolio project on **AWS + Databricks** for the accounting team of a large (fictional) retailer |
+| 🧩 What does it do? | Governed finance data → fraud and forecast models → an AI agent that drafts the month-end commentary for a person to approve |
+| 🛑 What does the AI never do? | Post entries, move money, approve payments, or send anything without a human yes |
+| 📍 Where are we? | All 7 stages done; see [STATUS.md](STATUS.md) |
 
-> Detail: [`cmdb.yml`](cmdb.yml) → `architecture`
+## 🧱 Architecture
 
-[![High-level design](docs/architecture/img/built-hld.png)](docs/architecture/hld.md)
+> **TL;DR:** click the picture for the interactive version. Detail: [`cmdb.yml`](cmdb.yml) → `architecture`
 
-Click the diagram for the HLD; it links to the six LLDs (network, identity & CI/CD,
-data platform, observability & cost, ML, agent).
+[![High-level design](docs/architecture/img/built-hld.png)](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-hld)
 
-## Where we are
+The picture is a screenshot of the web app. The written design is in the [HLD](docs/architecture/hld.md),
+which links to the six LLDs (network, identity & CI/CD, data platform, observability & cost, ML, agent).
 
-> Detail: [`cmdb.yml`](cmdb.yml) → `phases`
+## 📍 Where we are
 
-- **Done:** secure AWS foundation, CI/CD, audit and alerting, private Databricks
-  workspace with Unity Catalog on our own S3.
-- **Also done:** synthetic ERP and POS data loaded into Bronze, cleaned into Silver (0 rows lost).
-- **Next:** GL vs POS reconciliation, then Gold finance tables.
-- **Deadline:** Databricks trial ends 2026-10-06, then teardown.
+> **TL;DR:** built, proven, paying parts switched off. Detail: [STATUS.md](STATUS.md), [`cmdb.yml`](cmdb.yml) → `phases`
 
-## Start here
+- ✅ **Done:** all 7 stages: secure AWS foundation, private Databricks lakehouse, certified Gold, fraud and forecast models with drift checks, and the month-end agent (on Google Agent Runtime + Gemini, D-032).
+- 🟡 **Open:** releases (6.3) and monitoring (6.4).
+- 💤 **Cost:** paying network parts switched off on 2026-10-17; full teardown only with the owner's go.
+
+## 📚 Start here
+
+> **TL;DR:** the key files, in reading order.
 
 | File | What it is |
 |---|---|
 | [STATUS.md](STATUS.md) | Status and roadmap: where we are, where we go |
 | [AGENTS.md](AGENTS.md) | Rules and way of working, for any AI assistant or new contributor |
 | [docs/conception/](docs/conception/business-case.md) | **Day 0**: business case and end-to-end workflow, stakeholders (RACI), platform benchmark, ADRs |
-| [docs/architecture/](docs/architecture/hld.md) | HLD + 6 LLDs, with draw.io sources |
-| [Site (GitHub Pages)](https://kheuchi.github.io/retail-finance-platform-control-plane/) | Interactive landscape and architecture (as built and enterprise target), built from `docs/` |
+| [docs/architecture/](docs/architecture/hld.md) | HLD + 6 LLDs (screenshots of the web app, linked) |
+| [🌐 Web app](https://kheuchi.github.io/retail-finance-platform-control-plane/) | Interactive landscape and architecture (as built and enterprise target); source in `site/` |
 | [Databricks primer](docs/architecture/databricks-primer.md) | Every Databricks term used here, in plain words |
 | [docs/stories/MEMO.md](docs/stories/MEMO.md) | **One page**: what we built, the tricky parts, the top 10 lessons · deeper: [WALKTHROUGH](docs/stories/WALKTHROUGH.md) |
 | [docs/stories/](docs/stories/README.md) | How each piece was built and the tricky parts; planned stories for what is next |

@@ -134,6 +134,7 @@
         <span class="n">Press Play, or tap any box</span><b>{story.length} steps</b><p>Each step lights up who is involved and makes the data move along the arrows.</p>
       {:else}
         <span class="n">Step {step + 1} of {story.length}</span><b>{story[step].t}</b><p>{story[step].s}</p>
+        {#if story[step].why}<p class="why"><b>💡 Why is it there?</b> {story[step].why}</p>{/if}
       {/if}
     </div>
     <div class="btns">

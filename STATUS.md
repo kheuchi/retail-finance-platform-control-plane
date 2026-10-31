@@ -4,17 +4,19 @@
 
 Updated 2026-10-28 (roadmap, stage 6 follow-ups). Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Architecture: [HLD](docs/architecture/hld.md). How we built it: [stories](docs/stories/README.md). Rules for assistants: [AGENTS.md](AGENTS.md).
 
+> 🌐 **See it working:** the [interactive web app](https://kheuchi.github.io/retail-finance-platform-control-plane/) shows the platform box by box; in Simple mode, press Play to follow one month-end.
+
 ## TL;DR
 
 | Question | Answer |
 |---|---|
-| Goal | Show how a large retailer's accounting department could run governed finance data, ML and an AI agent on AWS + Databricks, built the enterprise way |
-| The plan in one line | Raw ERP and POS data → governed lakehouse → finance models → an agent that drafts cited commentary for the controller to approve |
-| Agent boundary | May investigate, summarise, recommend. Never posts entries, moves money or approves payments: a human signs off |
-| Where are we? | All 7 stages done (agent on Google Agent Runtime while AWS holds Bedrock, D-032): governed data, reconciliation 4/4, certified Gold, least-privilege identities, fraud models, scheduled pipeline with drift checks |
-| What is next? | Final review. Paying parts switched off on 2026-10-17 (VPC endpoints); nothing else destroyed. Full teardown only with the owner's go |
-| Deadline | Databricks trial ends 2026-10-06, teardown that day |
-| Running cost | ~USD 2/day network + trial credit for Databricks |
+| 🎯 Goal | Show how a large retailer's accounting department could run governed finance data, ML and an AI agent on AWS + Databricks, built the enterprise way |
+| 🧩 The plan in one line | Raw ERP and POS data → governed lakehouse → finance models → an agent that drafts cited commentary for the controller to approve |
+| 🛑 Agent boundary | May investigate, summarise, recommend. Never posts entries, moves money or approves payments: a human signs off |
+| 📍 Where are we? | All 7 stages done (agent on Google Agent Runtime while AWS holds Bedrock, D-032): governed data, reconciliation 4/4, certified Gold, least-privilege identities, fraud models, scheduled pipeline with drift checks |
+| ⏭️ What is next? | Final review. Paying parts switched off on 2026-10-17 (VPC endpoints); nothing else destroyed. Full teardown only with the owner's go |
+| ⏰ Deadline | Databricks trial ends 2026-10-06, teardown that day |
+| 💶 Running cost | ~USD 2/day network + trial credit for Databricks |
 
 ## Roadmap
 

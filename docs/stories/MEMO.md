@@ -5,15 +5,17 @@
 One page. Each line links to the full story. Updated 2026-10-04. Index: [stories](README.md).
 To explain how it works underneath (decisions, mechanics, likely questions): [WALKTHROUGH](WALKTHROUGH.md).
 
+> 🌐 **Prefer pictures?** The [interactive web app](https://kheuchi.github.io/retail-finance-platform-control-plane/) shows the same platform, box by box.
+
 ## TL;DR
 
 | | |
 |---|---|
-| What exists | A private Databricks lakehouse on AWS for a retailer's accounting team: governed data, a reconciliation that catches fake journals, certified finance tables, fraud models |
-| Proof it works | All 3 planted frauds found: 4/4 fake journals (reconciliation), S017-C03 and S031 ranked #1 by models trained without the answer |
-| How it is run | Everything as code, by pull request; three identities, each unable to do the others' job |
-| What bit us most | Permissions (IAM, grants, visibility), a blocked network port, and our own bugs caught by our own checks |
-| What is left | Final review and teardown |
+| 🏗️ What exists | A private Databricks lakehouse on AWS for a retailer's accounting team: governed data, a reconciliation that catches fake journals, certified finance tables, fraud models |
+| ✅ Proof it works | All 3 planted frauds found: 4/4 fake journals (reconciliation), S017-C03 and S031 ranked #1 by models trained without the answer |
+| ⚙️ How it is run | Everything as code, by pull request; three identities, each unable to do the others' job |
+| 🐛 What bit us most | Permissions (IAM, grants, visibility), a blocked network port, and our own bugs caught by our own checks |
+| ⏭️ What is left | Final review and teardown |
 
 ## Stage by stage
 

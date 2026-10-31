@@ -129,6 +129,12 @@ hld: { t: "High-level design", d: "The deployable parts and how they talk, group
     ["finance.agent.approvals", "One row per decision: draft, decision, approver, time, note", "Only the finance-controllers group; the agent and the Lambda are refused"],
     ["gold.close_commentary", "The approved text (in the gold schema, for Power BI)", "The Lambda, after sending"]] },
   { p: "<b>Why tables instead of an app?</b> We built no approval screen. A row in the SQL editor is the simplest approval that still enforces who may approve (through grants) and leaves an audit trail. In production this would be a Teams card or a ServiceNow approval writing the same row." },
+  { h: "Questions people ask" },
+  { table: ["Question", "Answer"], rows: [
+    ["Why a separate finance.agent schema?", "Unity Catalog grants are given per schema. The agent's only grant is EXECUTE on the functions in finance.agent; it has no SELECT on Gold, so it can't run its own queries or touch certified tables. The functions run with their owner's rights and return aggregates only. Drafts and approvals sit there too, away from Gold."],
+    ["Why a Lambda?", "The guardrails (figure check, approval check) must run outside the model, as code under another identity (finance-close-notifier). The agent can only ask; the Lambda decides. It is on AWS because the agent was designed for AgentCore first; on a Google-only build a Cloud Run function would do the same."],
+    ["Why does the Lambda call the SQL warehouse?", "All its work is SQL: re-run the functions for the figure check, insert the draft, read the approval, publish to gold.close_commentary. The SQL Statement API needs a warehouse to run on."],
+    ["finance-data-deployer vs finance-pipeline-runner?", "The deployer installs the bundle from CI; the runner is what every job runs as. Neither can grant, so a leaked one stays contained (story 4.5)."]] },
   { p: "<b>No run log table.</b> The agent's identity writes nothing to Databricks. Tokens and output are in the run output and Cloud Logging; a tracing tool (Langfuse) is the planned fix (see Observability)." },
   { table: ["Part", "Runs on", "Built with", "Why there"], rows: [
     ["Pipeline and ML jobs", "Databricks classic clusters in our VPC", "Spark, Auto Loader, scikit-learn, MLflow", "Data stays in our AWS account"],

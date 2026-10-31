@@ -32,7 +32,7 @@ export interface Dia {
   lanes?: [label: string, row: number, color: CssVar][];
   bounds?: [label: string, ids: string[], color: CssVar, icon?: string][];
 }
-export interface Step { on: string[]; w?: string[]; t: string; s: string }
+export interface Step { on: string[]; w?: string[]; t: string; s: string; why?: string }   // why: why the lit boxes exist
 
 export interface Part { id: string; n: string; ic: string; ly: Layer }
 export interface Msg { a: string; b: string; l: string; p?: string; back: number }

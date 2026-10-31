@@ -5,15 +5,17 @@
 Day 0 · Conception · 2026-10-04. Next: [stakeholders](stakeholders.md) · [benchmark](benchmark.md) · [ADRs](adr/README.md).
 Detail: [`cmdb.yml`](../../cmdb.yml) → `conception`, `decisions`.
 
+> 🌐 **The month-end, played out:** [As built → Business workflow](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-flow) in the web app.
+
 ## TL;DR
 
 | Question | Answer |
 |---|---|
-| Who? | The accounting department of a large grocery retailer (Germany and Switzerland, stores and online) |
-| Problem | The month-end close relies on extracts, Excel and sampling: frauds and booking errors surface months late, and nobody can trace a reported number to its source |
-| Solution | A governed lakehouse that reconciles every store-day, ML that ranks suspicious cashiers and stores, a forecast that must beat a baseline, and (planned) an AI agent that drafts the close commentary for a controller to approve |
-| Real or simulated? | The workflow is real-world; we build the core (lakehouse, ML; the agent is next) and simulate the edges (SAP, store systems, Teams, case management) |
-| Measured by | Store-days reconciled, time to detect, forecast error, controller hours on commentary, days to close |
+| 👥 Who? | The accounting department of a large grocery retailer (Germany and Switzerland, stores and online) |
+| 😩 Problem | The month-end close relies on extracts, Excel and sampling: frauds and booking errors surface months late, and nobody can trace a reported number to its source |
+| 💡 Solution | A governed lakehouse that reconciles every store-day, ML that ranks suspicious cashiers and stores, a forecast that must beat a baseline, and (planned) an AI agent that drafts the close commentary for a controller to approve |
+| 🧪 Real or simulated? | The workflow is real-world; we build the core (lakehouse, ML; the agent is next) and simulate the edges (SAP, store systems, Teams, case management) |
+| 📏 Measured by | Store-days reconciled, time to detect, forecast error, controller hours on commentary, days to close |
 
 ## Glossary
 

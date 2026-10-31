@@ -5,14 +5,16 @@
 Updated 2026-10-01. For a one-page summary see the [MEMO](MEMO.md); for the full story of each step, follow the links.
 Decisions: [`cmdb.yml`](../../cmdb.yml) → `decisions` (each D-xxx below is one).
 
+> 🌐 **Interactive companion:** the [web app](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-hld) shows every box; Simple mode explains each one in plain words.
+
 ## TL;DR
 
 | Question | Answer |
 |---|---|
-| What is this doc for? | Understanding how the platform works underneath, well enough to explain and defend it |
-| How is each chapter built? | **How it works** (mechanics) · **Why this, not that** (the decision) · **What broke** · **Questions you will get** |
-| How long? | ~20 minutes to read; each chapter stands alone |
-| MEMO vs walkthrough? | MEMO = cheat sheet before the meeting. Walkthrough = the understanding behind it |
+| 🤔 What is this doc for? | Understanding how the platform works underneath, well enough to explain and defend it |
+| 🧩 How is each chapter built? | **How it works** (mechanics) · **Why this, not that** (the decision) · **What broke** · **Questions you will get** |
+| ⏱️ How long? | ~20 minutes to read; each chapter stands alone |
+| ⚖️ MEMO vs walkthrough? | MEMO = cheat sheet before the meeting. Walkthrough = the understanding behind it |
 
 ## The 2-minute pitch
 
