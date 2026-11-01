@@ -119,7 +119,11 @@ hld: { t: "High-level design", d: "The target building blocks. Green-dot items i
     ["AI gateway vs API gateway?", "The AI gateway is the agent's door to models and tools: who asks, how much, which model, fallback, logs. The API gateway is the door to live SAP and portal APIs, for any caller."],
     ["SLM vs LLM?", "A small model is cheap and fast, good for sorting hundreds of signals. The large model reasons and writes on the few real cases."],
     ["Why events, not nightly files?", "The leak is seen the day it starts, not at month-end."],
-    ["Why does the agent not write to SAP?", "It drafts. SAP workflows act, under the approver's own identity."]] },
+    ["Why does the agent not write to SAP?", "It drafts. SAP workflows act, under the approver's own identity."],
+    ["How can deterministic checks verify a non-deterministic agent?", "The trajectory is unknown, but the action space is fixed: tools with typed inputs. The model selects tools and IDs; it never emits an amount. compute_leak(promotion_id) reads the rate from the contract graph, the cost from certified SQL and the claimed amount from SAP, then returns rate × cost − claimed."],
+    ["What do the guardrails check?", "Figure check: every number in the text appears in this run's tool outputs (logged per run). Recompute: claims are structured (supplier, promotion ID, amount, clause ID) and compute_leak is re-run per ID. Clause: the quote matches the contract version verbatim. Idempotency: a live SAP lookup by promotion ID just before submit, so no double claim."],
+    ["What can't they verify?", "Recall and case selection (measured offline on golden sets of past quarters), and whether a valid number is attached to the right label (the approver). The as-built figure check let an invented EUR 3.45m through because it equalled a real forecast bound."],
+    ["Is it RLVR?", "Same principle: an outcome a program can verify. RLVR uses it as a training reward; here it is a run-time gate. The same verifiers can score the golden set and could serve as rewards if a model were fine-tuned."]] },
 ]},
 lld: { t: "Low-level designs", d: "One component at a time. Pick a component.", b: [{ lld: [
   { n: "Event streaming", b: [
