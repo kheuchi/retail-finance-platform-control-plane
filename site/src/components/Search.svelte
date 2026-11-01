@@ -37,19 +37,22 @@
     return cut.split(re).filter(Boolean).map(s => ({ s, m: terms.includes(s.toLowerCase()) }));
   }
 
-  function choose(h: Hit) {
+  /** Navigate by hand: clearing the box removes the result link, and a browser won't follow a removed link. */
+  function go(h: Hit) {
     if (h.m) {
       try { localStorage.setItem("rfp-mode", h.m); } catch { /* private window */ }
       window.dispatchEvent(new CustomEvent("rfp-mode", { detail: h.m }));
     }
+    const samePage = new URL(h.h, location.href).pathname === location.pathname;
     open = false; q = ""; input.blur();
-    if (new URL(h.h, location.href).pathname === location.pathname) window.scrollTo(0, 0);
+    location.href = h.h;
+    if (samePage) window.scrollTo(0, 0);
   }
 
   function key(e: KeyboardEvent) {
     if (e.key === "ArrowDown") { cur = Math.min(cur + 1, hits.length - 1); e.preventDefault(); }
     else if (e.key === "ArrowUp") { cur = Math.max(cur - 1, 0); e.preventDefault(); }
-    else if (e.key === "Enter" && hits[cur]) { const h = hits[cur]; choose(h); location.href = h.h; }
+    else if (e.key === "Enter" && hits[cur]) go(hits[cur]);
     else if (e.key === "Escape") { open = false; input.blur(); }
   }
 
@@ -67,12 +70,12 @@
     onfocus={() => { load(); open = true; }} oninput={() => { open = true; cur = 0; }} onkeydown={key}
     onblur={() => setTimeout(() => (open = false), 150)} />
   {#if open && terms.length}
-    <div class="res" id="search-results">
+    <div class="res" id="search-results" role="presentation" onmousedown={e => e.preventDefault()}>
       {#if !index}<p class="none">Loading…</p>
       {:else if !hits.length}<p class="none">Nothing found for “{q}”. Try fewer or shorter words.</p>
       {:else}
         {#each hits as h, i}
-          <a href={h.h} class:cur={i === cur} onmouseenter={() => (cur = i)} onclick={() => choose(h)}>
+          <a href={h.h} class:cur={i === cur} onmouseenter={() => (cur = i)} onclick={e => { if (e.ctrlKey || e.metaKey || e.shiftKey || e.button) return; e.preventDefault(); go(h); }}>
             <b>{h.t}</b><span class="p">{h.p}</span>
             <span class="x">{#each snippet(h.x) as part}{#if part.m}<mark>{part.s}</mark>{:else}{part.s}{/if}{/each}</span>
           </a>
