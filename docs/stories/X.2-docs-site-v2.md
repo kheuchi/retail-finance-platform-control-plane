@@ -76,7 +76,7 @@ Run locally (WSL): `cd site && npm ci && npm run dev` (Node ≥ 22.23.4).
 |---|---|---|
 | 1 | Owner | Pages source set to **GitHub Actions**; compared v1 and v2; approved |
 | 2 | Assistant | `base` back to the root, v2 deployed there; v1 HTML, `docs/assets/` and `.nojekyll` deleted; preview label removed. Old `/v2/` links stop working (preview only) |
-| 3 | Assistant | Follow-up after owner questions: story steps take an optional `why` ("💡 Why is it there?"); Simple-mode HLD walk-throughs (as built: one real number from till to CFO inbox, 11 steps; target: one unclaimed promotion, 8 steps) and Q&A on finance.agent, the Lambda and the warehouse; README and key docs link to the web app |
+| 3 | Assistant | Follow-up after owner questions: story steps take an optional `why` ("💡 Why is it there?"); Simple-mode HLD walk-throughs (as built: one real number from till to CFO inbox, 11 steps; target: "Will we earn more money this quarter?", 8 steps) and Q&A on finance.agent, the Lambda and the warehouse; README and key docs link to the web app |
 | 4 | Assistant | Search box in the nav (2026-11-01): `search.json` built from the same data files (201 entries: architecture section × mode and each LLD, landscape tiles, tool categories), fetched on first use; every word must match, titles and tool names rank first; `/` focuses; architecture hits open in the right mode |
 
 ## Diagrams in the Markdown
