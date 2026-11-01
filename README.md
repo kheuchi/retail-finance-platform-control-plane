@@ -1,6 +1,16 @@
-# 🛒 Retail Finance Data, ML and Agentic AI Platform
+# 🛒 Retail Finance Data, ML and Agentic AI Platform · Control plane
 
-**Contents:** [Web app](#-open-the-interactive-web-app) · [TL;DR](#tldr) · [Architecture](#-architecture) · [Where we are](#-where-we-are) · [Start here](#-start-here)
+> 🎛️ **This repo is the control plane:** status, architecture, decisions, stories and security docs, plus the web app. No infrastructure or pipeline code lives here.
+>
+> | Repo | Owns |
+> |---|---|
+> | 🎛️ **retail-finance-platform-control-plane** (this one) | Status, architecture, stories, decisions (`cmdb.yml`), the web app in `site/` |
+> | 🏗️ [retail-finance-platform-infra](https://github.com/kheuchi/retail-finance-platform-infra) | Terraform: AWS foundation, network, Databricks workspace, agent on Google Cloud, guardrails |
+> | 📦 [retail-finance-data-products](https://github.com/kheuchi/retail-finance-data-products) | Data generator, Bronze/Silver/Gold jobs, ML models, the month-end agent, tests |
+>
+> More: [REPOSITORIES.md](REPOSITORIES.md).
+
+**Contents:** [Repos](#-retail-finance-data-ml-and-agentic-ai-platform--control-plane) · [Web app](#-open-the-interactive-web-app) · [TL;DR](#tldr) · [Architecture](#-architecture) · [Where we are](#-where-we-are) · [Start here](#-start-here)
 
 > ## 👉 [Open the interactive web app](https://kheuchi.github.io/retail-finance-platform-control-plane/)
 >
