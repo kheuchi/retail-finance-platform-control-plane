@@ -2,7 +2,7 @@
 
 **Contents:** [TL;DR](#tldr) · [Three words](#three-words) · [Per layer](#per-layer) · [Questions, tools, indicators](#questions-tools-indicators) · [One golden case, end to end](#one-golden-case-end-to-end) · [The loop](#the-loop) · [Evaluating AI in practice](#evaluating-ai-in-practice) · [Here vs target](#here-vs-target)
 
-Day 0 · Conception · 2026-10-29. Target picture only: nothing in this file is built.
+Target · 2026-10-29. Target picture only: nothing in this file is built.
 Applies to this project and to the [reference architecture](reference-architecture.md). Built monitoring today: [story 6.4](../stories/6.4-monitoring.md).
 Detail: [`cmdb.yml`](../../cmdb.yml) → `conception.evaluation_observability`.
 

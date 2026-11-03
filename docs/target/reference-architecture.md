@@ -2,8 +2,8 @@
 
 **Contents:** [TL;DR](#tldr) · [When is an agent worth it?](#when-is-an-agent-worth-it) · [The question](#the-question) · [Business case](#business-case) · [Build or buy](#build-or-buy) · [Sources and targets](#sources-and-targets) · [Flow: sources to targets](#flow-sources-to-targets) · [The agent in the middle](#the-agent-in-the-middle) · [Layer by layer](#layer-by-layer) · [One run, end to end](#one-run-end-to-end) · [Design rules](#design-rules) · [What usually goes wrong](#what-usually-goes-wrong) · [Teams](#teams) · [How this project compares](#how-this-project-compares) · [Use cases considered](#use-cases-considered)
 
-Day 0 · Conception · 2026-10-28. Target picture only: nothing in this file is built.
-Previous: [benchmark](benchmark.md). Français : [reference-architecture.fr.md](reference-architecture.fr.md). Detail: [`cmdb.yml`](../../cmdb.yml) → `conception.reference_architecture`.
+Target · 2026-10-28. Target picture only: nothing in this file is built. What runs today: [HLD](../architecture/hld.md).
+Built on: [benchmark](../conception/benchmark.md). The web app's Simple mode tells the same story from the CFO's question "Will we earn more money this quarter?". Next: [evaluation and observability](evaluation-observability.md). Detail: [`cmdb.yml`](../../cmdb.yml) → `conception.reference_architecture`.
 
 ## TL;DR
 
@@ -386,7 +386,7 @@ come back next year through a recovery audit, minus its fee, and some claims wou
 | Humans | Controller approves each draft | ✅ Built |
 
 Built detail: [story 5.1](../stories/5.1-fraud-detection.md), [story 7.1](../stories/7.1-month-end-agent.md),
-[ADR-006](adr/ADR-006-agent-platform.md).
+[ADR-006](../conception/adr/ADR-006-agent-platform.md).
 
 ## Use cases considered
 

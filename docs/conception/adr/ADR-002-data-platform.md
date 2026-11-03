@@ -2,7 +2,7 @@
 
 **Contents:** [TL;DR](#tldr) · [Context](#context) · [Options](#options) · [Decision](#decision) · [Consequences](#consequences) · [Revisit when](#revisit-when)
 
-Accepted · 2026-10-04 · cmdb: D-004 (sponsor requirement, tested by the benchmark), D-014b, D-021 · Benchmark: [scores](../benchmark.md#scores) · Docs: [LLD 3](../../architecture/lld-data-platform.md), [primer](../../architecture/databricks-primer.md)
+Accepted · 2026-10-04 · cmdb: D-004 (sponsor requirement, tested by the benchmark), D-014b, D-021 · Benchmark: [scores](../benchmark.md#scores) · Docs: [LLD 3](../../architecture/lld-data-platform.md), [primer](../../guides/databricks-primer.md)
 
 ## TL;DR
 

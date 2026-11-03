@@ -13,8 +13,8 @@ Detail: [`cmdb.yml`](../../cmdb.yml) → `conception`, `decisions`.
 |---|---|
 | 👥 Who? | The accounting department of a large grocery retailer (Germany and Switzerland, stores and online) |
 | 😩 Problem | The month-end close relies on extracts, Excel and sampling: frauds and booking errors surface months late, and nobody can trace a reported number to its source |
-| 💡 Solution | A governed lakehouse that reconciles every store-day, ML that ranks suspicious cashiers and stores, a forecast that must beat a baseline, and (planned) an AI agent that drafts the close commentary for a controller to approve |
-| 🧪 Real or simulated? | The workflow is real-world; we build the core (lakehouse, ML; the agent is next) and simulate the edges (SAP, store systems, Teams, case management) |
+| 💡 Solution | A governed lakehouse that reconciles every store-day, ML that ranks suspicious cashiers and stores, a forecast that must beat a baseline, and an AI agent that drafts the close commentary for a controller to approve |
+| 🧪 Real or simulated? | The workflow is real-world; we build the core (lakehouse, ML, the agent) and simulate the edges (SAP, store systems, Teams, case management) |
 | 📏 Measured by | Store-days reconciled, time to detect, forecast error, controller hours on commentary, days to close |
 
 ## Glossary
@@ -123,7 +123,7 @@ The agent runs inside our VPC with no internet; only approved messages leave, th
 
 ## Use cases
 
-> **TL;DR:** four built, one planned (the agent), eight candidates.
+> **TL;DR:** five built, eight candidates.
 
 | Use case | Technique | Before | After | Status |
 |---|---|---|---|---|
@@ -131,7 +131,7 @@ The agent runs inside our VPC with no internet; only approved messages leave, th
 | Refund fraud by cashier | ML, unsupervised | Store audits, tip-offs | Monthly ranked review queue | Built (planted case #1) |
 | Margin leakage by store | ML, unsupervised | Quarterly review | Monthly, against the store's own past | Built (planted case #1) |
 | Revenue forecast | ML vs seasonal baseline | Excel, unmeasured | Measured; the better method ships | Built (baseline wins) |
-| Close commentary and distribution | **AI agent** (supervisor + sub-agents, read-only tools, gateway for channels) | Days of controller writing, manual emails | Cited draft in minutes; approved items sent to the right channel | Planned (stage 7) |
+| Close commentary and distribution | **AI agent** (supervisor + sub-agents, read-only tools, gateway for channels) | Days of controller writing, manual emails | Cited draft in minutes; approved items sent to the right channel | Built ([story 7.1](../stories/7.1-month-end-agent.md); on Google Agent Runtime, D-032) |
 | Three-way match (PO, receipt, invoice) | Rules + ML for exceptions | Manual exception handling | Auto-match, humans on exceptions | Candidate |
 | Accrual proposals | Agent on open POs and receipts | Spreadsheet estimates | Proposed accruals with evidence | Candidate |
 | Intercompany reconciliation (DE-CH) | Rules + agent explanations | Email ping-pong | Matched, differences explained | Candidate |
@@ -194,7 +194,7 @@ the lakehouse's certified data and the models into it rather than rebuild those 
 | EU AI Act | Ranking employees for investigation likely counts as high-risk (monitoring workers, Annex III): human oversight, logging, legal review before production. Timelines may shift; Swiss stores fall under Swiss law |
 | EU data residency | Data in Frankfurt; the agent's model calls processed in EU regions only |
 | No public egress for finance data | Private VPC, PrivateLink ([ADR-003](adr/ADR-003-compute-network.md)) |
-| Portfolio budget (USD 50/month AWS budget, Databricks trial) | The private endpoints cost more than the budget per month (~USD 64, +17 for Bedrock): the build runs for a time-boxed window, teardown 2026-10-06 |
+| Portfolio budget (USD 50/month AWS budget, Databricks trial) | The private endpoints cost more than the budget per month (~USD 64, +17 for Bedrock): the build ran for a time-boxed window; the trial ended 2026-10-06 and the endpoints were deleted 2026-10-17 |
 
 ## Scope: built vs simulated
 
@@ -202,4 +202,4 @@ the lakehouse's certified data and the models into it rather than rebuild those 
 
 | Built | Simulated | Not built |
 |---|---|---|
-| AWS foundation, private network, Databricks workspace, Unity Catalog, Bronze/Silver/Gold, reconciliation, quality gates, ML, scheduling, drift checks; AI agent planned (stage 7) | SAP, POS and planning systems (synthetic files), the controller's approval (a status column), channels (a stand-in behind the gateway) | Teams, ServiceNow, Power BI, CFO pack (real tenants) |
+| AWS foundation, private network, Databricks workspace, Unity Catalog, Bronze/Silver/Gold, reconciliation, quality gates, ML, scheduling, drift checks; the month-end agent (stage 7) | SAP, POS and planning systems (synthetic files), the controller's approval (a status column), channels (a stand-in behind the gateway) | Teams, ServiceNow, Power BI, CFO pack (real tenants) |

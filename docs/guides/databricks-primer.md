@@ -3,7 +3,7 @@
 **Contents:** [TL;DR](#tldr) · [Where things run](#where-things-run) · [Compute](#compute) · [Code and automation](#code-and-automation) · [Data and governance](#data-and-governance) · [Analytics, ML and AI](#analytics-ml-and-ai) · [Billing](#billing)
 
 For readers who do not know Databricks. Plain words first, then what it is in this project.
-Architecture: [HLD](hld.md). Detail: [`cmdb.yml`](../../cmdb.yml) → `program.databricks`, `architecture`.
+Architecture: [HLD](../architecture/hld.md). Detail: [`cmdb.yml`](../../cmdb.yml) → `program.databricks`, `architecture`.
 
 ## TL;DR
 
@@ -67,7 +67,7 @@ Architecture: [HLD](hld.md). Detail: [`cmdb.yml`](../../cmdb.yml) → `program.d
 | **Grants** | Who may do what on which object | Analysts: read Gold only; engineers: everything |
 | **Lineage** | Which tables were built from which | Gold → Silver → Bronze → file, recorded automatically |
 | **Auto Loader** | Picks up only new files and loads them | Landing files → Bronze |
-| **Medallion** | Bronze (raw) → Silver (clean) → Gold (ready) | [LLD 3](lld-data-platform.md#bronze-silver-gold) |
+| **Medallion** | Bronze (raw) → Silver (clean) → Gold (ready) | [LLD 3](../architecture/lld-data-platform.md#bronze-silver-gold) |
 
 ## Analytics, ML and AI
 
@@ -87,5 +87,5 @@ Architecture: [HLD](hld.md). Detail: [`cmdb.yml`](../../cmdb.yml) → `program.d
 
 | Term | In plain words | In this project |
 |---|---|---|
-| **DBU** | Databricks' unit of usage, billed per hour of compute | Covered by the USD 400 trial credit until 2026-10-06 |
+| **DBU** | Databricks' unit of usage, billed per hour of compute | The USD 400 trial credit covered it until 2026-10-06; since then pay as you go (AWS Marketplace) |
 | **Cloud cost** | EC2, S3, network endpoints in our AWS account | ~USD 2/day for the private network; EC2 only while jobs run |

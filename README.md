@@ -57,12 +57,15 @@ which links to the six LLDs (network, identity & CI/CD, data platform, observabi
 |---|---|
 | [STATUS.md](STATUS.md) | Status and roadmap: where we are, where we go |
 | [AGENTS.md](AGENTS.md) | Rules and way of working, for any AI assistant or new contributor |
+| [🗂️ docs/README.md](docs/README.md) | **Map of every doc**, folder by folder |
 | [docs/conception/](docs/conception/business-case.md) | **Day 0**: business case and end-to-end workflow, stakeholders (RACI), platform benchmark, ADRs |
-| [docs/architecture/](docs/architecture/hld.md) | HLD + 6 LLDs (screenshots of the web app, linked) |
+| [docs/architecture/](docs/architecture/hld.md) | **As built**: HLD + 6 LLDs (screenshots of the web app, linked) |
+| [docs/target/](docs/target/reference-architecture.md) | **Enterprise target** (not built): reference architecture, evaluation and observability |
 | [🌐 Web app](https://kheuchi.github.io/retail-finance-platform-control-plane/) | Interactive landscape and architecture (as built and enterprise target); source in `site/` |
-| [Databricks primer](docs/architecture/databricks-primer.md) | Every Databricks term used here, in plain words |
-| [docs/stories/MEMO.md](docs/stories/MEMO.md) | **One page**: what we built, the tricky parts, the top 10 lessons · deeper: [WALKTHROUGH](docs/stories/WALKTHROUGH.md) |
-| [docs/stories/](docs/stories/README.md) | How each piece was built and the tricky parts; planned stories for what is next |
+| [docs/guides/MEMO.md](docs/guides/MEMO.md) | **One page**: what we built, the tricky parts, the top 10 lessons · deeper: [WALKTHROUGH](docs/guides/WALKTHROUGH.md) |
+| [☁️ Cloud equivalents](docs/guides/cloud-equivalents.md) | Every component of this stack and its counterpart on AWS, Azure and Google Cloud |
+| [Databricks primer](docs/guides/databricks-primer.md) | Every Databricks term used here, in plain words |
+| [docs/stories/](docs/stories/README.md) | History: how each piece was built, what went wrong, the lessons |
 | [docs/security/](docs/security/) | Threat model, controls, who owns what |
 | [REPOSITORIES.md](REPOSITORIES.md) | Which repo does what |
 | [cmdb.yml](cmdb.yml) | Inventory: decisions, risks, threats, controls, stories index, history |

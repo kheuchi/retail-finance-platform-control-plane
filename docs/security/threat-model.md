@@ -23,8 +23,8 @@ infrastructure) · finance data in S3 · the budget.
 | Threat | Severity | Status |
 |---|---|---|
 | GitHub account takeover → merge to `main` → AWS deploy role | Critical | Open: 2FA off, accepted by owner |
-| Audit trail stopped or IAM widened with no alert | High | Open: alarms planned |
-| Cost overrun from running infrastructure | Medium | Budget alerts; teardown 2026-10-06 |
+| Audit trail stopped or IAM widened with no alert | High | Open (F-3): an alarm fires on admin writes, none yet on trail tampering or IAM changes |
+| Cost overrun from running infrastructure | Medium | Budget alerts; paying network parts deleted 2026-10-17 |
 | Data leaving the network | Low | **No egress path exists**: no internet gateway, no NAT, verified in AWS |
 | Another Databricks customer using our roles | Low | External IDs and principal tags on every trust |
 

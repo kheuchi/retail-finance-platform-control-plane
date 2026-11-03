@@ -2,7 +2,7 @@
 
 **Contents:** [TL;DR](#tldr) · [Diagram](#diagram) · [Bronze, Silver, Gold](#bronze-silver-gold) · [Pipeline](#pipeline) · [Catalog layout](#catalog-layout) · [Access](#access) · [Sources and anomalies](#sources-and-anomalies) · [Deploy](#deploy)
 
-Updated 2026-09-27. Back to [HLD](hld.md). Stories: [2.4](../stories/2.4-unity-catalog-on-our-s3.md) · [3.1](../stories/3.1-synthetic-accounting-data.md) · [3.2](../stories/3.2-catalog-and-bundle-deploy.md) · [3.3](../stories/3.3-first-job-in-the-private-vpc.md) · [4.1](../stories/4.1-silver-tables.md) · planned [4.2-4.4](../stories/README.md#epic-4--transform--quality).
+Updated 2026-11-03. Back to [HLD](hld.md). Stories: [2.4](../stories/2.4-unity-catalog-on-our-s3.md) · [3.1](../stories/3.1-synthetic-accounting-data.md) · [3.2](../stories/3.2-catalog-and-bundle-deploy.md) · [3.3](../stories/3.3-first-job-in-the-private-vpc.md) · [4.1](../stories/4.1-silver-tables.md) · [4.2-4.5](../stories/README.md#epic-4--transform--quality).
 Detail:
 [data `cmdb.yml`](https://github.com/kheuchi/retail-finance-data-products/blob/main/cmdb.yml) → `sources`, `anomalies`, `volumes`, `pipeline` ·
 [infra `cmdb.yml`](https://github.com/kheuchi/retail-finance-platform-infra/blob/main/cmdb.yml) → `stacks.databricks`.
@@ -14,7 +14,7 @@ Detail:
 | Where does data come from? | A seeded generator: 40 stores, 21 months, 8 sources. FX rates are real ECB data |
 | How does it land? | CSV files in a Unity Catalog volume, then Auto Loader into Bronze |
 | What is done? | Bronze, Silver (0 lost), reconciliation (4/4 fake journals) and 4 Gold tables |
-| What is next? | Scheduling and drift checks; the AI agent reads Gold and the scores |
+| What reads it? | The scheduled ML job ([LLD 5](lld-ml.md)) and the month-end agent, through seven functions in `finance.agent` ([LLD 6](lld-agent.md)) |
 | Who reads what? | Engineers: everything. Analysts, ML and the agent: Gold only |
 | How is it tested? | 15 tests in CI (generator + Silver rules on local Spark); the planted anomalies are the answer key |
 
@@ -54,15 +54,17 @@ file in Bronze. That trace is what an auditor asks for.
 
 ## Catalog layout
 
-> **TL;DR:** one catalog, five schemas, stored in our `dbx-uc` bucket and bound to this workspace only.
+> **TL;DR:** one catalog, seven schemas, stored in our `dbx-uc` bucket and bound to this workspace only.
 
 | Schema | Holds |
 |---|---|
 | `raw` | Volume `landing`: incoming files, ground truth, Auto Loader checkpoints |
 | `bronze` | 8 tables, all text, never edited |
-| `silver` | Clean, typed tables (next) |
-| `gold` | Finance-ready tables (planned) |
-| `ops` | Volume `artifacts`: job wheels |
+| `silver` | Clean, typed tables |
+| `gold` | Finance-ready, certified tables, scores and the published commentary |
+| `ops` | Volume `artifacts` (job wheels); quality results, certification, lineage evidence, drift |
+| `ml` | Registered models ([LLD 5](lld-ml.md)) |
+| `agent` | The agent's seven functions, drafts and approvals ([LLD 6](lld-agent.md)) |
 
 ## Access
 

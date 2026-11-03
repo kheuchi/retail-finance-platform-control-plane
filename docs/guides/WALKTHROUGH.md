@@ -1,8 +1,8 @@
 # Walkthrough: explain the build
 
-**Contents:** [TL;DR](#tldr) · [The 2-minute pitch](#the-2-minute-pitch) · [0 Why](#0--why-the-business-case) · [1 Shape](#1--the-shape) · [2 Foundation](#2--aws-foundation-and-cicd) · [3 Network](#3--private-network) · [4 Workspace and UC](#4--databricks-as-code-and-unity-catalog) · [5 Ingest](#5--data-and-ingest) · [6 Silver](#6--silver-cleaning) · [7 Gold](#7--reconciliation-and-gold) · [8 Quality](#8--quality-gates-and-lineage) · [9 Identities](#9--separation-of-duties) · [10 ML](#10--ml) · [11 Agent](#11--the-ai-agent-planned) · [Production gaps](#what-i-would-change-in-production) · [Numbers](#numbers-to-remember)
+**Contents:** [TL;DR](#tldr) · [The 2-minute pitch](#the-2-minute-pitch) · [0 Why](#0--why-the-business-case) · [1 Shape](#1--the-shape) · [2 Foundation](#2--aws-foundation-and-cicd) · [3 Network](#3--private-network) · [4 Workspace and UC](#4--databricks-as-code-and-unity-catalog) · [5 Ingest](#5--data-and-ingest) · [6 Silver](#6--silver-cleaning) · [7 Gold](#7--reconciliation-and-gold) · [8 Quality](#8--quality-gates-and-lineage) · [9 Identities](#9--separation-of-duties) · [10 ML](#10--ml) · [11 Agent](#11--the-ai-agent) · [Production gaps](#what-i-would-change-in-production) · [Numbers](#numbers-to-remember)
 
-Updated 2026-10-01. For a one-page summary see the [MEMO](MEMO.md); for the full story of each step, follow the links.
+Updated 2026-11-03. For a one-page summary see the [MEMO](MEMO.md); for the full story of each step, follow the links.
 Decisions: [`cmdb.yml`](../../cmdb.yml) → `decisions` (each D-xxx below is one).
 
 > 🌐 **Interactive companion:** the [web app](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-hld) shows every box; Simple mode explains each one in plain words.
@@ -28,12 +28,14 @@ becomes four certified Gold tables. A reconciliation of the general ledger again
 found all four fake revenue journals I had planted, with zero false alarms. Two unsupervised models found the other
 two planted frauds, ranking them first without seeing the answer. The forecast model lost to a simple
 baseline, so the baseline ships. Three machine identities split the work: one builds the platform,
-one deploys, one runs, and none can do another's job. Every step has a story with what broke and the lesson."
+one deploys, one runs, and none can do another's job. On top, a month-end agent drafts the close commentary
+through seven read-only functions; code checks every figure, and nothing is sent until a controller approves.
+Every step has a story with what broke and the lesson."
 
 ## 0 · Why: the business case
 
 > **TL;DR:** start with the close, not the tools.
-> [Business case](../conception/business-case.md) · [stakeholders](../conception/stakeholders.md) · [benchmark](../conception/benchmark.md) · [ADRs](../conception/adr/README.md) · [reference architecture](../conception/reference-architecture.md)
+> [Business case](../conception/business-case.md) · [stakeholders](../conception/stakeholders.md) · [benchmark](../conception/benchmark.md) · [ADRs](../conception/adr/README.md) · [reference architecture](../target/reference-architecture.md)
 
 - **Problem:** the month-end close runs on extracts, Excel and samples; frauds surface months late; nobody can trace a number.
 - **Flow:** SAP, store POS, planning tool and ECB land as files in S3 → lakehouse certifies → ML scores → agent drafts → controller approves → the agent's tool gateway sends to Teams, ServiceNow, CFO pack; Power BI reads Gold.
@@ -73,7 +75,7 @@ one deploys, one runs, and none can do another's job. Every step has a story wit
 ## 2 · AWS foundation and CI/CD
 
 > **TL;DR:** nobody holds a key; CI gets one-hour credentials, and the deploy role can touch only our resources.
-> Stories [1.1](1.1-aws-account-baseline.md) · [1.2](1.2-passwordless-cicd.md) · [1.3](1.3-least-privilege-deploy-role.md) · [1.4](1.4-audit-and-alarms.md) · [1.5](1.5-security-review-going-public.md)
+> Stories [1.1](../stories/1.1-aws-account-baseline.md) · [1.2](../stories/1.2-passwordless-cicd.md) · [1.3](../stories/1.3-least-privilege-deploy-role.md) · [1.4](../stories/1.4-audit-and-alarms.md) · [1.5](../stories/1.5-security-review-going-public.md)
 
 **How it works**
 - **Terraform state** is Terraform's record of what exists. It lives in a versioned, locked S3 bucket so
@@ -108,7 +110,7 @@ one deploys, one runs, and none can do another's job. Every step has a story wit
 ## 3 · Private network
 
 > **TL;DR:** the VPC has no internet gateway and no NAT; clusters reach Databricks through PrivateLink and S3 through a gateway endpoint.
-> Stories [2.1](2.1-where-databricks-runs.md) · [2.2](2.2-private-network.md) · [3.3](3.3-first-job-in-the-private-vpc.md) · [LLD 1](../architecture/lld-network.md)
+> Stories [2.1](../stories/2.1-where-databricks-runs.md) · [2.2](../stories/2.2-private-network.md) · [3.3](../stories/3.3-first-job-in-the-private-vpc.md) · [LLD 1](../architecture/lld-network.md)
 
 **How it works**
 - **SCC (secure cluster connectivity):** clusters have no public IP; they open an outbound connection to
@@ -141,7 +143,7 @@ one deploys, one runs, and none can do another's job. Every step has a story wit
 ## 4 · Databricks as code and Unity Catalog
 
 > **TL;DR:** Terraform tells Databricks where our VPC, role and buckets are; Unity Catalog decides who reads what.
-> Stories [2.3](2.3-workspace-as-code.md) · [2.4](2.4-unity-catalog-on-our-s3.md) · [2.5](2.5-guardrails.md) · [Databricks primer](../architecture/databricks-primer.md)
+> Stories [2.3](../stories/2.3-workspace-as-code.md) · [2.4](../stories/2.4-unity-catalog-on-our-s3.md) · [2.5](../stories/2.5-guardrails.md) · [Databricks primer](databricks-primer.md)
 
 **How it works**
 - The workspace is a set of **registrations**: a cross-account IAM role (so Databricks can launch EC2 in our
@@ -170,7 +172,7 @@ one deploys, one runs, and none can do another's job. Every step has a story wit
 ## 5 · Data and ingest
 
 > **TL;DR:** synthetic books with known frauds; the bundle ships the code; Auto Loader loads Bronze as text.
-> Stories [3.1](3.1-synthetic-accounting-data.md) · [3.2](3.2-catalog-and-bundle-deploy.md) · [3.3](3.3-first-job-in-the-private-vpc.md)
+> Stories [3.1](../stories/3.1-synthetic-accounting-data.md) · [3.2](../stories/3.2-catalog-and-bundle-deploy.md) · [3.3](../stories/3.3-first-job-in-the-private-vpc.md)
 
 **How it works**
 - **Generator:** 40 stores, 21 months, 8 sources (sales, ledger, refunds, budget, FX…), seeded so it is
@@ -197,7 +199,7 @@ one deploys, one runs, and none can do another's job. Every step has a story wit
 ## 6 · Silver: cleaning
 
 > **TL;DR:** one spec per source; a generic function types, checks, deduplicates, and sends bad rows to quarantine with a reason.
-> Story [4.1](4.1-silver-tables.md) · [LLD 3](../architecture/lld-data-platform.md)
+> Story [4.1](../stories/4.1-silver-tables.md) · [LLD 3](../architecture/lld-data-platform.md)
 
 **How it works**
 - `try_cast` turns a bad value into null instead of crashing; each failed rule adds a reason to a list per row.
@@ -217,7 +219,7 @@ one deploys, one runs, and none can do another's job. Every step has a story wit
 ## 7 · Reconciliation and Gold
 
 > **TL;DR:** ledger revenue vs till sales per store and day, matched to the cent; then four Gold tables, written only if they add up to Silver.
-> Stories [4.2](4.2-gl-pos-reconciliation.md) · [4.3](4.3-gold-finance-tables.md)
+> Stories [4.2](../stories/4.2-gl-pos-reconciliation.md) · [4.3](../stories/4.3-gold-finance-tables.md)
 
 **How it works**
 - **GL** (general ledger, the books) vs **POS** (point of sale, the tills). Each day's sales are booked as one
@@ -237,7 +239,7 @@ one deploys, one runs, and none can do another's job. Every step has a story wit
 ## 8 · Quality gates and lineage
 
 > **TL;DR:** check Silver, build Gold, check Gold, certify the run; downstream reads only certified Gold.
-> Story [4.4](4.4-quality-and-lineage.md)
+> Story [4.4](../stories/4.4-quality-and-lineage.md)
 
 **How it works**
 - Job order: `quality_silver` → `reconcile_gl_pos` → `finance_tables` → `quality_gold`.
@@ -259,7 +261,7 @@ one deploys, one runs, and none can do another's job. Every step has a story wit
 ## 9 · Separation of duties
 
 > **TL;DR:** one identity could do everything; now three, each tested on what it must not do.
-> Story [4.5](4.5-split-service-principals.md) · [LLD 2](../architecture/lld-identity-cicd.md)
+> Story [4.5](../stories/4.5-split-service-principals.md) · [LLD 2](../architecture/lld-identity-cicd.md)
 
 **How it works**
 
@@ -281,7 +283,7 @@ one deploys, one runs, and none can do another's job. Every step has a story wit
 ## 10 · ML
 
 > **TL;DR:** two unsupervised fraud detectors and a forecast that had to beat a baseline; all on certified Gold, inside our VPC.
-> Stories [5.1](5.1-fraud-detection.md) · [5.2](5.2-revenue-forecast.md) · [LLD 5](../architecture/lld-ml.md)
+> Stories [5.1](../stories/5.1-fraud-detection.md) · [5.2](../stories/5.2-revenue-forecast.md) · [LLD 5](../architecture/lld-ml.md)
 
 **How it works**
 - **Isolation Forest:** builds random trees that split the data at random values. An unusual point gets
@@ -309,13 +311,13 @@ one deploys, one runs, and none can do another's job. Every step has a story wit
 ## 11 · The AI agent
 
 > **TL;DR:** an LLM-driven supervisor with three sub-agents; tools over MCP; a person approves before anything is sent. Designed for AgentCore + Claude; runs on Google Agent Runtime + Gemini 3.8 Flash (EU) because AWS held the account (D-032).
-> [ADR-006](../conception/adr/ADR-006-agent-platform.md) · [story 7.1](7.1-month-end-agent.md)
+> [ADR-006](../conception/adr/ADR-006-agent-platform.md) · [story 7.1](../stories/7.1-month-end-agent.md)
 
 **How it works**
 - **Deep Agents** (LangChain, on LangGraph): the model writes its own plan and delegates to sub-agents (commentary writer, alert triage, distributor). No fixed graph, no capped loop.
 - **Data tools** are read-only Unity Catalog functions over certified Gold, exposed as MCP tools; the agent's own service principal can execute them and nothing else.
-- **Channel tools** sit behind **AgentCore Gateway**: Identity holds the Teams and ServiceNow credentials, Policy decides which agent calls which tool, and each send tool refuses items a controller has not approved.
-- **Model:** Claude on Bedrock with an EU-only profile, behind LangChain's model abstraction.
+- **Channel tools** sit behind **AgentCore Gateway** → Lambda: email by SES today (Teams and ServiceNow are stand-ins, no real tenants); Policy decides which agent calls which tool, and each send tool refuses items a controller has not approved.
+- **Model:** Gemini 3.8 Flash on the Vertex AI EU endpoint today; designed for Claude on Bedrock (EU profile). The model is configuration behind LangChain's model abstraction.
 
 **Why this, not that**
 - *Free the reasoning, constrain the permissions:* guardrails live in grants, IAM, gateway policy and the send tools, not in prompts or loops.

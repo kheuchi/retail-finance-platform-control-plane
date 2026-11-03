@@ -22,8 +22,8 @@ Instructions for any AI assistant (or new human) working on this project. Tool-n
 | Order | File | Gives you |
 |---|---|---|
 | 1 | [STATUS.md](STATUS.md) | Goal, roadmap, where we are, what is next, deadlines, open risks |
-| 2 | [docs/conception/business-case.md](docs/conception/business-case.md), then [hld.md](docs/architecture/hld.md) | Why it exists and the decisions ([ADRs](docs/conception/adr/README.md)); how the platform fits together (then the LLDs; [primer](docs/architecture/databricks-primer.md) if Databricks is new) |
-| 3 | [docs/stories/MEMO.md](docs/stories/MEMO.md), then [README](docs/stories/README.md) | One-page summary; then what was built, what went wrong, what is planned ([WALKTHROUGH](docs/stories/WALKTHROUGH.md) explains each layer) |
+| 2 | [docs/conception/business-case.md](docs/conception/business-case.md), then [hld.md](docs/architecture/hld.md) | Why it exists and the decisions ([ADRs](docs/conception/adr/README.md)); how the platform fits together (then the LLDs; [primer](docs/guides/databricks-primer.md) if Databricks is new) |
+| 3 | [docs/guides/MEMO.md](docs/guides/MEMO.md), then [stories](docs/stories/README.md) | One-page summary; then what was built, what went wrong, what is planned ([WALKTHROUGH](docs/guides/WALKTHROUGH.md) explains each layer). Map of every doc: [docs/README.md](docs/README.md) |
 | 4 | [cmdb.yml](cmdb.yml) | Inventory: decisions, risks, controls, lessons, stories index |
 
 Infra and data repos have their own `cmdb.yml` (resources, incidents, pipeline); see [REPOSITORIES.md](REPOSITORIES.md).
@@ -37,7 +37,7 @@ Infra and data repos have their own `cmdb.yml` (resources, incidents, pipeline);
 3. **Infra and data repos: every change by pull request**, required checks green, deploy only through the gated GitHub workflows. **The control plane (docs) needs no PR**: push to `main`.
 4. **Two-phase IAM changes:** grant in one apply, use in the next; run the IAM policy simulator first.
 5. **Synthetic data only.** No real personal, customer or card data.
-6. **Budgets before spend.** USD 50/month AWS budget; Databricks trial ends 2026-10-06, tear down that day.
+6. **Budgets before spend.** USD 50/month AWS budget. The Databricks trial ended 2026-10-06 and the paying network parts were deleted 2026-10-17; switching anything back on, or the full teardown, needs the owner's go.
 7. **Agents are read-only** on finance data; posting entries, moving money or approving payments always needs a human.
 8. **Commits use the owner's personal GitHub identity**, never an employer address. Check before committing.
 9. **Before any cloud CLI command, check which account it targets.**
@@ -57,7 +57,8 @@ Infra and data repos have their own `cmdb.yml` (resources, incidents, pipeline);
 
 **Docs rules:** every `.md` starts with a contents line and a TL;DR table, each section has a
 one-line TL;DR, and points to cmdb keys. Short and plain. Each fact lives in one place:
-`cmdb.yml` = what, stories = why and how.
+`cmdb.yml` = what, stories = why and how. Folders: [docs/README.md](docs/README.md). Don't move a
+story, the HLD or an LLD: the infra and data repos link to those paths.
 
 **Diagram rules:** no new draw.io, D2 or Structurizr (those three need a local tool). This is about diagram tools only: the docs site may use libraries, a framework or a build.
 

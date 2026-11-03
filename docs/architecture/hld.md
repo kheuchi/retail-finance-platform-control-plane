@@ -64,7 +64,7 @@ Bands: identity and access, compute, network, observability, governance and cost
 | 3 | Clusters read and write data | Cluster → S3 gateway endpoint → `dbx-uc` | Unity Catalog role, bucket policies |
 | 4 | Infra changes | Actions → OIDC → CI roles | Short-lived tokens, trust pinned to repo + branch |
 | 5 | Job changes | Actions → OAuth → bundle deploy | Deployer identity; jobs run as the runner |
-| 6 | Agent reads data | Agent Engine → Databricks managed MCP (HTTPS) | OAuth M2M; EXECUTE on 6 functions only |
+| 6 | Agent reads data | Agent Engine → Databricks managed MCP (HTTPS) | OAuth M2M; EXECUTE on 7 functions only (6 finance + certification status) |
 | 7 | Agent sends | Agent Engine → STS (Google ID token) → AgentCore Gateway → Lambda | Role may only invoke the gateway; approved drafts only |
 
 ## Design choices
@@ -91,7 +91,7 @@ Bands: identity and access, compute, network, observability, governance and cost
 | [5 · ML](lld-ml.md) | How are frauds found and revenue forecast, from certified Gold? | [5.1](../stories/5.1-fraud-detection.md), [5.2](../stories/5.2-revenue-forecast.md) |
 | [6 · Agent](lld-agent.md) | Who does the agent run as, across Google, Databricks and AWS, and what may it do? | [7.1](../stories/7.1-month-end-agent.md) |
 
-New to Databricks? Read the [primer](databricks-primer.md) first.
+New to Databricks? Read the [primer](../guides/databricks-primer.md) first. Same parts on Azure or Google Cloud: [cloud equivalents](../guides/cloud-equivalents.md). Enterprise target (not built): [reference architecture](../target/reference-architecture.md).
 
 ## Change the diagram
 

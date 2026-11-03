@@ -88,7 +88,7 @@ Run locally (WSL): `cd site && npm ci && npm run dev` (Node ≥ 22.23.4).
 | HLD, LLD data platform, ML, agent, identity and CI/CD | Screenshot of As built → HLD / LLDs 1-4, linked | Same parts; the site version was checked against the code |
 | Reference architecture: flow, agent | Screenshot of Target → HLD / LLD agent and AI gateway, linked | Same building blocks |
 | LLD network, LLD observability and cost, business workflow, evaluation loop and matrix | Kept (frozen draw.io) | The site shows these only partly (network as a sequence, not the VPC layout) |
-| French reference architecture | Kept | The site is English only |
+| French reference architecture | Deleted 2026-11-03 (in Git history) | A second-language copy drifted from the English one; docs are English only (AGENTS.md) |
 
 Screenshots: `docs/architecture/img/`, taken from the built site by `site/scripts/diagram-shots.py` (headless Edge, expert mode, light theme).
 

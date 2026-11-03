@@ -2,16 +2,16 @@
 
 **Contents:** [TL;DR](#tldr) · [How to read a story](#how-to-read-a-story) · [How the docs work](#how-the-docs-work) · [Review checklist](#review-checklist) · [Epic 1 · Foundation](#epic-1--foundation) · [Epic 2 · Lakehouse](#epic-2--lakehouse) · [Epic 3 · Ingest](#epic-3--ingest) · [Epic 4 · Transform & Quality](#epic-4--transform--quality) · [Epic 5 · ML Models](#epic-5--ml-models) · [Epic 6 · Serve & Monitor](#epic-6--serve--monitor) · [Epic 7 · AI Agent](#epic-7--ai-agent) · [Cross-cutting](#cross-cutting)
 
-Updated 2026-10-01. **Short on time? Read the one-page [MEMO](MEMO.md). Need to explain it? Read the [WALKTHROUGH](WALKTHROUGH.md).** Index in [`cmdb.yml`](../../cmdb.yml) → `stories`. Status: [STATUS.md](../../STATUS.md). Architecture: [HLD](../architecture/hld.md).
+Updated 2026-11-03. **Short on time? Read the one-page [MEMO](../guides/MEMO.md). Need to explain it? Read the [WALKTHROUGH](../guides/WALKTHROUGH.md).** Stories are the history: they stay as written when the work was done. Index in [`cmdb.yml`](../../cmdb.yml) → `stories`. Status: [STATUS.md](../../STATUS.md). Architecture: [HLD](../architecture/hld.md).
 
 ## TL;DR
 
 | Question | Answer |
 |---|---|
 | What is a story? | One piece of work: why we did it, what we built, what went wrong, how we proved it |
-| As-built vs planned? | Epics 1-3 are **as-built**, written after the work. Epic 4 onward is **planned**, written before, with acceptance criteria |
+| As-built vs planned? | Epics 1-3 were written after the work; from epic 4 on, each story was written first with acceptance criteria, then completed as-built. Only 6.3 (in review) and 6.4 (design) are still open |
 | Where is the inventory? | [`cmdb.yml`](../../cmdb.yml): IDs, status, dates, one-line reasons. Stories hold the explanations |
-| MEMO vs walkthrough? | [MEMO](MEMO.md): one line per story (built, trap, lesson). [WALKTHROUGH](WALKTHROUGH.md): how each layer works, why, and the questions you will get |
+| MEMO vs walkthrough? | [MEMO](../guides/MEMO.md): one line per story (built, trap, lesson). [WALKTHROUGH](../guides/WALKTHROUGH.md): how each layer works, why, and the questions you will get |
 | Best stories to learn from | [1.3](1.3-least-privilege-deploy-role.md) (IAM traps), [2.1](2.1-where-databricks-runs.md) (cloud choice), [3.3](3.3-first-job-in-the-private-vpc.md) (network debugging) |
 
 ## How to read a story
@@ -30,15 +30,15 @@ Planned stories add **Acceptance criteria** before any code is written.
 |---|---|---|
 | Overview | Where are we, what is it? | [README](../../README.md), [STATUS](../../STATUS.md) |
 | Assistant rules | How must any AI assistant work here? | [AGENTS.md](../../AGENTS.md) (auto-loaded via `CLAUDE.md`) |
-| Architecture | How is it built? | [HLD](../architecture/hld.md) + 5 LLDs, draw.io sources next to the PNGs |
-| Stories | Why, and what went wrong? | This folder; [MEMO](MEMO.md) and [WALKTHROUGH](WALKTHROUGH.md) summarise them |
+| Architecture | How is it built? | [HLD](../architecture/hld.md) + 6 LLDs (site screenshots; network and observability still frozen draw.io); target in [docs/target/](../target/reference-architecture.md) |
+| Stories | Why, and what went wrong? | This folder; [MEMO](../guides/MEMO.md) and [WALKTHROUGH](../guides/WALKTHROUGH.md) in `docs/guides/` summarise them |
 | Inventory | Exact facts: IDs, ports, dates, status | `cmdb.yml` in each repo |
 
 Every doc starts with a contents line and a TL;DR table, has a one-line TL;DR per section, and
 points to cmdb keys. How it came about (2026-09-25): the markdown had grown to 1,411 lines nobody
 would read. Decisions, threats and controls were **parsed** into `cmdb.yml`, not retyped, so none
-were lost; the long versions stay in Git history. draw.io exports need absolute Windows paths,
-one at a time (`cmdb.yml` → `architecture.toolchain`).
+were lost; the long versions stay in Git history. On 2026-11-03 the docs were sorted into folders
+(map: [docs/README.md](../README.md)); duplicates were deleted and stay in Git history.
 
 ## Review checklist
 

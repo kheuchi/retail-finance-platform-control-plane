@@ -2,7 +2,7 @@
 
 **Contents:** [TL;DR](#tldr) · [Roadmap](#roadmap) · [Where we are](#where-we-are) · [Where we go](#where-we-go) · [Use cases](#use-cases) · [Deadlines and cost](#deadlines-and-cost) · [Open risks](#open-risks) · [Scope rule](#scope-rule)
 
-Updated 2026-10-28 (roadmap, stage 6 follow-ups). Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Architecture: [HLD](docs/architecture/hld.md). How we built it: [stories](docs/stories/README.md). Rules for assistants: [AGENTS.md](AGENTS.md).
+Updated 2026-11-03 (dates and cost after the trial; docs reorganised, map in [docs/README.md](docs/README.md)). Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Architecture: [HLD](docs/architecture/hld.md). How we built it: [stories](docs/stories/README.md). Rules for assistants: [AGENTS.md](AGENTS.md).
 
 > 🌐 **See it working:** the [interactive web app](https://kheuchi.github.io/retail-finance-platform-control-plane/) shows the platform box by box; in Simple mode, press Play to follow one month-end.
 
@@ -15,12 +15,12 @@ Updated 2026-10-28 (roadmap, stage 6 follow-ups). Detail: [`cmdb.yml`](cmdb.yml)
 | 🛑 Agent boundary | May investigate, summarise, recommend. Never posts entries, moves money or approves payments: a human signs off |
 | 📍 Where are we? | All 7 stages done (agent on Google Agent Runtime while AWS holds Bedrock, D-032): governed data, reconciliation 4/4, certified Gold, least-privilege identities, fraud models, scheduled pipeline with drift checks |
 | ⏭️ What is next? | Final review. Paying parts switched off on 2026-10-17 (VPC endpoints); nothing else destroyed. Full teardown only with the owner's go |
-| ⏰ Deadline | Databricks trial ends 2026-10-06, teardown that day |
-| 💶 Running cost | ~USD 2/day network + trial credit for Databricks |
+| ⏰ Dates | Databricks trial ended 2026-10-06 (now pay as you go, idle); paying network parts deleted 2026-10-17 |
+| 💶 Running cost | ~USD 1-2/month on AWS (secrets, S3, logs); Databricks and Google bill only when something runs |
 
 ## Roadmap
 
-![Plan and roadmap](docs/roadmap.svg)
+![Plan and roadmap](docs/img/roadmap.svg)
 
 ## Where we are
 
@@ -46,7 +46,8 @@ Updated 2026-10-28 (roadmap, stage 6 follow-ups). Detail: [`cmdb.yml`](cmdb.yml)
 1. ~~**Silver:** real types, bad rows set aside, nothing lost~~ ✅ done 2026-09-27.
 2. ~~**Reconciliation:** the general ledger matches the sales~~ ✅ done 2026-09-27: 4/4 fake journals, 0 false alarms.
 3. ~~**Gold:** daily revenue, margin, refunds, actual vs budget~~ ✅ done 2026-09-27.
-4. **Models, then the agent,** reading Gold only.
+4. ~~**Models, then the agent,** reading Gold only~~ ✅ done 2026-10-07.
+5. **Final review**, then teardown when the owner says go ([runbook](https://github.com/kheuchi/retail-finance-platform-infra/blob/main/docs/runbooks/teardown.md)).
 
 ## Use cases
 
@@ -59,26 +60,25 @@ Updated 2026-10-28 (roadmap, stage 6 follow-ups). Detail: [`cmdb.yml`](cmdb.yml)
 
 ## Deadlines and cost
 
-> **TL;DR:** one hard date, small daily cost. Detail: [`cmdb.yml`](cmdb.yml) → `risks`
+> **TL;DR:** the trial is over; almost nothing runs, so almost nothing bills. Detail: [`cmdb.yml`](cmdb.yml) → `program.cloud`, `progress`
 
 | Item | Value |
 |---|---|
-| Databricks trial ends | **2026-10-06**, tear down that day ([runbook](https://github.com/kheuchi/retail-finance-platform-infra/blob/main/docs/runbooks/teardown.md)) |
-| Service principal secret expires | ~2026-10-08 |
-| Private network | ~USD 2/day |
-| Job runs | A few cents each |
-| Databricks usage | USD 400 trial credit, alerts at 100, 200, 300, 380 |
+| Databricks trial | Ended 2026-10-06; the workspace stays, billed per use through AWS Marketplace (USD 8.40 to 2026-10-17) |
+| Private network | Interface endpoints deleted 2026-10-17 (were USD 6.34/day); clusters and the AWS agent path need them back (switch on, apply) |
+| AWS today | ~USD 1-2/month (secrets, S3, logs); bill to 2026-10-17 USD 106.30 gross, covered by credits |
+| Google Cloud | Agent Engine scales to zero; EUR 0.63 gross to 2026-10-17 |
+| Teardown | Only with the owner's go ([runbook](https://github.com/kheuchi/retail-finance-platform-infra/blob/main/docs/runbooks/teardown.md)) |
 
 ## Open risks
 
-> **TL;DR:** five that matter now. Detail: [`cmdb.yml`](cmdb.yml) → `risks`
+> **TL;DR:** four that matter now. Detail: [`cmdb.yml`](cmdb.yml) → `risks`, `findings`
 
 | Risk | State |
 |---|---|
 | GitHub 2FA off | Accepted (owner decision) |
-| Network costs above budget if left on | Teardown 2026-10-06 |
-| Trial converts to paid on 2026-10-06 | Teardown or cancel that day |
-| Databricks secret expires ~2026-10-08 | Move to OIDC federation |
+| Databricks secret had a ~2026-10-08 expiry (14-day lifetime) | Rotate, or move to OIDC federation, before the next deploy |
+| No alarm on audit-trail tampering or IAM changes (F-3) | Open |
 | Employee-level fraud scores readable by analysts | Accepted (R-12): pseudonymous, synthetic; production would restrict |
 
 ## Scope rule

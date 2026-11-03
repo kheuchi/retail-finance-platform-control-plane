@@ -70,5 +70,5 @@ The fix took one rule. Detail: infra `cmdb.yml` → `incidents`.
 
 | Limit | Why it is OK here |
 |---|---|
-| Alerts, not brakes: nothing auto-stops spend | Short trial, owner watches the inbox, teardown on 2026-10-06 |
+| Alerts, not brakes: nothing auto-stops spend | Owner watches the inbox; the paying network parts were deleted after the build (2026-10-17) |
 | Workspace admins bypass cluster policies | Only the owner and the service principal are admins |
