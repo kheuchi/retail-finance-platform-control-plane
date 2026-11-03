@@ -38,6 +38,7 @@ function words(b: Block): string[] {
   if ("chat" in b) return b.chat.flatMap(([, tool, t]) => [tool, t]);
   if ("spot" in b) return [b.spot.intro, ...b.spot.parts.map(p => typeof p === "string" ? p : p[0]), b.spot.caught, b.spot.limit];
   if ("approve" in b) return [b.approve.draft, ...b.approve.yes, ...b.approve.no];
+  if ("movie" in b) return [b.movie.ask, b.movie.answer, ...b.movie.scenes.flatMap(s => [s.t, s.s, s.why, s.card ?? "", ...(s.lines ?? []).map(l => l[0])])];
   return [];
 }
 const text = (bs: Block[], extra: string[] = []) => clean([...bs.flatMap(words), ...extra].filter(Boolean).join(" · "));

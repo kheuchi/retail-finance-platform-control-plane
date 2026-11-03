@@ -4,7 +4,7 @@ import type { Arch } from "../types";
 
 export const target: Arch = { name: "Enterprise target", sections: {
 big: { t: "The big picture", d: "A margin recovery agent for a large grocer. Target picture: nothing here is built.", b: [
-  { q: "Where did we lose margin this month, why, and how much can we still recover before we close the books?" },
+  { q: "The controller asks: “Will we earn more money this quarter?” Behind it: where is margin leaking, why, and how much can we still win back before the quarter closes?" },
   { h: "How it is done today (before AI)" },
   { table: ["Example", "Tool", "Already automated", "Still left to people"], rows: [
     ["A 2% rebate above EUR 1M of purchases", "SAP condition contracts, Vistex", "Accrual and settlement, once the term is keyed in", "A side letter in a PDF nobody keyed in"],
@@ -32,9 +32,9 @@ big: { t: "The big picture", d: "A margin recovery agent for a large grocer. Tar
     ["5 · Checkable, reversible", "Every claim, price and accrual approved first"], ["6 · Worth building", "Margin is the grocer's economics; data and contracts are ours"]] },
 ]},
 flow: { t: "Business workflow", d: "One example from the controller's question to money recovered; decisions flow back as labels.", b: [
-  { q: "Controller, close day 2, in Teams: “Where did we lose margin this month, why, and how much can we still recover before we close?”" },
+  { q: "Controller, mid-quarter, in Teams: “Will we earn more money this quarter?”" },
   { dia: { cols: 6, els: [
-    E("ask", "person", "Controller asks in Teams", "“Where did we lose margin?”", "teams", 1, 1, 1, "person"),
+    E("ask", "person", "Controller asks in Teams", "“Will we earn more money this quarter?”", "teams", 1, 1, 1, "person"),
     E("appr", "person", "Approvers decide", "category manager, pricing, controller", "person", 4, 1, 1, "person"),
     E("sap", "ext", "SAP · suppliers", "claims, prices, accruals", "sap", 6, 1),
     E("tri", "cont", "SLM triage", "312 signals → 23 real cases", "meta", 2, 2, 1, "agent"),
@@ -52,11 +52,11 @@ flow: { t: "Business workflow", d: "One example from the controller's question t
       R("olap", "inv", "", "v", { f: 0.15 }), R("fc", "inv", "", "v"), R("rag", "inv", "", "v", { f: 0.7, m: 0.3 }), R("api", "inv", "", "v", { f: 0.9, m: 0.7 }),
       R("appr", "act", "approved", "hv", { f: 0.5 }), R("act", "sap", "", "vh", { e: 0.8 }), R("act", "lab", "outcome", "hv"), R("lab", "fc", "labels → retrain", "hv", { dash: 1 })] } },
   { table: ["Two ways in", "Example", "Starts at"], rows: [
-    ["Asked", "“Where did we lose margin this month?”", "The controller in Teams, through the AI gateway"],
+    ["Asked", "“Will we earn more money this quarter?”", "The controller in Teams, through the AI gateway"],
     ["Pushed", "“Cost +6% on 140 SKUs, shelf price unchanged for 2 days”", "A stream rule fires; the SLM keeps it if it is a real case"]] },
   { h: "The asked example, step by step" },
   { table: ["#", "Who", "Does", "Gets"], rows: [
-    ["1", "Controller (close day 2)", "Asks the question in Teams", "A case"], ["2", "SLM", "Groups 312 signals by supplier", "23 real cases"],
+    ["1", "Controller (mid-quarter)", "Asks “Will we earn more money this quarter?” in Teams", "A case"], ["2", "SLM", "Groups 312 signals by supplier", "23 real cases"],
     ["3", "OLAP", "Margin by category and supplier", "Gap in dairy, drinks, fresh"], ["4", "ML forecast", "Expected margin", "Gap EUR 1.9M (computed by a tool)"],
     ["5", "GraphRAG", "Ended promotions without a claim", "14 promotions, 5 suppliers, owners named"], ["6", "RAG", "Contract clause per promotion", "Rates and deadlines, cited"],
     ["7", "Live APIs", "Claims, credit notes, conditions now", "No claims sent; 140 SKUs cost +6%"], ["8", "Tools", "Leak size per case", "610k + 380k + 210k recoverable; waste 700k not"],
@@ -92,7 +92,7 @@ hld: { t: "High-level design", d: "The target building blocks. Green-dot items i
     E("st", "cont", "Event backbone + stream processing", "Kafka / MSK, Flink, schema registry", "apachekafka", 1, 4, 2, "gate"),
     E("lake", "db", "Lakehouse", "Bronze → Gold, quality gates, graph tables", "databricks", 3, 4, 1, "data"),
     E("doc", "cont", "Document pipeline", "OCR, chunks, SLM extraction", "python", 4, 4, 1, "know"),
-    E("src", "ext", "Sources", "SAP, POS, WMS, promotions, contracts, claims history", "sap", 5, 4, 2),
+    E("src", "ext", "Source systems (six, SAP is one)", "SAP · store tills (POS) · warehouse (WMS) · promotions tool · contract PDFs · claims history", "", 5, 4, 2),
     E("pbi", "ext", "Power BI", "margin bridge, EUR recovered, claims by status", "powerbi", 2, 5),
     E("obs", "cont", "Around everything", "OpenTelemetry: one trace per case → Langfuse (agent, tokens, cost, evals) · ClickStack (infra) · Lakehouse Monitoring + MLflow (models) · Unity Catalog · identity on behalf of the user · budgets and cost per team", "opentelemetry", 1, 6, 6, "base")],
     rels: [R("ppl", "gw", "asks · answer", "v", { both: 1 }), R("gw", "ag", "case + user token"), R("gw", "llm", "LLM calls", "v", { e: 0.9, f: 0.3 }), R("ag", "gr"), R("gr", "wf", "drafts"), R("wf", "sap", "", "v"), R("wf", "sup", "claims", "vh", { e: 0.25 }),

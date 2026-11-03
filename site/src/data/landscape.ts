@@ -82,7 +82,7 @@ built: {
   ],
 },
 target: {
-  sub: "The target picture for a margin recovery agent: “Where did we lose margin this month, why, and how much can we still recover before we close?” Not built. Green dot = this project already has it.",
+  sub: "The target picture for a margin recovery agent: “Will we earn more money this quarter? Where is margin leaking, why, and how much can we still win back?” Not built. Green dot = this project already has it.",
   legend: [["s-here", "exists in this project"], ["s-target", "target only"]],
   steps: [
     ["1", "A margin signal arrives, or the controller asks in Teams"],

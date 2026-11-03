@@ -57,7 +57,8 @@ export type Block =
   | { quiz: [question: string, options: string[], right: number, why: string][] }
   | { chat: [who: "ctl" | "code" | "agent" | "tool", tool: string, text: string][] }
   | { spot: Spot }
-  | { approve: Approve };
+  | { approve: Approve }
+  | { movie: Movie };                                     // simple mode: animated walk-through (Movie.svelte)
 
 export interface Who {
   modes: string[];
@@ -66,6 +67,10 @@ export interface Who {
 }
 export interface Spot { intro: string; parts: (string | [text: string, source: string])[]; caught: string; limit: string }
 export interface Approve { draft: string; yes: string[]; no: string[] }
+/** One scene per key; Movie.svelte draws each key's picture, the data gives the words. */
+export type SceneKey = "ask" | "door" | "wake" | "numbers" | "forecast" | "contracts" | "check" | "answer" | "approve";
+export interface Scene { k: SceneKey; t: string; s: string; why: string; card?: string; lines?: [text: string, ok: boolean][] }
+export interface Movie { ask: string; answer: string; scenes: Scene[] }
 
 export interface Section { t: string; d: string; b: Block[] }
 export type SecKey = "big" | "flow" | "simple" | "hld" | "lld" | "net" | "obs" | "eval" | "sec" | "more";

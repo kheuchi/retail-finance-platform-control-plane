@@ -10,7 +10,7 @@ Built on: [benchmark](../conception/benchmark.md). The web app's Simple mode tel
 | Question | Answer |
 |---|---|
 | What is this? | The full enterprise picture of an AI agent that needs **every** tool: event streaming, lakehouse + OLAP, live APIs, ML (forecasts + scores), RAG, GraphRAG, an SLM, humans, and an LLM to tie it together |
-| The question | **"Where did we lose margin this month, why, and how much can we still recover before we close the books?"** |
+| The question | **"Will we earn more money this quarter?"** Behind it: where is margin leaking, why, and how much can we still win back before the quarter closes? |
 | Who asks | The financial controller and the category managers of our fictional grocer |
 | Why an agent | Margin leaks through six systems and hundreds of contracts; each leak needs a different path; no fixed rule or single product sees them all |
 | Why build | Margin is the core of a grocer's economics; the data and contracts are ours; the platform is reused by every next use case. **Build the platform, buy the parts** |
@@ -46,7 +46,7 @@ needed**; it also expects over 40% of agentic projects to be cancelled by 2027, 
 
 > **TL;DR:** one question for the controller, broken into sub-questions; each answered by a different tool.
 
-> **"Where did we lose margin this month, why, and how much can we still recover before we close the books?"**
+> **"Will we earn more money this quarter?"** Behind it: where is margin leaking, why, and how much can we still win back before the quarter closes?
 
 | Sub-question | Answered by |
 |---|---|

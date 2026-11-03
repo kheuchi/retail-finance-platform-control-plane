@@ -9,6 +9,7 @@
   import Chat from "./Chat.svelte";
   import SpotGame from "./SpotGame.svelte";
   import ApproveGame from "./ApproveGame.svelte";
+  import Movie from "./Movie.svelte";
   import type { Block, Dia } from "../../data/types";
 
   let { b, expertDia, plain, lld = 0, setLld }: {
@@ -44,6 +45,8 @@
   <SpotGame sp={x.spot} />
 {:else if x.approve}
   <ApproveGame ap={x.approve} />
+{:else if x.movie}
+  <Movie m={x.movie} />
 {:else if x.q}
   <p class="q">{x.q.includes("“") ? x.q : `“${x.q}”`}</p>
 {:else if x.h}
