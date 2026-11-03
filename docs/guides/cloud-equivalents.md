@@ -13,8 +13,8 @@ Updated 2026-11-03. What we built: [HLD](../architecture/hld.md). Why these pick
 | 🧩 What is our stack? | AWS (account, network, audit, Lambda, email) + Databricks (lakehouse, jobs, ML, catalog) + Google Cloud (the agent's runtime and model) + GitHub (code, CI) |
 | 🔁 Can it move to Azure or Google Cloud? | Yes. Databricks runs on all three clouds, so the cheapest move keeps Databricks and swaps only the cloud underneath (foundation, network, audit, functions, email) |
 | 🏗️ And without Databricks? | Every cloud has the parts, but splits them over two or three services each. Unity Catalog (one catalog for tables, files, models and functions) has no single native twin |
-| 🤖 The agent? | Proven portable: it moved from AWS AgentCore + Claude to Google Agent Engine + Gemini by configuration (D-032) |
-| ⚠️ Caveat | Names as of November 2026. Cloud vendors rename often, so check the vendor's page before quoting a name |
+| 🤖 The agent? | Proven portable: it moved from AWS AgentCore + Claude to Google Agent Runtime (ex Vertex AI Agent Engine) + Gemini by configuration (D-032) |
+| ⚠️ Caveat | Names checked on vendor pages on 2026-11-03. Recent renames: Vertex AI → Gemini Enterprise Agent Platform (April 2026), Dataplex Universal Catalog → Knowledge Catalog (April 2026), Serverless for Apache Spark → Managed Service for Apache Spark, QuickSight → Quick Sight (in Amazon Quick) |
 
 ## How to read it
 
@@ -72,13 +72,13 @@ Updated 2026-11-03. What we built: [HLD](../architecture/hld.md). Why these pick
 | The platform itself | Databricks classic workspace in our VPC | **Databricks on AWS** | Azure Databricks (a first-party Microsoft service) or Microsoft Fabric | Databricks on Google Cloud, or BigQuery |
 | Object storage | S3 bucket `dbx-uc` | **S3** | ADLS Gen2 / OneLake | Cloud Storage |
 | Table format | Delta Lake | Apache Iceberg (S3 Tables) | Delta (OneLake) | Iceberg (BigLake tables) |
-| Catalog, grants, lineage | Unity Catalog | Lake Formation + Glue Data Catalog, SageMaker Catalog | Microsoft Purview + OneLake catalog | Dataplex Universal Catalog + BigQuery IAM |
+| Catalog, grants, lineage | Unity Catalog | Lake Formation + Glue Data Catalog, SageMaker Catalog | Microsoft Purview + OneLake catalog | Knowledge Catalog (ex Dataplex Universal Catalog) + BigQuery IAM |
 | Incremental file ingest | Auto Loader from a Unity Catalog volume | Glue job with bookmarks | Data Factory copy job | Dataflow, or BigQuery Data Transfer Service |
-| Spark jobs (Bronze → Silver → Gold) | Databricks jobs on classic clusters | Glue or EMR Serverless | Fabric Spark | Google Cloud Serverless for Apache Spark, or BigQuery SQL |
+| Spark jobs (Bronze → Silver → Gold) | Databricks jobs on classic clusters | Glue or EMR Serverless | Fabric Spark | Managed Service for Apache Spark (ex Dataproc), or BigQuery SQL |
 | Orchestration | One Databricks orchestrator job | Step Functions or MWAA (Airflow) | Data Factory / Fabric pipelines | Cloud Composer (Airflow) or Workflows |
 | Deploying the jobs | Asset Bundles from GitHub Actions | CDK or CloudFormation | Fabric deployment pipelines | Dataform or Composer DAG deploy |
 | SQL engine (agent, BI) | SQL warehouse | Redshift Serverless or Athena | Fabric Warehouse | BigQuery |
-| Quality gates | Our checks → `ops.dq_results`, Gold certification | Glue Data Quality | Purview data quality | Dataplex data quality scans |
+| Quality gates | Our checks → `ops.dq_results`, Gold certification | Glue Data Quality | Purview data quality | Knowledge Catalog data quality scans |
 | Separate machine identities (platform, deployer, runner) | Databricks service principals | IAM roles | Managed identities | Service accounts |
 | Sharing with partners (not built) | Delta Sharing, Clean Rooms | Lake Formation cross-account, AWS Clean Rooms | Fabric external data sharing, Azure Confidential Clean Rooms | BigQuery sharing (ex Analytics Hub), BigQuery data clean rooms |
 
@@ -88,11 +88,11 @@ Updated 2026-11-03. What we built: [HLD](../architecture/hld.md). Why these pick
 
 | Component | Ours | AWS | Azure | Google Cloud |
 |---|---|---|---|---|
-| Training code | scikit-learn (Isolation Forest, gradient boosting) on a job cluster | Same code on SageMaker AI jobs | Azure Machine Learning jobs | Vertex AI custom training |
-| Experiment tracking | MLflow (managed by Databricks) | SageMaker AI managed MLflow | Azure Machine Learning (MLflow-compatible) | Vertex AI Experiments |
-| Model registry | Unity Catalog, `finance.ml` | SageMaker Model Registry | Azure Machine Learning registry | Vertex AI Model Registry |
-| Scheduled scoring | ML task in the orchestrator job | SageMaker Pipelines, batch transform | Azure ML batch endpoints | Vertex AI Pipelines, batch prediction |
-| Input drift (PSI) | Our job → `ops.model_drift` | SageMaker Model Monitor | Azure ML model monitoring | Vertex AI Model Monitoring |
+| Training code | scikit-learn (Isolation Forest, gradient boosting) on a job cluster | Same code on SageMaker AI jobs | Azure Machine Learning jobs | Agent Platform custom training (ex Vertex AI) |
+| Experiment tracking | MLflow (managed by Databricks) | SageMaker AI managed MLflow | Azure Machine Learning (MLflow-compatible) | Agent Platform Experiments (ex Vertex AI) |
+| Model registry | Unity Catalog, `finance.ml` | SageMaker Model Registry | Azure Machine Learning registry | Agent Platform Model Registry |
+| Scheduled scoring | ML task in the orchestrator job | SageMaker Pipelines, batch transform | Azure ML batch endpoints | Agent Platform Pipelines, batch prediction |
+| Input drift (PSI) | Our job → `ops.model_drift` | SageMaker Model Monitor | Azure ML model monitoring | Agent Platform Model Monitoring (ex Vertex AI) |
 | Managed forecasting | Not used: a seasonal baseline wins ([story 5.2](../stories/5.2-revenue-forecast.md)) | SageMaker Canvas (Amazon Forecast is closed to new customers) | Azure ML AutoML forecasting | BigQuery ML (ARIMA_PLUS, TimesFM) |
 
 ## Agent
@@ -101,9 +101,9 @@ Updated 2026-11-03. What we built: [HLD](../architecture/hld.md). Why these pick
 
 | Component | Ours | AWS | Azure | Google Cloud |
 |---|---|---|---|---|
-| Agent runtime | Vertex AI Agent Engine, scale to zero; *designed:* AgentCore Runtime in our VPC | Bedrock AgentCore Runtime | Foundry Agent Service | **Vertex AI Agent Engine** |
+| Agent runtime | Agent Runtime (ex Vertex AI Agent Engine), scale to zero; *designed:* AgentCore Runtime in our VPC | Bedrock AgentCore Runtime | Foundry Agent Service | **Agent Runtime** (Gemini Enterprise Agent Platform) |
 | Agent framework | Deep Agents (LangGraph) in a container | Same container; AWS's own: Strands Agents | Same container; Microsoft's own: Microsoft Agent Framework | Same container; Google's own: Agent Development Kit (ADK) |
-| Model, EU only | Gemini 3.8 Flash, Vertex EU endpoint; *designed:* Claude on Bedrock, EU profile | Bedrock (Claude, EU inference profile) | Foundry Models (OpenAI, Claude) | **Vertex AI** (Gemini, Claude) |
+| Model, EU only | Gemini 3.8 Flash, Vertex EU endpoint; *designed:* Claude on Bedrock, EU profile | Bedrock (Claude, EU inference profile) | Foundry Models (OpenAI, Claude) | **Agent Platform** (Gemini, Claude) |
 | Data tools over MCP | Databricks managed MCP → 7 functions in `finance.agent` | AgentCore Gateway in front of Lambda or Redshift | Azure MCP Server, Fabric data agent | MCP Toolbox for Databases, BigQuery MCP server |
 | Read-only functions that run with the owner's rights | Unity Catalog SQL functions (agent has EXECUTE only) | Redshift stored procedures, `SECURITY DEFINER` | Stored procedures `EXECUTE AS OWNER` | BigQuery authorized routines |
 | Gateway for actions | AgentCore Gateway (MCP, IAM auth) | **AgentCore Gateway** | API Management (AI gateway, MCP) | Apigee |
@@ -121,7 +121,7 @@ Updated 2026-11-03. What we built: [HLD](../architecture/hld.md). Why these pick
 | Code and CI/CD | GitHub + Actions | CodePipeline + CodeBuild | Azure DevOps (or GitHub) | Cloud Build |
 | Infrastructure scan | Checkov in CI | Same | Same; Defender for Cloud DevOps security | Same |
 | Docs web app | GitHub Pages | Amplify Hosting | Static Web Apps | Firebase Hosting |
-| BI (not built) | Power BI on Databricks SQL | Amazon QuickSight (in Quick Suite) | Power BI | Looker |
+| BI (not built) | Power BI on Databricks SQL | Amazon Quick Sight (in Amazon Quick) | Power BI | Looker |
 
 ## Target components (not built)
 
@@ -132,9 +132,9 @@ Updated 2026-11-03. What we built: [HLD](../architecture/hld.md). Why these pick
 | Event backbone | Kafka (MSK or Confluent) or SAP Event Mesh | Amazon MSK, Kinesis | Event Hubs (Kafka API) | Managed Service for Apache Kafka, Pub/Sub |
 | Stream processing | Flink or Spark Structured Streaming | Managed Service for Apache Flink | Stream Analytics, Fabric Real-Time Intelligence | Dataflow |
 | Change data capture from SAP | SAP SLT, Datasphere or Debezium | AWS DMS, AppFlow | Data Factory SAP CDC connector | Datastream, Cortex Framework |
-| Vector index (RAG) | Databricks Vector Search | Bedrock Knowledge Bases, S3 Vectors, OpenSearch | Azure AI Search | Vertex AI Vector Search, RAG Engine |
+| Vector index (RAG) | Databricks Vector Search | Bedrock Knowledge Bases, S3 Vectors, OpenSearch | Azure AI Search | Vector Search (2.0 is now Agent Retrieval), RAG Engine |
 | Knowledge graph (GraphRAG) | Neo4j, Neptune or graph tables | Neptune Analytics | Cosmos DB (Gremlin) | Spanner Graph |
-| Small model serving (SLM) | Own GPU or private endpoint | SageMaker AI endpoints, Bedrock Custom Model Import | Foundry managed compute | Vertex AI endpoints (Model Garden) |
+| Small model serving (SLM) | Own GPU or private endpoint | SageMaker AI endpoints, Bedrock Custom Model Import | Foundry managed compute | Agent Platform endpoints (Model Garden) |
 | AI gateway | AgentCore Gateway, Apigee, Databricks AI Gateway or LiteLLM | AgentCore Gateway | API Management AI gateway | Apigee |
 | Live API layer | API gateway with quotas and caching | API Gateway | API Management | Apigee or API Gateway |
 | Agent tracing | Langfuse, self-hosted in the EU | AgentCore Observability | Foundry observability, Application Insights | Cloud Trace |
