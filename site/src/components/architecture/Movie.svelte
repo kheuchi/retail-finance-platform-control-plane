@@ -23,11 +23,9 @@
   const pos = $derived(SPOT[sc.k]);
   const asleep = $derived(i < at("wake"));
   const looking = $derived(["numbers", "forecast", "contracts"].includes(sc.k));
-  const STATIONS: [SceneKey, string, string, string][] = [
-    ["numbers", "📊", "The numbers", "certified sales and margin"],
-    ["forecast", "📈", "The forecast", "where the quarter ends"],
-    ["contracts", "📄", "The contracts", "what suppliers promised"],
-  ];
+  const KEYS: SceneKey[] = ["numbers", "forecast", "contracts"];     // the three look-up scenes, in station order
+  const st = $derived(m.stage);
+  const STATIONS = $derived(st.stations.map(([ic, t, sub], n) => [KEYS[n], ic, t, sub] as [SceneKey, string, string, string]));
   const card = (k: SceneKey) => m.scenes[at(k)]?.card ?? "";
   const lines = $derived(m.scenes[at("check")]?.lines ?? []);
 
@@ -87,7 +85,7 @@
 
       <!-- Teams chat -->
       <div class="m-chat" class:m-hot={now("ask") || now("answer")}>
-        <div class="m-bar"><span class="m-tm">T</span>Teams · Finance close</div>
+        <div class="m-bar"><span class="m-tm">T</span>{st.chat}</div>
         <div class="m-msgs">
           <div class="m-me">
             <span class="m-bub">{askShown}{#if now("ask") && typed < m.ask.length}<i class="m-caret"></i>{/if}</span>
@@ -95,7 +93,7 @@
           </div>
           {#if now("ask") && typed >= m.ask.length}<div class="m-tick">Sent ✓</div>{/if}
           {#if past("door") && !past("answer")}
-            <div class="m-status">{now("door") ? "Checking who you are" : "The agent is investigating"}<span class="m-dots3"><i></i><i></i><i></i></span></div>
+            <div class="m-status">{now("door") ? st.waiting[0] : st.waiting[1]}<span class="m-dots3"><i></i><i></i><i></i></span></div>
           {/if}
           {#if ansShown}
             <div class="m-them">
@@ -112,12 +110,12 @@
           <path d="M6 128 V40 a24 24 0 0 1 48 0 V128" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" />
           <circle cx="30" cy="30" r="7" class="m-lamp" />
         </svg>
-        <span class="m-lbl">Front door</span>
+        <span class="m-lbl">{st.door}</span>
       </div>
       {#if now("door")}
         <div class="m-badge m-pop">
-          <b>Who is asking?</b>
-          <span>Controller ✓</span><span>Sees finance data only ✓</span><span>Team budget OK ✓</span>
+          <b>{st.doorAsk}</b>
+          {#each st.badge as l}<span>{l}</span>{/each}
         </div>
       {/if}
 
@@ -126,7 +124,7 @@
 
       <!-- three tool stations -->
       {#each STATIONS as [key, ic, t, sub]}
-        {@const x = 390 + 138 * STATIONS.findIndex(s => s[0] === key)}
+        {@const x = 390 + 138 * KEYS.indexOf(key)}
         <div class="m-stn" class:m-hot={now(key)} class:m-done={past(key)} style="left:{x}px">
           <b>{ic} {t}</b><small>{sub}</small>
           {#if past(key)}<span class="m-found" class:m-pop={now(key)}>{card(key)}</span>{/if}
@@ -135,7 +133,7 @@
 
       <!-- code checks -->
       <div class="m-calc" class:m-hot={now("check")}>
-        <b>🧮 Code checks (not AI)</b>
+        <b>{st.calc}</b>
         {#if past("check")}
           {#each lines.filter(([, ok]) => ok || now("check")) as [t, ok], n}
             <span class="m-ln" class:m-bad={!ok} class:m-toss={!ok && now("check")} style="--d:{n * 0.9}s">{t}</span>
@@ -145,19 +143,19 @@
 
       <!-- the approver -->
       <div class="m-appr" class:m-hot={now("approve")}>
-        <b>🧑‍💼 Category manager</b>
+        <b>{st.judge}</b>
         {#if past("approve")}
-          <div class="m-slips">{#each [0, 1, 2, 3, 4] as n}<span class="m-slip" style="--d:{n * 0.15}s">claim</span>{/each}</div>
+          <div class="m-slips">{#each Array(st.slips) as _, n}<span class="m-slip" style="--d:{n * 0.15}s">{st.slip}</span>{/each}</div>
           <span class="m-ok">Approve ✓</span>
-          <small class="m-sap">SAP sends them to suppliers</small>
+          <small class="m-sap">{st.done}</small>
         {:else}
-          <small>waits for drafts</small>
+          <small>{st.idle}</small>
         {/if}
       </div>
 
       <!-- the robot (the agent) -->
       <div class="m-bot" class:m-asleep={asleep} class:m-moving={moving} class:m-looking={looking} style="left:{pos[0]}px;top:{pos[1]}px">
-        {#if now("wake")}<div class="m-think m-pop"><b>My plan</b>① the numbers<br />② the forecast<br />③ the contracts</div>{/if}
+        {#if now("wake")}<div class="m-think m-pop"><b>My plan</b>{#each st.plan as l, n}{"①②③④"[n]} {l}<br />{/each}</div>{/if}
         {#if asleep}<span class="m-z m-z1">z</span><span class="m-z m-z2">z</span><span class="m-z m-z3">Z</span>{/if}
         <svg viewBox="0 0 80 88" width="80" height="88">
           <line x1="36" y1="4" x2="36" y2="15" stroke="currentColor" stroke-width="3" />

@@ -70,7 +70,13 @@ export interface Approve { draft: string; yes: string[]; no: string[] }
 /** One scene per key; Movie.svelte draws each key's picture, the data gives the words. */
 export type SceneKey = "ask" | "door" | "wake" | "numbers" | "forecast" | "contracts" | "check" | "answer" | "approve";
 export interface Scene { k: SceneKey; t: string; s: string; why: string; card?: string; lines?: [text: string, ok: boolean][] }
-export interface Movie { ask: string; answer: string; scenes: Scene[] }
+/** The props on the stage: chat title, the door and its checks, three tool stations, the checker, the approver. */
+export interface Stage {
+  chat: string; door: string; doorAsk: string; badge: string[]; waiting: [atDoor: string, working: string];
+  stations: [icon: string, title: string, sub: string][]; plan: string[]; calc: string;
+  judge: string; idle: string; slip: string; slips: number; done: string;
+}
+export interface Movie { ask: string; answer: string; stage: Stage; scenes: Scene[] }
 
 export interface Section { t: string; d: string; b: Block[] }
 export type SecKey = "big" | "flow" | "simple" | "hld" | "lld" | "net" | "obs" | "eval" | "sec" | "more";
