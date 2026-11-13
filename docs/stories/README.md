@@ -142,4 +142,4 @@ Findings go into the story (fixed, or accepted with a reason); accepted risks go
 |---|---|---|
 | X.1 | [Documentation system](#how-the-docs-work) | ✅ cmdb = what, stories = why; TL;DR tables everywhere |
 | X.2 | [Docs site v2](X.2-docs-site-v2.md) | ✅ Same look on Astro + Svelte, content in data files, build checks; diagrams in the docs are site screenshots |
-| X.3 | [Request journey redesign](X.3-request-journey.md) | Eight stages shared by built/target and Simple/Expert; local site/docs changes only, publication pending |
+| X.3 | [Request journey redesign](X.3-request-journey.md) | Eight stages shared by built/target and Simple/Expert; site/docs published 2026-11-13; finance runtime unchanged |

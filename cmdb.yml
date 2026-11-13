@@ -111,7 +111,7 @@ architecture:
   request_journey:
     story: 'X.3'
     date: '2026-11-13'
-    status: 'Implemented and locally verified; CI/publication pending'
+    status: 'Done; CI passed and published 2026-11-13'
     source: 'site/src/data/journey.ts'
     stages: ['request', 'check', 'plan', 'evidence', 'draft', 'validate', 'approve', 'deliver']
     continuity: 'Same month-end question, order and layout in built/target and Simple/Expert'
@@ -135,7 +135,7 @@ architecture:
     - agent_model: 'Agent Engine (europe-west1) -> Gemini 3.8 Flash on the Vertex AI EU endpoint (D-032); designed: AgentCore Runtime in the VPC -> Bedrock interface endpoint (PrivateLink), eu-central-1'
   observability_tools: 'picks 2026-10-30 (target, not built): agent + AI gateway = Langfuse self-hosted EU (Google Cloud Trace kept for Agent Engine runtime logs; Arize Phoenix for notebook evals only: Elastic License 2.0, Dynatrace deal pending); models = Lakehouse Monitoring + MLflow; infra = ClickStack (ClickHouse + HyperDX + OTel collector), Grafana LGTM if already in place; OpenTelemetry GenAI conventions everywhere. As built next: Langfuse free tier for the agent, Databricks SQL alerts for drift and quality, no infra stack (budget)'
   toolchain:
-    site: 'GitHub Pages from site/ (Astro + Svelte); shared request model in site/src/data/journey.ts; Journey.svelte renders architecture and landscape, search indexes the same stages; original URLs and architecture deep links retained. Request-led redesign X.3 implemented locally, publication pending; tool scorecard remains historical October 2026 opinion.'
+    site: 'GitHub Pages from site/ (Astro + Svelte); shared request model in site/src/data/journey.ts; Journey.svelte renders architecture and landscape, search indexes the same stages; original URLs and architecture deep links retained. Request-led redesign X.3 published 2026-11-13; Pages run 43502597395 passed; tool scorecard remains historical October 2026 opinion.'
     drawio: draw.io desktop, installed 2026-09-26 via 'winget install --id JGraph.Draw --scope user' (frozen 2026-10-30, no new diagrams)
     export: DrawIO.exe --export --format png --scale 1.5 --border 20 --output <abs path>.png <abs path>.drawio
     gotchas:
@@ -175,7 +175,7 @@ stories:
     - {id: '7.1', title: 'Month-end close agents (Deep Agents on AgentCore, MCP tools, gateway, approval)', epic: 7, type: as-built, status: 'Done (on Google Agent Runtime, D-032)', dates: '2026-10-04..07', file: 7.1-month-end-agent.md}
     - {id: 'X.1', title: 'Documentation system', epic: cross-cutting, type: as-built, status: 'Done (living)', dates: '2026-09-14..26', file: 'README.md#how-the-docs-work'}
     - {id: 'X.2', title: 'Docs site v2 (Astro + Svelte, same look, content checks)', epic: cross-cutting, type: as-built, status: 'Done', dates: '2026-10-31', file: X.2-docs-site-v2.md}
-    - {id: 'X.3', title: 'One request from start to finish', epic: cross-cutting, type: as-built, status: 'Implemented and locally verified; CI/publication pending', dates: '2026-11-13', file: X.3-request-journey.md}
+    - {id: 'X.3', title: 'One request from start to finish', epic: cross-cutting, type: as-built, status: 'Done; CI passed and published 2026-11-13', dates: '2026-11-13', file: X.3-request-journey.md}
 
 # ──────────── decisions ────────────
 decisions:
@@ -377,7 +377,7 @@ decisions:
 
   - id: D-034
     decision: 'Explain the platform through one month-end request in all architecture modes'
-    status: 'Accepted 2026-11-13; implemented locally, publication pending'
+    status: 'Accepted 2026-11-13; implemented and published'
     reason: 'Preserve workflow direction and built-to-target continuity; keep runtime facts distinct from production proposals'
     story: 'X.3'
 
@@ -1284,7 +1284,7 @@ progress:
 
   - date: '2026-11-13'
     summary:
-      - 'X.3: local site/docs redesign follows eight month-end request stages in built/target and Simple/Expert; target additions labelled proposed; data preparation and supporting controls separated; margin recovery retained as a separate use case. No runtime or cloud changes; publication pending.'
+      - 'X.3: published site/docs redesign follows eight month-end request stages in built/target and Simple/Expert; target additions labelled proposed; data preparation and supporting controls separated; margin recovery retained as a separate use case. No finance runtime or cloud changes; commit 068fca2, Pages run 43502597395 successful, live browser verification passed.'
 
 # ──────────── lessons ────────────
 lessons:
