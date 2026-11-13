@@ -21,7 +21,7 @@ Code: `src/retail_finance_data/ml/train_models.py`, `databricks_jobs/05_train_ml
 
 [![ML LLD](img/built-lld-ml.png)](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-lld-1)
 
-ML is scheduled preparation before the request. The agent reads existing scores and forecasts at stage 4; it does not train models when asked a question. See [the request journey](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-lld-1). Content: `site/src/data/journey.ts`.
+Interactive version, where you can tap a box to see what it gets and gives: [Architecture → As built → LLDs → ML](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-lld-1). The image is a screenshot of that view. Content: `site/src/data/architecture/built.ts`.
 
 ## Inputs and gate
 

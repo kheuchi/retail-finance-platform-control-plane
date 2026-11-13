@@ -5,7 +5,7 @@
 Updated 2026-11-03. For a one-page summary see the [MEMO](MEMO.md); for the full story of each step, follow the links.
 Decisions: [`cmdb.yml`](../../cmdb.yml) → `decisions` (each D-xxx below is one).
 
-> 🌐 **Interactive companion:** the [web app](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-hld) follows the request from question to approved delivery; Simple and Expert retain the same eight stages.
+> 🌐 **Interactive companion:** the [web app](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-hld) shows every box; Simple mode explains each one in plain words.
 
 ## TL;DR
 

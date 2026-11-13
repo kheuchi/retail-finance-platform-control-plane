@@ -2,10 +2,10 @@
 
 **Contents:** [TL;DR](#tldr) · [Stage by stage](#stage-by-stage) · [Top 10 lessons](#top-10-lessons) · [Open items](#open-items)
 
-One page. Each line links to the full story. Updated 2026-11-13. Index: [stories](../stories/README.md).
+One page. Each line links to the full story. Updated 2026-11-03. Index: [stories](../stories/README.md).
 To explain how it works underneath (decisions, mechanics, likely questions): [WALKTHROUGH](WALKTHROUGH.md).
 
-> 🌐 **Prefer pictures?** The [interactive web app](https://kheuchi.github.io/retail-finance-platform-control-plane/) follows one month-end request through eight stages.
+> 🌐 **Prefer pictures?** The [interactive web app](https://kheuchi.github.io/retail-finance-platform-control-plane/) shows the same platform, box by box.
 
 ## TL;DR
 
@@ -47,7 +47,6 @@ To explain how it works underneath (decisions, mechanics, likely questions): [WA
 | [6.2](../stories/6.2-drift-checks.md) | PSI input drift; nightly config-drift check | PSI read noise on 40 stores and nothing on mostly-zero features | Calibrate a metric on clean data before trusting its alarms |
 | [7.1](../stories/7.1-month-end-agent.md) | Month-end agents (Deep Agents) draft, check and send the close commentary; a controller approves | AWS held Bedrock and AgentCore at zero: moved to Google Agent Runtime + Gemini by configuration | Check AI quotas on day 0; portability only counts once tested |
 | [Docs](../stories/README.md#how-the-docs-work) | Short docs, cmdb, diagrams, stories, AGENTS.md | 1,411 lines nobody would read | One fact, one place: cmdb says what, stories say why |
-| [X.3](../stories/X.3-request-journey.md) | Site and docs explain one request through eight stages; target extends month-end close | Hosting diagrams obscured the workflow; target changed use case | Keep the same request and stage numbers in every mode; production additions remain proposed |
 | [X.2](../stories/X.2-docs-site-v2.md) | Web app rebuilt on Astro + Svelte, content in data files | A bug in one widget broke the whole page | Put content in typed data and let the build check it |
 
 ## Top 10 lessons

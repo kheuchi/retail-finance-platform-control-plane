@@ -125,7 +125,7 @@ Updated 2026-11-03. What we built: [HLD](../architecture/hld.md). Why these pick
 
 ## Target components (not built)
 
-> **TL;DR:** the separate [margin recovery extension](../target/margin-recovery.md) explores streaming and knowledge; the [month-end target](../target/reference-architecture.md) retains the same request journey.
+> **TL;DR:** the [reference architecture](../target/reference-architecture.md) adds streaming, knowledge and an AI gateway.
 
 | Component | Target pick | AWS | Azure | Google Cloud |
 |---|---|---|---|---|

@@ -85,9 +85,7 @@ Detail: [`cmdb.yml`](../../cmdb.yml) → `conception`, `decisions`.
 
 > **TL;DR:** sources land raw in our account, the lakehouse certifies them, ML and the agent work on certified data only, and people approve before anything leaves finance.
 
-[![Month-end request in eight stages](../architecture/img/built-hld.png)](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-flow)
-
-Explanation redesigned 2026-11-13; runtime unchanged. Follow the request top to bottom in the [HLD](../architecture/hld.md). Data preparation runs beforehand; distribution requires controller approval. Production additions in the target are proposals.
+![Business workflow](business-workflow.png)
 
 | # | Stage | Real-world tool | In this project |
 |---|---|---|---|

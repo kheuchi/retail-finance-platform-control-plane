@@ -22,7 +22,7 @@ Detail:
 
 [![Identity and CI/CD LLD](img/built-lld-identity-cicd.png)](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-lld-3)
 
-Identity supports access at stage 2; CI/CD is a separate change path, not a hop in each finance request. The tables below retain that deployment detail. See [the request journey](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-lld-3). Content: `site/src/data/journey.ts`.
+Interactive version, where you can tap a box to see what it gets and gives: [Architecture → As built → LLDs → Identity and CI/CD](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-lld-3). The image is a screenshot of that view. Content: `site/src/data/architecture/built.ts`.
 
 ## Change path
 

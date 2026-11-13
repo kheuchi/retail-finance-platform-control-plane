@@ -2,9 +2,9 @@
 
 **Contents:** [TL;DR](#tldr) · [Roadmap](#roadmap) · [Where we are](#where-we-are) · [Where we go](#where-we-go) · [Use cases](#use-cases) · [Deadlines and cost](#deadlines-and-cost) · [Open risks](#open-risks) · [Scope rule](#scope-rule)
 
-Updated 2026-11-13 (published site/docs request-journey redesign [X.3](docs/stories/X.3-request-journey.md); published through GitHub Pages; runtime unchanged). Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Architecture: [HLD](docs/architecture/hld.md). How we built it: [stories](docs/stories/README.md). Rules for assistants: [AGENTS.md](AGENTS.md).
+Updated 2026-11-03 (dates and cost after the trial; docs reorganised, map in [docs/README.md](docs/README.md)). Detail: [`cmdb.yml`](cmdb.yml) → `phases`, `progress`. Architecture: [HLD](docs/architecture/hld.md). How we built it: [stories](docs/stories/README.md). Rules for assistants: [AGENTS.md](AGENTS.md).
 
-> 🌐 **See it working:** the [interactive web app](https://kheuchi.github.io/retail-finance-platform-control-plane/) is the published explanation. The site follows one month-end request through eight stages; target production additions are proposals, not deployed features.
+> 🌐 **See it working:** the [interactive web app](https://kheuchi.github.io/retail-finance-platform-control-plane/) shows the platform box by box; in Simple mode, press Play to follow one month-end.
 
 ## TL;DR
 

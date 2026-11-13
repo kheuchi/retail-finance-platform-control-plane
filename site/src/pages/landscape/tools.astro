@@ -12,10 +12,9 @@ validateTools(CATS);
   footer="Synthetic data only. Logos: Simple Icons (CC0); products not in that set appear as text badges; trademarks of their owners.">
   <Fragment slot="header">
     <h1>Tool Scorecard</h1>
-    <p class="sub">Tools used in the demonstration, proposed production options and separate extension options. Not every category is required for month-end close. Higher means it can do more; further right means it suits this project better (our cloud, our budget, EU rules, how well it plugs into the rest). Click a logo to see why.</p>
+    <p class="sub">Every kind of tool the platform needs, the one we picked, and its competitors. Higher means it can do more; further right means it suits this project better (our cloud, our budget, EU rules, how well it plugs into the rest). Click a logo to see why.</p>
   </Fragment>
   <main><div class="wrap">
-    <p class="note"><strong>Read the workflow first:</strong> the <a href="../architecture/architecture.html#target-hld">production month-end target</a> extends the same eight stages. Streaming and graph retrieval are options for the separate margin recovery use case. Scores below are historical opinions from October 2026, not a new product assessment.</p>
     <Scorecard client:load {CATS} />
     <p class="note">Scores are our opinion for this project in October 2026, from 1 to 10: not a benchmark and not a market ranking. Capability = how much the tool can do for this job. Fit = how well it suits us (AWS eu-central-1, Databricks, EU data, a USD 50/month budget, keyless identities). Decisions and reasons are in <a href="https://github.com/kheuchi/retail-finance-platform-control-plane/blob/main/cmdb.yml">cmdb.yml</a> (D-003, D-004, D-029, D-031, D-032) and the <a href="https://github.com/kheuchi/retail-finance-platform-control-plane/tree/main/docs/conception/adr">ADRs</a>.</p>
   </div></main>

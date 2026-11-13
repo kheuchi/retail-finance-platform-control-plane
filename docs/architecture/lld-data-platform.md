@@ -22,7 +22,7 @@ Detail:
 
 [![Data platform LLD](img/built-lld-data-platform.png)](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-lld-0)
 
-Preparation before the request, then evidence at stage 4. The screenshot is a reading map; the tables below remain the implementation detail. See [the request journey](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-lld-0). Content: `site/src/data/journey.ts`.
+Interactive version, where you can tap a box to see what it gets and gives: [Architecture → As built → LLDs → Data platform](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-lld-0). The image is a screenshot of that view. Content: `site/src/data/architecture/built.ts`.
 
 ## Bronze, Silver, Gold
 
@@ -40,7 +40,7 @@ file in Bronze. That trace is what an auditor asks for.
 
 ## Pipeline
 
-> **TL;DR:** scheduled preparation builds Bronze, Silver, certified Gold and ML outputs before the agent reads them.
+> **TL;DR:** two jobs today (Bronze, Silver); Gold comes next.
 
 | Step | Where | What |
 |---|---|---|
@@ -74,7 +74,7 @@ file in Bronze. That trace is what an auditor asks for.
 |---|---|
 | `finance-data-engineers` | ALL_PRIVILEGES on `finance` |
 | `finance-analysts` | USE_CATALOG + USE_SCHEMA/SELECT on `gold` |
-| Separate service principals | Platform provisions, deployer deploys, runner executes jobs; agent reads through functions |
+| Service principal | Owns every object; jobs run as it |
 
 ## Sources and anomalies
 

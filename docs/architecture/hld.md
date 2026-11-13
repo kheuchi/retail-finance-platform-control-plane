@@ -1,116 +1,100 @@
-﻿# High-Level Design
+# High-Level Design
 
-**Contents:** [TL;DR](#tldr) · [Diagram](#diagram) · [Before the request](#before-the-request) · [One run, step by step](#one-run-step-by-step) · [The parts, by where they run](#the-parts-by-where-they-run) · [Key flows](#key-flows) · [Design choices](#design-choices) · [Zoom in (LLDs)](#zoom-in-llds) · [Change the diagram](#change-the-diagram)
+**Contents:** [TL;DR](#tldr) · [Diagram](#diagram) · [The parts, by where they run](#the-parts-by-where-they-run) · [One run, step by step](#one-run-step-by-step) · [Key flows](#key-flows) · [Design choices](#design-choices) · [Zoom in (LLDs)](#zoom-in-llds) · [Change the diagram](#change-the-diagram)
 
-Explanation redesigned 2026-11-13; the demonstrated runtime is unchanged. Why: [business case](../conception/business-case.md).
-Detail: `cmdb.yml` → `architecture.request_journey`, `decisions`; redesign: [X.3](../stories/X.3-request-journey.md).
+Updated 2026-10-29. Why it exists and the end-to-end business workflow: [business case](../conception/business-case.md); decisions: [ADRs](../conception/adr/README.md). Detail: [`cmdb.yml`](../../cmdb.yml) → `architecture`, `decisions`. How it was built: [stories](../stories/README.md).
+
+> 🌐 **Interactive version:** [Architecture → As built → HLD](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-hld). Tap any box to see what it is; switch to Simple mode and press Play to follow one month-end with *why each box is there*.
 
 ## TL;DR
 
 | Question | Answer |
 |---|---|
-| What does a person ask? | “Draft the August 2026 month-end commentary.” |
-| How do I read the chart? | Start at 1 and follow the arrows down to 8; Expert opens the components inside those same stages |
-| What is as built? | The implementation demonstrated in October; now paused after paid network endpoints were removed |
-| What is the target? | The same month-end journey with proposed production additions, [not deployed](../target/reference-architecture.md) |
-| What changed in this redesign? | Website and documentation only; no agent, pipeline, Terraform or cloud changes |
-| What stays human? | Approval before distribution; financial postings, payments and money movement |
+| 🤔 What is it? | A finance data, ML and AI agent platform for the accounting team of a large retailer |
+| ☁️ Where does it run? | AWS eu-central-1 (our account) + Databricks Enterprise (control plane) |
+| 🔒 Where is the finance data? | Only in our S3 buckets. Databricks sends commands, not data |
+| 🔌 How do clusters reach Databricks? | PrivateLink. The VPC has no internet gateway and no NAT |
+| 👷 Who changes it? | Only CI/CD, through pull requests. No stored cloud keys |
+| ✅ What is live? | Private workspace, Bronze → Silver → Gold, reconciliation, quality gates, fraud models, forecast, drift checks, month-end agents |
+| 🤖 Where does the agent run? | Designed for AgentCore + Claude on Bedrock; runs on Google Agent Runtime + Gemini (EU) while AWS holds Bedrock ([ADR-006](../conception/adr/ADR-006-agent-platform.md), D-032) |
 
 ## Diagram
 
-> **TL;DR:** one request proceeds down the page; cloud boundaries are supporting detail.
+[![High-level design](img/built-hld.png)](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-hld)
 
-[![The eight-stage month-end request](img/built-hld.png)](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-hld)
-
-[Interactive request journey](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-hld).
-The screenshot is a reading map, not a deployment topology. Simple and Expert use the same stages in the same positions.
-The agent may repeat evidence reads while drafting; the numbered stages describe the overall lifecycle, not a fixed LLM trajectory.
-
-## Before the request
-
-> **TL;DR:** data preparation is scheduled work; asking a question does not rebuild the platform.
-
-Synthetic source files → Bronze (as delivered) → Silver (typed, checked, quarantine) → reconciliation and certified Gold → ML results.
-The agent reads the prepared totals, anomalies and forecast. Details: [data platform](lld-data-platform.md), [ML](lld-ml.md).
-
-## One run, step by step
-
-> **TL;DR:** request → check → plan → evidence → draft → validate → approve → deliver.
-
-| # | Stage | Component hand-off | Result or gate |
-|---|---|---|---|
-| 1 | Make a request | Controller → agent run | One close month; no production chat portal |
-| 2 | Check access and readiness | Agent identity → managed MCP → `gold_certification_status` | Stop if Gold is not certified; tool permissions constrain access |
-| 3 | Plan the investigation | Deep Agents supervisor → Gemini EU → sub-agents | Read-only investigation plan |
-| 4 | Retrieve trusted evidence | Managed MCP → Unity Catalog functions → SQL warehouse → Gold and ML results | Aggregates and references returned to the agent; no employee-level scores |
-| 5 | Write a cited draft | Writer + model → draft per audience | Unapproved commentary |
-| 6 | Check the draft | `submit_draft` → AgentCore Gateway → Lambda figure check → storage | Unsupported figures rejected; semantic correctness still needs review |
-| 7 | Get human approval | Controller → approval row in `finance.agent.approvals` | The agent and notifier cannot approve |
-| 8 | Deliver the approved result | Next run: `send_approved` → gateway + Lambda → SES and `gold.close_commentary` | Unapproved drafts refused |
-
-The August demonstration produced three checked drafts; one was approved and emailed.
-Power BI, Teams, ServiceNow and the CFO pack remain intended consumers or simulated edges, not connected production integrations.
-Seven functions means six finance functions plus the certification function. Proof: [story 7.1](../stories/7.1-month-end-agent.md).
+Interactive version, where you can tap a box to see what it gets and gives: [Architecture → As built → HLD](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-hld). The image is a screenshot of that view. Also on the site: the [landscape](https://kheuchi.github.io/retail-finance-platform-control-plane/landscape/platform-landscape.html).
 
 ## The parts, by where they run
 
-> **TL;DR:** hosting explains operations, not the order in which a reader follows the request.
+> **TL;DR:** grouped by where they run; the bands are what surrounds every run.
 
-| Location | Role | Detail |
+| Group | Holds | Detail |
 |---|---|---|
-| Google europe-west1 | Agent Engine, Gemini EU endpoint, agent credential store and logs | [Agent LLD](lld-agent.md) |
-| AWS eu-central-1 | AgentCore send gateway, channel Lambda, SES, S3 and classic Databricks compute | [Network LLD](lld-network.md) |
-| Databricks | Managed MCP, seven functions, SQL warehouse, governed tables, scheduled jobs and MLflow | [Data LLD](lld-data-platform.md) |
-| GitHub | Three repos, checks and gated deployment workflows | [Identity LLD](lld-identity-cicd.md) |
+| **People** | The controller (starts a run), engineers (PRs only) | [stakeholders](../conception/stakeholders.md) |
+| **GitHub** | 3 repos, Actions (CI, gated deploy, drift, release), keyless deploy identities | [LLD 2](lld-identity-cicd.md) |
+| **Google Cloud** | Agent Engine (Deep Agents, scale to zero), Gemini EU, Secret Manager, Cloud Logging | [LLD 6](lld-agent.md) |
+| **Tools and gateways** | Databricks managed MCP (read), AgentCore Gateway → Lambda → SES (send) | [LLD 6](lld-agent.md) |
+| **Databricks in our VPC** | SQL warehouse, pipeline job Bronze → Gold, ML job, MLflow, Unity Catalog on our S3 | [LLD 1](lld-network.md), [LLD 3](lld-data-platform.md), [LLD 5](lld-ml.md) |
+| **Outputs** | Approval, Power BI, CFO pack | [story 7.1](../stories/7.1-month-end-agent.md) |
 
-Classic compute uses our private VPC; the agent SQL warehouse is serverless. Cross-cloud agent hops use HTTPS.
-Secret Manager supports authentication and is deliberately outside the main request chart.
+Bands: identity and access, compute, network, observability, governance and cost ([LLD 4](lld-observability-cost.md), [story 6.4](../stories/6.4-monitoring.md)).
+
+## One run, step by step
+
+> **TL;DR:** the agent reads through functions, drafts, waits for a person, then sends.
+
+| # | Step |
+|---|---|
+| ① | The controller starts a run for a close month |
+| ② | The agent checks Gold is certified, then calls Unity Catalog functions over managed MCP |
+| ③ | A SQL warehouse runs the functions on Gold and returns aggregates only |
+| ④ | Gemini plans, delegates to sub-agents and drafts the commentary |
+| ⑤ | `submit_draft` through AgentCore Gateway; the Lambda checks every figure and stores the draft |
+| ⑥ | The controller approves: one row in `finance.agent.approvals` |
+| ⑦ | `send_approved`: email by SES; commentary published to `gold.close_commentary` for Power BI |
 
 ## Key flows
 
-> **TL;DR:** separate request traffic from preparation and delivery of code.
+> **TL;DR:** the platform's traffic stays private; only the login and the agent's hops cross the internet.
 
-| Path | Protection | Where in the journey |
-|---|---|---|
-| Agent → Databricks managed MCP | OAuth M2M, EXECUTE on seven functions; no direct table grants | 2 and 4 |
-| Agent → Vertex EU model | Runtime service account | 3 and 5 |
-| Google identity → AWS STS → AgentCore Gateway → Lambda | Federated identity, gateway-only role; validator and approval check outside model | 6 and 8 |
-| Classic cluster → Databricks / S3 | PrivateLink / S3 gateway endpoint, Unity Catalog grants | Before the request |
-| GitHub Actions → cloud deployment | Short-lived cloud federation, required checks and gated workflows | Outside request execution |
+| # | Flow | Path | Protection |
+|---|---|---|---|
+| 1 | People log in | Browser → workspace (HTTPS) | Databricks auth |
+| 2 | Clusters talk to Databricks | Cluster → PrivateLink → control plane | No internet route, SG ports 443/6666/8443-8451 |
+| 3 | Clusters read and write data | Cluster → S3 gateway endpoint → `dbx-uc` | Unity Catalog role, bucket policies |
+| 4 | Infra changes | Actions → OIDC → CI roles | Short-lived tokens, trust pinned to repo + branch |
+| 5 | Job changes | Actions → OAuth → bundle deploy | Deployer identity; jobs run as the runner |
+| 6 | Agent reads data | Agent Engine → Databricks managed MCP (HTTPS) | OAuth M2M; EXECUTE on 7 functions only (6 finance + certification status) |
+| 7 | Agent sends | Agent Engine → STS (Google ID token) → AgentCore Gateway → Lambda | Role may only invoke the gateway; approved drafts only |
 
 ## Design choices
 
-> **TL;DR:** preserve security controls while reducing visual clutter.
+> **TL;DR:** classic compute in our VPC, private by default, cheap by default.
+> Detail: [`cmdb.yml`](../../cmdb.yml) → `decisions`
 
-| Choice | Consequence |
-|---|---|
-| Synthetic data with planted anomalies | Known answer key, no real customer or employee data |
-| Gold certification before analysis | The model cannot choose to bypass the readiness gate |
-| Separate agent and notifier permissions | Read, store, approve and send remain distinct responsibilities |
-| Budget alerts and auto-stop | Limit waste; USD 50 is an alerting budget, not a hard cloud spending cap |
-| Eight stages across all site modes | Production additions can be compared without changing the use case |
+| Choice | Why | Cost of it |
+|---|---|---|
+| Classic workspace in our VPC | What enterprises run; data stays in our account | We run the network |
+| PrivateLink, no NAT | No path to the internet at all | ~USD 64/month vs ~38 for NAT |
+| Unity Catalog on our S3 | One place for grants and lineage | One more IAM role |
+| Everything in Terraform, via PR | Reviewable, repeatable, teardown in one run | Slower first build |
+| Synthetic data with planted anomalies | Real finance data is not shareable; we know the answers | Must look realistic |
 
 ## Zoom in (LLDs)
 
-> **TL;DR:** use the detailed docs after following the request once.
+| LLD | Question it answers | Build stories |
+|---|---|---|
+| [1 · Network](lld-network.md) | How does traffic flow, and why can't it leave? | [2.1](../stories/2.1-where-databricks-runs.md), [2.2](../stories/2.2-private-network.md), [3.3](../stories/3.3-first-job-in-the-private-vpc.md) |
+| [2 · Identity & CI/CD](lld-identity-cicd.md) | Who can change what, and how? | [1.2](../stories/1.2-passwordless-cicd.md), [1.3](../stories/1.3-least-privilege-deploy-role.md), [2.3](../stories/2.3-workspace-as-code.md) |
+| [3 · Data platform](lld-data-platform.md) | How do files become trusted finance tables? | [2.4](../stories/2.4-unity-catalog-on-our-s3.md), [3.1](../stories/3.1-synthetic-accounting-data.md), [3.2](../stories/3.2-catalog-and-bundle-deploy.md), [4.x](../stories/README.md#epic-4--transform--quality) |
+| [4 · Observability & cost](lld-observability-cost.md) | What is recorded, what alerts, what limits spend? | [1.4](../stories/1.4-audit-and-alarms.md), [2.5](../stories/2.5-guardrails.md) |
+| [5 · ML](lld-ml.md) | How are frauds found and revenue forecast, from certified Gold? | [5.1](../stories/5.1-fraud-detection.md), [5.2](../stories/5.2-revenue-forecast.md) |
+| [6 · Agent](lld-agent.md) | Who does the agent run as, across Google, Databricks and AWS, and what may it do? | [7.1](../stories/7.1-month-end-agent.md) |
 
-| Detail | Relationship to the request |
-|---|---|
-| [1 · Network](lld-network.md) | Supporting connectivity and classic compute topology |
-| [2 · Identity & CI/CD](lld-identity-cicd.md) | Request access and the separate change/deploy path |
-| [3 · Data platform](lld-data-platform.md) | Preparation before the request; evidence reads at stage 4 |
-| [4 · Observability & cost](lld-observability-cost.md) | Signals and budgets across every stage |
-| [5 · ML](lld-ml.md) | Scores and forecast prepared before the request |
-| [6 · Agent](lld-agent.md) | Components inside stages 1–8 |
-
-The [enterprise target](../target/reference-architecture.md) extends this month-end journey.
-[Margin recovery](../target/margin-recovery.md) remains a separate possible use case.
+New to Databricks? Read the [primer](../guides/databricks-primer.md) first. Same parts on Azure or Google Cloud: [cloud equivalents](../guides/cloud-equivalents.md). Enterprise target (not built): [reference architecture](../target/reference-architecture.md).
 
 ## Change the diagram
 
-> **TL;DR:** edit the request model, then regenerate site screenshots.
+> **TL;DR:** change the data, not the picture.
 
-The active site uses `site/src/data/journey.ts`, `site/src/components/Journey.svelte` and `site/src/styles/journey.css`.
-Architecture, landscape and search share the request model. Existing `#built-hld`, `#target-hld` and LLD links resolve to the redesigned explanation.
-Run the site build, then `site/scripts/diagram-shots.py` against the local preview to refresh `docs/architecture/img/`.
-The detailed LLD tables remain the technical reference; screenshots now explain stage context rather than reproduce every deployment box.
+The diagrams are drawn by the site from `site/src/data/architecture/` (`built.ts`, `target.ts`; plain words in `simple.ts`). Edit there; the build checks every arrow and story link ([story X.2](../stories/X.2-docs-site-v2.md)). Then retake the screenshots in `docs/architecture/img/` with `site/scripts/diagram-shots.py`. The draw.io HLD of 2026-10-29 is in Git history.

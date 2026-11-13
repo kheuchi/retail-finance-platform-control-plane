@@ -1,4 +1,3 @@
-/* Legacy diagram content retained for source history. Active architecture, landscape and search use journey.ts (X.3). */
 /* Simple mode for architecture.html: plain-words versions of sections 1-4 (big picture, workflow, simplified, HLD)
    for readers who know nothing about data or ML (aim: a 13-15 year old).
    KID[arch][sec] = { t, d, b: blocks }; a block { dia: "from", story } reuses the expert diagram of the same section.
