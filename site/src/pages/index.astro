@@ -1,29 +1,23 @@
----
-import Base from "../layouts/Base.astro";
-import "../styles/home.css";
-import { iconHTML } from "../lib/icons";
-import { url } from "../lib/url";
-
-const STACK = [["databricks", "Databricks"], ["apachespark", "Spark"], ["mlflow", "MLflow"], ["scikitlearn", "scikit-learn"], ["googlecloud", "Vertex AI"], ["googlegemini", "Gemini"],
-  ["langgraph", "LangGraph"], ["aws", "AWS"], ["agentcore", "AgentCore"], ["terraform", "Terraform"], ["githubactions", "GitHub Actions"], ["python", "Python"]];
+﻿---
+import Base from '../layouts/Base.astro';
+import '../styles/home.css';
+import {url} from '../lib/url';
 ---
 <Base title="Retail Finance Platform" page="home" narrow
-  description="A finance data, ML and AI agent platform for a retailer's accounting team, on AWS, Databricks and Google: landscape and architecture views."
-  footer="Synthetic data only. Logos: Simple Icons (CC0); AWS and Microsoft products shown as text badges; logos are trademarks of their owners.">
-  <h1 slot="header">Retail Finance Platform</h1>
-  <main><div class="wrap">
-    <p class="lead">A finance data, ML and AI agent platform for the accounting team of a large (fictional) grocer, built the enterprise way: governed lakehouse, fraud models and a forecast, and a month-end agent whose drafts a controller approves.</p>
-    <div class="cards">
-      <a class="card" style="--c:var(--agent)" href={url("landscape/platform-landscape.html")}><h2>Landscape</h2><p>Every part as a tile, by layer: as built, the target margin recovery agent, and how each part is evaluated.</p><span class="go">Open the landscape →</span></a>
-      <a class="card" style="--c:var(--data)" href={url("architecture/architecture.html")}><h2>Architecture</h2><p>As built and the enterprise target, each from the business question to HLD, LLDs, network and protocols, observability and evaluation.</p><span class="go">Open the architecture →</span></a>
-      <a class="card" style="--c:var(--base)" href="https://github.com/kheuchi/retail-finance-platform-control-plane"><h2>Docs, decisions, stories</h2><p>Status, ADRs, the inventory (cmdb.yml) and the stories of how each piece was built.</p><span class="go">Open on GitHub →</span></a>
-    </div>
-    <div class="facts">
-      <div><b>Runs on</b>AWS eu-central-1 · Databricks · Google europe-west1</div>
-      <div><b>Data</b>Synthetic: 40 stores, 21 months, 4.2m rows</div>
-      <div><b>Agent rule</b>Read-only; a person approves every send</div>
-      <div><b>Status</b>All 7 stages built; trial resources switched off</div>
-    </div>
-    <div class="stack"><span class="lbl">Built with</span>{STACK.map(([k, n]) => <span><Fragment set:html={iconHTML(k, 16)} />{n}</span>)}</div>
-  </div></main>
+ description="Follow a finance request from question to trusted evidence, checked draft, human approval and controlled delivery."
+ footer="Synthetic data only. This site explains a paused demonstration and a proposed enterprise design. It does not run the finance agent.">
+ <h1 slot="header">A finance question. A checked answer. A human decision.</h1>
+ <main><div class="wrap">
+  <p class="lead">A controller asks for the month-end commentary. The agent reads trusted finance results, drafts an explanation and waits for approval. Follow that one request from start to finish.</p>
+  <div class="home-request"><span class="lbl">Start with a real question</span><blockquote>“Explain the August close: revenue, margin, exceptions and the forecast.”</blockquote><a class="primary-link" href={url('architecture/architecture.html')}>Follow the request →</a></div>
+  <div class="home-path"><span>Request</span><span aria-hidden="true">↓</span><span>Check access & data</span><span aria-hidden="true">↓</span><span>Plan & retrieve evidence</span><span aria-hidden="true">↓</span><span>Draft & validate</span><span aria-hidden="true">↓</span><span>Human approval</span><span aria-hidden="true">↓</span><span>Controlled delivery</span></div>
+  <div class="cards">
+   <a class="card" style="--c:var(--agent)" href={url('architecture/architecture.html#built-hld')}><h2>Understand the demonstration</h2><p>Eight stages in request order. Simple explains the story; Expert reveals the components in the same places.</p><span class="go">Explore as built →</span></a>
+   <a class="card" style="--c:var(--data)" href={url('architecture/architecture.html#target-hld')}><h2>See what production adds</h2><p>The same month-end question and eight stages, with proposed production additions clearly marked.</p><span class="go">Compare the enterprise target →</span></a>
+   <a class="card" style="--c:var(--base)" href={url('landscape/platform-landscape.html')}><h2>Find where a component fits</h2><p>Components appear at the stage that uses them. Credentials, hosting and monitoring sit in supporting detail.</p><span class="go">Open the platform map →</span></a>
+  </div>
+  <div class="facts"><div><b>Demonstrated</b>AWS + Databricks + Google; core platform built</div><div><b>Data</b>40 synthetic stores · 21 months · 4.2m rows</div><div><b>Boundary</b>No financial postings or payments; approval before delivery</div><div><b>Today</b>Paused; target is a design, not deployed functionality</div></div>
+  <p class="lead">The redesign changes the explanation, not the running platform. <a href="https://github.com/kheuchi/retail-finance-platform-control-plane/blob/main/docs/architecture/hld.md">Read the architecture and implementation limits</a>, or compare <a href={url('landscape/tools.html')}>tool options</a>.</p>
+ </div></main>
+ <style>.home-request{background:#182b38;color:#fff;padding:28px;border-radius:12px}.home-request .lbl{color:#bfd5e0}.home-request blockquote{font:500 27px/1.4 var(--f-display);margin:12px 0 20px;max-width:700px}.primary-link{display:inline-block;padding:11px 16px;background:#fff;color:#182b38;border-radius:7px;text-decoration:none;font-weight:600}.home-path{display:grid;justify-items:center;gap:7px;padding:20px;border:1px solid var(--line);border-radius:10px;background:var(--paper)}.home-path span:nth-child(odd){font-weight:600}.home-path span:nth-child(even){color:var(--agent)}</style>
 </Base>

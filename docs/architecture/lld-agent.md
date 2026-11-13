@@ -20,7 +20,7 @@ Code: infra `gcp/` (Google side), infra `agent/` (gateway, federation, Lambda); 
 
 [![LLD 6 · Agent](img/built-lld-agent.png)](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-lld-2)
 
-Interactive version, where you can tap a box to see what it gets and gives: [Architecture → As built → LLDs → Agent](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-lld-2). The image is a screenshot of that view. Content: `site/src/data/architecture/built.ts`.
+Follow the same eight request stages as the HLD. The screenshot explains the agent hand-offs; identity and network tables below describe the demonstrated runtime. See [the request journey](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-lld-2). Content: `site/src/data/journey.ts`.
 
 ## Identities
 
@@ -30,7 +30,7 @@ Interactive version, where you can tap a box to see what it gets and gives: [Arc
 |---|---|---|---|
 | `finance-agent-deployer` (service account) | Google | Deploy to Agent Runtime, write the staging bucket, act as the runtime SA | Run the agent; read the secret. Reachable only from the data repo's `main` (Workload Identity Federation condition) |
 | `finance-month-end-agent` (service account) | Google | Call Gemini, write logs and traces, read its one secret | Anything else in the project |
-| `finance-month-end-agent` (service principal) | Databricks | EXECUTE on the six `finance.agent` functions | Read any table directly; write anything |
+| `finance-month-end-agent` (service principal) | Databricks | EXECUTE on seven `finance.agent` functions (six finance + certification) | Read any table directly; write anything |
 | `…-agent-gcp` (IAM role) | AWS | `InvokeGateway` on the channels gateway, 1 h sessions; trusted only for the runtime SA's ID token with audience `retail-finance-agent-gateway` | Any other AWS call |
 | `finance-close-notifier` (service principal) | Databricks, used by the Lambda | Write drafts, read approvals, publish to `gold.close_commentary` | Approve: only `finance-controllers` write `finance.agent.approvals` |
 

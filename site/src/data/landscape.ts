@@ -1,3 +1,4 @@
+/* Legacy diagram content retained for source history. Active architecture, landscape and search use journey.ts (X.3). */
 /* Landscape: every part as a tile, by layer. T(name, caption, status, steps, detail, mono). */
 import type { Tile, View, Status } from "./types";
 

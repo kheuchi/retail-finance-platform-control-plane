@@ -14,13 +14,13 @@
 
 > ## 👉 [Open the interactive web app](https://kheuchi.github.io/retail-finance-platform-control-plane/)
 >
-> The fastest way in: the whole project in pictures you can click, with a **Simple mode** that explains every box in plain words.
+> The fastest way in: the whole project in pictures you can click, following **one month-end request through eight stages**. Simple and Expert keep the same order; the target adds proposed production capabilities.
 >
 > | 🧭 Go to | What you get |
 > |---|---|
-> | [🏗️ Architecture: as built](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-hld) | What runs today; press Play to follow one month-end, step by step |
-> | [🎯 Architecture: enterprise target](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#target-hld) | What a large grocer would build next |
-> | [🗺️ Platform landscape](https://kheuchi.github.io/retail-finance-platform-control-plane/landscape/platform-landscape.html) | Every capability: built, partly, missing |
+> | [🏗️ Architecture: as built](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-hld) | The paused demonstration, explained from request to delivery |
+> | [🎯 Architecture: enterprise target](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#target-hld) | The same month-end journey with proposed production additions |
+> | [🗺️ Platform landscape](https://kheuchi.github.io/retail-finance-platform-control-plane/landscape/platform-landscape.html) | Components at the stage that uses them; supporting controls separately |
 > | [🧰 Tool scorecard](https://kheuchi.github.io/retail-finance-platform-control-plane/landscape/tools.html) | Our pick vs competitors, per category |
 
 ## TL;DR
@@ -38,7 +38,7 @@
 
 [![High-level design](docs/architecture/img/built-hld.png)](https://kheuchi.github.io/retail-finance-platform-control-plane/architecture/architecture.html#built-hld)
 
-The picture is a screenshot of the web app. The written design is in the [HLD](docs/architecture/hld.md),
+The picture follows the request top to bottom. It is a screenshot of the redesigned web app; runtime code and infrastructure are unchanged. Production additions are proposals. The written design is in the [HLD](docs/architecture/hld.md),
 which links to the six LLDs (network, identity & CI/CD, data platform, observability & cost, ML, agent).
 
 ## 📍 Where we are

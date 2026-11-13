@@ -2,9 +2,9 @@
 
 **Contents:** [TL;DR](#tldr) · [Folders](#folders) · [Reading paths](#reading-paths) · [Where a new doc goes](#where-a-new-doc-goes)
 
-Updated 2026-11-03. Detail: [`cmdb.yml`](../cmdb.yml) → `conception`, `architecture`, `stories`. Rules: [AGENTS.md](../AGENTS.md).
+Updated 2026-11-13 (request-led site and architecture redesign). Detail: [`cmdb.yml`](../cmdb.yml) → `conception`, `architecture`, `stories`. Rules: [AGENTS.md](../AGENTS.md).
 
-> 🌐 **Prefer pictures?** The [interactive web app](https://kheuchi.github.io/retail-finance-platform-control-plane/) shows the same platform, box by box.
+> 🌐 **Prefer pictures?** The [interactive web app](https://kheuchi.github.io/retail-finance-platform-control-plane/) follows one month-end request through eight stages.
 
 ## TL;DR
 
@@ -22,7 +22,7 @@ Updated 2026-11-03. Detail: [`cmdb.yml`](../cmdb.yml) → `conception`, `archite
 |---|---|---|
 | [conception/](conception/business-case.md) | Why does it exist, and what did we decide on day 0? | Business case and workflow, stakeholders (RACI), benchmark, [ADRs](conception/adr/README.md) |
 | [architecture/](architecture/hld.md) | What runs today? | HLD, 6 LLDs (network, identity & CI/CD, data platform, observability & cost, ML, agent), screenshots in `img/` |
-| [target/](target/reference-architecture.md) | What would a large grocer build next? (not built) | Reference architecture (margin recovery agent), [evaluation and observability](target/evaluation-observability.md) |
+| [target/](target/reference-architecture.md) | What would a large grocer build next? (not built) | Production month-end target, separate [margin recovery extension](target/margin-recovery.md), [evaluation and observability](target/evaluation-observability.md) |
 | [guides/](guides/MEMO.md) | How do I explain it? | [MEMO](guides/MEMO.md) (one page), [WALKTHROUGH](guides/WALKTHROUGH.md) (each layer, likely questions), [Databricks primer](guides/databricks-primer.md), [cloud equivalents](guides/cloud-equivalents.md) |
 | [stories/](stories/README.md) | How was each piece built, and what went wrong? | One file per story, review checklist, docs system (X.1) |
 | [security/](security/threat-model.md) | What could go wrong, and what stops it? | [Threat model](security/threat-model.md), [control matrix](security/control-matrix.md), [responsibility matrix](security/responsibility-matrix.md) |

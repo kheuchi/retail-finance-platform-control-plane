@@ -22,7 +22,7 @@
 # ======================================================================
 
 about: Inventory for the retail-finance platform program (facts, IDs, status, one-line reasons). Explanations live in docs/stories/.
-updated: '2026-11-03'
+updated: '2026-11-13'
 
 # ──────────── program ────────────
 program:
@@ -99,25 +99,33 @@ phases:
 conception:
   docs: 'docs/conception/ (day 0 - business case, stakeholders, benchmark, adr/); target pictures (reference architecture, evaluation and observability) in docs/target/ since 2026-11-03'
   business_case: 'month-end close for a DE/CH grocery retailer; sources SAP S/4HANA, store POS, planning tool, ECB, HR; files in, tool gateway out; outputs to controller (commentary), internal audit (fraud), GL lead (exceptions), FP&A (forecast)'
-  diagram: {file: conception/business-workflow, covers: 'sources -> integration in -> S3 landing -> lakehouse -> ML -> agent (Bedrock) -> review -> AgentCore Gateway (MCP tools) -> Teams, CFO pack, ServiceNow; Power BI reads Gold; built vs simulated'}
+  diagram: {file: architecture/img/built-hld.png, covers: 'request -> checks -> plan -> evidence -> draft -> validate -> human approval -> delivery; preparation separately'}
   stakeholders: 'CFO (sponsor), Head of Accounting (business owner), GL, store controlling, FP&A, internal audit, CISO, DPO + works council, finance data & AI product team (PO, data/ML/AI engineers; deploys code), data & AI platform team (provisions infra; a self-service portal in production, PRs here), enterprise architect, SAP/integration team; RACI in stakeholders.md'
   benchmark: 'Databricks on AWS 87, AWS-native 75, Google 74, Snowflake 72, Fabric 70, SAP-native 60 (weighted, 9 criteria, judgement as of 2026-10)'
   adrs: [ADR-001 cloud, ADR-002 data platform, ADR-003 compute and network, ADR-004 ingestion, ADR-005 orchestration and deploy, ADR-006 agent platform]
-  reference_architecture: 'docs/target/reference-architecture.md (2026-10-28, target picture, not built): margin recovery agent ("where did we lose margin, why, how much can we still recover before the close?"); leaks: unclaimed promotion funding, cost up price unchanged, rebate tier at risk, supplier deductions, waste, fraud, markdowns; tools: event streaming, lakehouse + OLAP, live APIs, ML forecasts + scores, RAG, GraphRAG, SLM, LLM, 3 human approvers; 6-test agent checklist + build vs buy; diagrams: site screenshots of target HLD and target LLD agent (docs/architecture/img/, linked to the site); the French version keeps its drawio + png; dropped: replenishment (engine exists), refund fraud (Appriss), vendor chargebacks (supplier-side)'
-  evaluation_observability: 'docs/target/evaluation-observability.md (2026-10-29, target picture, not built): test on every PR, evaluate on golden sets at every release (ship only if not worse), observe every run; per layer: data pipes, ML, RAG, GraphRAG, agents; code checks first, LLM judge second, a person checks the judge; diagrams evaluation-observability (hub) and evaluation-matrix (question -> tool -> indicator, 22 checks), drawio + png; one golden case end to end; built today: story 6.4'
+  reference_architecture: 'docs/target/reference-architecture.md (2026-11-13): proposed production month-end close; same eight request stages as the demonstration; no runtime changes. Separate earlier margin recovery proposal: docs/target/margin-recovery.md'
+  evaluation_observability: 'docs/target/evaluation-observability.md (2026-10-29, target picture, not built): test on every PR, evaluate on golden sets at every release (ship only if not worse), observe every run; per layer: data pipes, ML, RAG, GraphRAG, agents; code checks first, LLM judge second, a person checks the judge; diagrams evaluation-observability (hub) and evaluation-matrix (question -> tool -> indicator, 22 checks), drawio + png; one golden case end to end; implemented signals and proposed gaps: story 6.4'
   date: '2026-10-04'
 
 architecture:
+  request_journey:
+    story: 'X.3'
+    date: '2026-11-13'
+    status: 'Implemented and locally verified; CI/publication pending'
+    source: 'site/src/data/journey.ts'
+    stages: ['request', 'check', 'plan', 'evidence', 'draft', 'validate', 'approve', 'deliver']
+    continuity: 'Same month-end question, order and layout in built/target and Simple/Expert'
+    boundary: 'Website and documentation redesign only; runtime, pipelines and infrastructure unchanged; enterprise additions proposed, not implemented'
   guides: 'docs/guides/ (MEMO one-pager, WALKTHROUGH, databricks-primer, cloud-equivalents: every component mapped to AWS, Azure and Google Cloud); moved from docs/stories/ and docs/architecture/ on 2026-11-03'
   docs: 'docs/architecture/ (hld.md + lld-*.md). Diagrams: HLD and LLDs data platform, ML, agent, identity and CI/CD are screenshots of the site (docs/architecture/img/, taken by site/scripts/diagram-shots.py, linked to the live view); network and observability-cost LLDs still draw.io (.drawio + .png, frozen, not covered by the site)'
   diagrams:
-    - {file: hld, covers: 'as built, redrawn 2026-10-29: one run end to end (controller -> Agent Engine -> managed MCP -> SQL warehouse on Gold -> Gemini -> AgentCore Gateway -> Lambda -> approval -> SES, Power BI); GitHub CI/CD and keyless identities; pipeline and ML jobs; bands for identity, compute, network, observability, governance and cost'}
+    - {file: hld, covers: '2026-11-13 request journey: eight stages top to bottom; scheduled preparation before request; hosting and credentials in supporting detail'}
     - {file: lld-network, covers: 'VPC 10.20.0.0/16, 2 AZ x (workspace /22 + endpoint /24), 4 interface + 1 gateway endpoint, SG rules, cost'}
-    - {file: lld-identity-cicd, covers: 'PR -> checks -> gated deploy; OIDC plan/deploy roles; cross-account and UC roles with external IDs; service principal; groups'}
-    - {file: lld-data-platform, covers: 'generate -> landing volume -> Auto Loader -> Bronze -> Silver -> Gold -> consumers (all done); catalog layout; grants; jobs run as finance-pipeline-runner (labels refreshed 2026-10-28)'}
+    - {file: lld-identity-cicd, covers: 'supporting identity screenshot; detailed CI/CD and role tables retained in the LLD'}
+    - {file: lld-data-platform, covers: 'preparation before the request plus stage 4 evidence chain; detailed catalog and grant tables retained in the LLD'}
     - {file: lld-observability-cost, covers: 'CloudTrail, audit bucket, metric filters, alarms, SNS; flow logs; budgets, cluster policies, serverless egress; change gates'}
-    - {file: lld-ml, covers: 'train_models job on certified Gold: two Isolation Forest detectors, forecast vs baseline, MLflow, finance.ml registry, Gold scores, results, limits'}
-    - {file: lld-agent, covers: 'agent identities across GitHub (OIDC -> WIF), Google (deployer and runtime SAs, Gemini EU, Secret Manager), Databricks (agent SP EXECUTE on finance.agent functions; notifier SP), AWS (ID token -> role ...-agent-gcp -> AgentCore Gateway -> Lambda -> SES); added 2026-10-29'}
+    - {file: lld-ml, covers: 'ML preparation before the request; detailed methods and evaluation retained in the LLD'}
+    - {file: lld-agent, covers: 'eight-stage agent request context; detailed runtime identities and limits retained in the LLD'}
   key_flows:
     - login: browser -> workspace over HTTPS (only internet path)
     - control: cluster -> PrivateLink (443, 6666, 8443-8451) -> Databricks control plane
@@ -127,7 +135,7 @@ architecture:
     - agent_model: 'Agent Engine (europe-west1) -> Gemini 3.8 Flash on the Vertex AI EU endpoint (D-032); designed: AgentCore Runtime in the VPC -> Bedrock interface endpoint (PrivateLink), eu-central-1'
   observability_tools: 'picks 2026-10-30 (target, not built): agent + AI gateway = Langfuse self-hosted EU (Google Cloud Trace kept for Agent Engine runtime logs; Arize Phoenix for notebook evals only: Elastic License 2.0, Dynatrace deal pending); models = Lakehouse Monitoring + MLflow; infra = ClickStack (ClickHouse + HyperDX + OTel collector), Grafana LGTM if already in place; OpenTelemetry GenAI conventions everywhere. As built next: Langfuse free tier for the agent, Databricks SQL alerts for drift and quality, no infra stack (budget)'
   toolchain:
-    site: 'GitHub Pages from site/ (Astro 7 + Svelte 5; story X.2, D-033), built and deployed by .github/workflows/site.yml on every change to site/; content in site/src/data (architecture built/target/simple, tools, landscape), link checks in validate.ts; v1 hand-written HTML in docs/ replaced and deleted 2026-10-31. Pages: index.html, landscape/platform-landscape.html, landscape/tools.html (16 categories, opinion not benchmark), architecture/architecture.html (as built + target x 10 sections, Simple mode for sections 1-4); logos Simple Icons 16.32.0 (CC0), AWS and Microsoft as text badges'
+    site: 'GitHub Pages from site/ (Astro + Svelte); shared request model in site/src/data/journey.ts; Journey.svelte renders architecture and landscape, search indexes the same stages; original URLs and architecture deep links retained. Request-led redesign X.3 implemented locally, publication pending; tool scorecard remains historical October 2026 opinion.'
     drawio: draw.io desktop, installed 2026-09-26 via 'winget install --id JGraph.Draw --scope user' (frozen 2026-10-30, no new diagrams)
     export: DrawIO.exe --export --format png --scale 1.5 --border 20 --output <abs path>.png <abs path>.drawio
     gotchas:
@@ -167,6 +175,7 @@ stories:
     - {id: '7.1', title: 'Month-end close agents (Deep Agents on AgentCore, MCP tools, gateway, approval)', epic: 7, type: as-built, status: 'Done (on Google Agent Runtime, D-032)', dates: '2026-10-04..07', file: 7.1-month-end-agent.md}
     - {id: 'X.1', title: 'Documentation system', epic: cross-cutting, type: as-built, status: 'Done (living)', dates: '2026-09-14..26', file: 'README.md#how-the-docs-work'}
     - {id: 'X.2', title: 'Docs site v2 (Astro + Svelte, same look, content checks)', epic: cross-cutting, type: as-built, status: 'Done', dates: '2026-10-31', file: X.2-docs-site-v2.md}
+    - {id: 'X.3', title: 'One request from start to finish', epic: cross-cutting, type: as-built, status: 'Implemented and locally verified; CI/publication pending', dates: '2026-11-13', file: X.3-request-journey.md}
 
 # ──────────── decisions ────────────
 decisions:
@@ -365,6 +374,12 @@ decisions:
     date: '2026-10-31'
     reason: 'v1 hand-written pages kept the look but mixed CSS, JS and content in one file; components and data files make changes local, and the build fails on broken content links. Starlight and Docusaurus rejected: they impose their own docs look'
     story: X.2
+
+  - id: D-034
+    decision: 'Explain the platform through one month-end request in all architecture modes'
+    status: 'Accepted 2026-11-13; implemented locally, publication pending'
+    reason: 'Preserve workflow direction and built-to-target continuity; keep runtime facts distinct from production proposals'
+    story: 'X.3'
 
 # ──────────── risks ────────────
 risks:
@@ -1266,6 +1281,10 @@ progress:
   - date: '2026-11-03'
     summary:
       - 'Docs cleanup: target pictures moved to docs/target/, MEMO, WALKTHROUGH and the Databricks primer to docs/guides/, roadmap.svg to docs/img/; French reference architecture (md + 2 draw.io + 2 png) and docs/landscape/README.md deleted (duplicates; the site covers them; in Git history); stale facts fixed (agent built, trial over, 7 agent functions); docs/README.md map and docs/guides/cloud-equivalents.md added. Story and LLD paths kept: the infra and data repos link to them'
+
+  - date: '2026-11-13'
+    summary:
+      - 'X.3: local site/docs redesign follows eight month-end request stages in built/target and Simple/Expert; target additions labelled proposed; data preparation and supporting controls separated; margin recovery retained as a separate use case. No runtime or cloud changes; publication pending.'
 
 # ──────────── lessons ────────────
 lessons:

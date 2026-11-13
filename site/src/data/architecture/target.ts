@@ -1,3 +1,4 @@
+/* Legacy diagram content retained for source history. Active architecture, landscape and search use journey.ts (X.3). */
 /* Enterprise target architecture. Generated from v1 architecture.html; edit here from now on. */
 import { E, R, P, M } from "./helpers";
 import type { Arch } from "../types";

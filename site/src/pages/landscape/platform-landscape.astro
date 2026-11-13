@@ -1,11 +1,11 @@
+﻿---
+import Base from '../../layouts/Base.astro';
+import Journey from '../../components/Journey.svelte';
+import '../../styles/journey.css';
 ---
-import Base from "../../layouts/Base.astro";
-import Landscape from "../../components/landscape/Landscape.svelte";
-import "../../styles/landscape.css";
-import { VIEWS, ICON, C } from "../../data/landscape";
----
-<Base title="Retail Finance Platform Landscape" page="landscape"
-  description="Every part of the retail finance data, ML and agent platform as tiles: as built, the target margin recovery agent, and evaluation."
-  footer="Synthetic data only. Logos: Simple Icons (CC0); AWS and Microsoft products shown as text badges. Logos are trademarks of their owners.">
-  <Landscape client:load {VIEWS} {ICON} {C} />
+<Base title="Retail Finance · Components in the request" page="landscape"
+ description="The same eight-stage month-end journey, with platform capabilities explained where they are used."
+ footer="Documentation redesign only. Runtime code and infrastructure unchanged. Enterprise additions are proposals.">
+ <Fragment slot="header"><h1>Where each component fits</h1><p class="sub">The platform landscape follows the same request as the architecture. Switch to Expert to reveal the components inside each stage.</p></Fragment>
+ <Journey client:load landscape />
 </Base>
